@@ -35,6 +35,68 @@ public class MessageHandler implements Runnable {
                  var writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
                 //TODO Implement receiving info from MessageClient in order
 
+                //read in acct info from client
+                String credentials = reader.readLine();
+                String[] info = credentials.split(":");
+                String username = info[1];
+                String password = info[2];
+
+                //to write to a file
+                try {
+                    File f = new File("Accounts.txt");
+                    BufferedReader bfr = new BufferedReader(new FileReader(f));
+                    PrintWriter pw = new PrintWriter(new FileOutputStream(f, true));
+
+                    //login
+                    if (credentials.charAt(0) == 'L')
+                    {
+                        String s = bfr.readLine();
+                        while ((s != null)) {
+                            String currentUser = s.substring(0, s.indexOf(","));
+                            String currentPass = s.substring(s.indexOf(",") + 1);
+                            //once username and password is found, is true and break
+                            if ((currentUser.equals(username)) && (currentPass.equals(password)))
+                            {
+                                writer.write("true");
+                                writer.newLine();
+                                writer.flush();
+                                break;
+                            }
+                            s = bfr.readLine();
+                        }
+                        //if username and password aren't found, is false
+                        writer.write("false");
+                        writer.newLine();
+                        writer.flush();
+                    }
+                    //register
+                    else
+                    {
+                        String s = bfr.readLine();
+                        while ((s != null)) {
+                            String currentUser = s.substring(0, s.indexOf(","));
+                            //if username is and password is taken, is true and break
+                            if (currentUser.equals(username))
+                            {
+                                writer.write("true");
+                                writer.newLine();
+                                writer.flush();
+                                break;
+                            }
+                            s = bfr.readLine();
+                        }
+                        //if username is unique and now added to list of accts
+                        pw.println(username + "," + password);
+                        writer.write("false");
+                        writer.newLine();
+                        writer.flush();
+                    }
+
+                } catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }

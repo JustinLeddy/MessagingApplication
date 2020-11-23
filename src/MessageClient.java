@@ -137,6 +137,8 @@ public class MessageClient {
                 //If login does exist, check if user is logging in or registering
                 if (loginOrRegister) {
                     //Changes window to full message app
+                    message("You've successfully logged in!",
+                            JOptionPane.INFORMATION_MESSAGE);
                     runMessageApp();
                 } else {
                     //Prompts user that entered username is already taken
@@ -151,6 +153,8 @@ public class MessageClient {
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     //Changes window to full message app
+                    message("You've successfully registered!",
+                            JOptionPane.INFORMATION_MESSAGE);
                     runMessageApp();
                 }
             }

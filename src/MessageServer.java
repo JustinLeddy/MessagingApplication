@@ -31,13 +31,10 @@ public class MessageServer {
             System.out.println("Connected to Client");
             while (true) {
 
-                var reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                var writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                System.out.println(reader.readLine());
-
-                writer.write("true");
-                writer.newLine();
-                writer.flush();
+                //start thread to handle login/register
+                MessageHandler one = new MessageHandler(socket);
+                Thread test = new Thread(one);
+                test.start();
             }
         } catch (IOException e) {
             e.printStackTrace();

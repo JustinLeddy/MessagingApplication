@@ -1,5 +1,6 @@
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  * Message Server
@@ -16,17 +17,37 @@ import java.net.ServerSocket;
  * @version November 30th, 2020
  */
 public class MessageServer {
-    // ServerSocket for server
-    private final ServerSocket serverSocket;
-
-
-    //Constructor to construct server off passed port
-    public MessageServer(int port) throws IOException {
-        this.serverSocket = new ServerSocket(port);
-    }
-
     public void serveClient() {
         //TODO Serve Client using MessageHandler threading
+    }
+
+    public static void main(String[] args) {
+        //Temporary
+
+        try {
+            var serverSocket = new ServerSocket(8888);
+            System.out.println("Connected");
+            var socket = serverSocket.accept();
+            System.out.println("Connected to Client");
+            while (true) {
+
+                var reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                var writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                System.out.println(reader.readLine());
+
+                writer.write("true");
+                writer.newLine();
+                writer.flush();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Temporary
+
+
+
+
     }
 
 

@@ -34,13 +34,13 @@ public class MessageHandler implements Runnable {
                  var reader = new BufferedReader(new InputStreamReader(inputStream));
                  var writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
                 //TODO Implement receiving info from MessageClient in order
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
-
     }
+    //Account Format: username,password
 
 
 }

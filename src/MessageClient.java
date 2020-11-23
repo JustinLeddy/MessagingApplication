@@ -4,6 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 /**
  * Message Client
@@ -16,45 +19,57 @@ import java.net.Socket;
  * @version November 30th, 2020
  */
 public class MessageClient {
-    //Declare components and Network IO fields
+    //Declare component fields
     private static JLabel userLbl;
     private static JLabel passLbl;
     private static Button loginBtn;
     private static Button registerBtn;
     private static JTextField userText;
-    private static JTextField passText;
+    private static JPasswordField passText;
     private static JFrame frame;
-    private static Socket socket;
-    private static OutputStream outputStream;
-    private static InputStream inputStream;
-    private static BufferedWriter socketWriter;
-    private static BufferedReader socketReader;
+
+    //Declare Network IO fields
+    private static BufferedWriter writer;
+    private static BufferedReader reader;
+
+    //Other Fields
+    private static final String title = "Social Messaging App";
 
     //ActionListener for all components in program
-    private static ActionListener actionListener = new ActionListener() {
+    private static final ActionListener actionListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent event) {
-            //TODO Implement component ActionListeners
+            //Format L:username:password
+            if (event.getSource() == loginBtn) {
+                loginRegisterActions(true);
+            }
+            //Format R:username:password
+            if (event.getSource() == registerBtn) {
+                loginRegisterActions(false);
+            }
         }
     };
 
     //Constructor to initialize component and Network IO fields
-    public MessageClient() throws IOException {
+    public MessageClient() {
         //Component
         userLbl = new JLabel("Username");
         passLbl = new JLabel("Password");
         loginBtn = new Button("Login");
-        registerBtn = new Button("Sign Up");
+        registerBtn = new Button("Register");
         userText = new JTextField(5);
-        passText = new JTextField(5);
-        frame = new JFrame("Social Messaging App");
+        passText = new JPasswordField(5);
+        frame = new JFrame(title);
 
         //Network IO
-        socket = new Socket("localhost", 5555);
-        outputStream = socket.getOutputStream();
-        inputStream = socket.getInputStream();
-        socketWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
-        socketReader = new BufferedReader(new InputStreamReader(inputStream));
+        try {
+            Socket socket = new Socket("localhost", 8888);
+            writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -82,16 +97,82 @@ public class MessageClient {
         panel.add(registerBtn);
         panel.add(userText);
         panel.add(passText);
-
-        //TODO Implement checking for button click and then connection to server
     }
 
-    /**
-     * Register screen for registering. Will redirect back to Login Screen
-     */
-    public static void register(JPanel panel) {
-        //TODO Implement registering panel and communicate
-        // to server to check requirements
+    //Runs actions for login or button based on true (login) or false (register) param
+    public static void loginRegisterActions(boolean loginOrRegister) {
+        //Grab username and password
+        String username = userText.getText();
+        char[] passwordArray = passText.getPassword();
+        String password = "";
+        String userpass;
+
+        //Turns password into string representation
+        for (char character : passwordArray) {
+            password += character;
+        }
+
+        //Checks if fields are empty and displays message if so
+        if (username.isEmpty() || password.isEmpty()) {
+            message("Please Fill All Fields", JOptionPane.ERROR_MESSAGE);
+            return;
+        } else if (loginOrRegister) {
+            //Send info for login
+            userpass = String.format("L:%s:%s", username, password);
+        } else {
+            //Send info for register
+            userpass = String.format("R:%s:%s", username, password);
+        }
+
+        try {
+            //Writes to server to take username and password
+            writer.write(userpass);
+            writer.newLine();
+            writer.flush();
+
+            //Boolean represents if login credentials exist
+            boolean userExists = Boolean.parseBoolean(reader.readLine());
+
+            if (userExists) {
+                //If login does exist, check if user is logging in or registering
+                if (loginOrRegister) {
+                    //Changes window to full message app
+                    runMessageApp();
+                } else {
+                    //Prompts user that entered username is already taken
+                    message("Username is already taken, enter a different username",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            } else {
+                //If login does not exist, check if user is logging in or registering
+                if (loginOrRegister) {
+                    //Prompts user that login credentials do not exist
+                    message("Account with entered username and password does not exist.",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    //Changes window to full message app
+                    runMessageApp();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //Method to run Login and Register screen
+    public static void runLoginRegister() {
+        //Wipe frame and set new login and register screen
+        frame.getContentPane().removeAll();
+        frame.repaint();
+        JPanel panel = new JPanel(null);
+        login(panel);
+        frame.add(panel);
+
+        //Set Frame Size, Settings, and Visibility
+        frame.setSize(300, 150);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setVisible(true);
     }
 
     /**
@@ -111,19 +192,46 @@ public class MessageClient {
     public static void messageApp(JPanel panel) {
         //TODO Implement message screen and individual message screen
         // Communications with server to receive conversations, messages, and their functionality
+
+        //Example for Justin
+
+        String[] test = {"T", "E", "S", "T","M", "E", "S", "S","A", "G", "E","T", "E", "S", "T"};
+
+        JList<String> jList = new JList<>(test);
+
+        JScrollPane jScrollPane = new JScrollPane(jList);
+        panel.setLayout(new FlowLayout());
+        panel.add(jScrollPane);
+
+        //Example for Justin
+    }
+
+    //Method to run message application screen
+    public static void runMessageApp() {
+        //Wipe frame and set new message app screen
+        frame.getContentPane().removeAll();
+        frame.repaint();
+        JPanel panel = new JPanel(null);
+        messageApp(panel);
+        frame.add(panel);
+
+        //Set Frame Size, Settings, and Visibility
+        frame.setSize(300, 150); //Up to Change
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setVisible(true);
+    }
+
+    //Simplifies JOptionPane process
+    public static void message(String message, int type) {
+        JOptionPane.showMessageDialog(null, message, title, type);
     }
 
     //Main method to run all screens: Login, Register, messageApp
     public static void main(String[] args) {
-        //Login or SignUp
-        JPanel panel = new JPanel(null);
-        login(panel);
-        frame.add(panel);
 
-        //Set Frame Size, Settings, and Visibility
-        frame.setSize(300, 150);
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setVisible(true);
+        MessageClient client = new MessageClient();
+
+        runLoginRegister();
     }
 }

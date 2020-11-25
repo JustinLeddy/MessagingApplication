@@ -28,6 +28,7 @@ public class MessageServer {
 
         try {
             var serverSocket = new ServerSocket(8888);
+            serverSocket.setSoTimeout(0);
             System.out.println("Connected");
 
 

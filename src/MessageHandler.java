@@ -92,7 +92,6 @@ public class MessageHandler implements Runnable {
                         }
                         //if username is unique and now added to list of accts
                         fileWriter.println(username + "," + password);
-                        System.out.println("Wrottoten: " + username + ", " + password + " to file Accounts.txt");
                         clientWriter.write("false");
                         clientWriter.newLine();
                         clientWriter.flush();

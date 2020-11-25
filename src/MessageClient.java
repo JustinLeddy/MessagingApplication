@@ -13,7 +13,7 @@ import java.util.stream.Stream;
  * <p>
  * Deals with most GUI parts of social messaging app.
  * Takes input from user within application and sends to the MessageServer
- * USE PORT 5555 on LOCALHOST
+ * USE PORT 8888 on LOCALHOST
  *
  * @author Alex Frey, Justin Leddy, Maeve Tra, Yifie Mao, Naveena Erranki
  * @version November 30th, 2020
@@ -233,6 +233,8 @@ public class MessageClient {
 
     //Main method to run all screens: Login, Register, messageApp
     public static void main(String[] args) {
+
+
 
         MessageClient client = new MessageClient();
 

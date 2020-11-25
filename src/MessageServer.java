@@ -17,6 +17,8 @@ import java.net.Socket;
  * @version November 30th, 2020
  */
 public class MessageServer {
+
+
     public void serveClient() {
         //TODO Serve Client using MessageHandler threading
     }
@@ -27,9 +29,11 @@ public class MessageServer {
         try {
             var serverSocket = new ServerSocket(8888);
             System.out.println("Connected");
-            var socket = serverSocket.accept();
-            System.out.println("Connected to Client");
+
+
             while (true) {
+                var socket = serverSocket.accept();
+                System.out.println("Connected to Client");
 
                 //start thread to handle login/register
                 MessageHandler one = new MessageHandler(socket);

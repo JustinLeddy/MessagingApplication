@@ -34,7 +34,7 @@ public class MessageHandler implements Runnable {
 
         synchronized (gateKeeper) {
 
-            //try with resources, being the imput and output streams, readers, and writers.
+            //try with resources, being the input and output streams, readers, and writers.
             try (var inputStream = this.clientSocket.getInputStream();
                  var outputStream = this.clientSocket.getOutputStream();
                  var clientReader = new BufferedReader(new InputStreamReader(inputStream));
@@ -48,7 +48,7 @@ public class MessageHandler implements Runnable {
 
                 if (clientMessage.charAt(0) == 'M') { //incoming message is a message to the server
                     //format for incoming messages M|SendingUserName|ReceivingUserName|Message
-                    String[] messageSplit = clientMessage.split("|");
+                    String[] messageSplit = clientMessage.split("\\|");
                     //splits message into components to use
                     String userReceived = messageSplit[1];
                     String userToSend = messageSplit[2];
@@ -62,8 +62,8 @@ public class MessageHandler implements Runnable {
 
                 } else { //Login/Register processing
                     String[] info = clientMessage.split(":");
-                    String username = info[1];
-                    String password = info[2];
+                    String username = info[1].trim(); //trim removes leading and trailing spaces " "
+                    String password = info[2].trim();
 
                     //login
                     if (clientMessage.charAt(0) == 'L') {

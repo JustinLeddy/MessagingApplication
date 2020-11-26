@@ -18,7 +18,7 @@ public class TestCases {
 	public void testMessageHandlerExists() {
 		try {
 			Class<?> clazz = Class.forName("MessageHandler");
-			if (!clazz.isAssignableFrom(Runnable.class)) {
+			if (!Runnable.class.isAssignableFrom(clazz)) {
 				Assert.fail("Make sure `MessageHandler` implements Runnable");
 			}
 		} catch (ClassNotFoundException e) {
@@ -31,7 +31,7 @@ public class TestCases {
 	public void testMessageClientExists() {
 		try {
 			Class<?> clazz = Class.forName("MessageClient");
-			if (!clazz.isAssignableFrom(Object.class)) {
+			if (!Object.class.isAssignableFrom(clazz)) {
 				Assert.fail("Make sure that `MessageClient` extends `Object`");
 			}
 		} catch (ClassNotFoundException e) {
@@ -44,7 +44,7 @@ public class TestCases {
 	public void testMessageServerExists() {
 		try {
 			Class<?> clazz = Class.forName("MessageServer");
-			if (!clazz.isAssignableFrom(Object.class)) {
+			if (!Object.class.isAssignableFrom(clazz)) {
 				Assert.fail("Make sure `MessageServer` extends Object");
 			}
 		} catch (ClassNotFoundException e) {

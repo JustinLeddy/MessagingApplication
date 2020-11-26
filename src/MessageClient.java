@@ -20,6 +20,7 @@ public class MessageClient {
     private static final String title = "Social Messaging App";
     private static JFrame frame;
     private static String clientUsername;
+    private static AtomicBoolean messageSent;
 
     //Runs actions for login or button based on true (login) or false (register) param
     public static void setClientMessage(boolean loginOrRegister, String username, char[] passwordArray) {
@@ -78,20 +79,41 @@ public class MessageClient {
         panel.add(jScrollPane);
 
         //Example for Justin
+        //Justin: ty
     }
 
 
-        //Method to run message application screen
-        public static void runMessageApp(JTextField messageField, JButton sendButton) {
+        //Method to run message application GUI,
+        //TODO: Create the actual GUI for this
+        public static void runMessageApp() {
             //wipe and repaint
             frame.getContentPane().removeAll();
             frame.repaint();
 
+            //components for messaging
+            JButton sendButton = new JButton("Send");
+            JTextField messageField = new JTextField(10);
+            JTextField userToSendTo = new JTextField(10);
+            JLabel recipient = new JLabel("Recipient");
+
             JPanel panel = new JPanel();
+
+            //action listener
+            sendButton.addActionListener(event -> {
+
+                messageSent.set(true);
+
+                if (messageField.getText().isEmpty()) {
+                    message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    setClientMessage(messageField.getText());
+                }
+            });
 
             panel.add(messageField);
             panel.add(sendButton);
-
+            panel.add(recipient);
+            panel.add(userToSendTo);
             frame.add(panel);
 
 
@@ -100,7 +122,6 @@ public class MessageClient {
             frame.setLocationRelativeTo(null);
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setVisible(true);
-
         }
 
     //Simplifies JOptionPane process
@@ -119,9 +140,6 @@ public class MessageClient {
         JTextField userText = new JTextField(5);
         JPasswordField passText = new JPasswordField(5);
 
-        //components for messaging
-        JButton sendButton = new JButton("Send");
-        JTextField messageField = new JTextField(10);
 
         //frame
         frame = new JFrame(title);
@@ -129,7 +147,7 @@ public class MessageClient {
         //Other Fields
         AtomicBoolean loginOrRegister = new AtomicBoolean(true);
         AtomicBoolean buttonClicked = new AtomicBoolean(false);
-        AtomicBoolean messageSent = new AtomicBoolean(false);
+        messageSent = new AtomicBoolean(false);
 
         //Add Button Functionality, can adapt this to a better action listener method.
         //TODO: Adapt action listeners to a method above to make organization better
@@ -161,16 +179,7 @@ public class MessageClient {
             }
         });
 
-        sendButton.addActionListener(event -> {
 
-            messageSent.set(true);
-
-            if (messageField.getText().isEmpty()) {
-                message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
-            } else {
-                setClientMessage(messageField.getText());
-            }
-        });
 
         //layout for login screen
             //Creating Login Screen
@@ -237,12 +246,12 @@ public class MessageClient {
 
                         if (userExists) {
                             //If login does exist, check if user is logging in or registering
-                            if (loginOrRegister.get()) {
+                            if (loginOrRegister.get()) { //user successfully logged in
                                 //Changes window to full message app
                                 message("You've successfully logged in!",
                                         JOptionPane.INFORMATION_MESSAGE);
                                 clientUsername = userText.getText();
-                                runMessageApp(messageField, sendButton);
+                                runMessageApp();
                             } else {
                                 //Prompts user that entered username is already taken
                                 message("Username is already taken, enter a different username",
@@ -254,12 +263,12 @@ public class MessageClient {
                                 //Prompts user that login credentials do not exist
                                 message("Account with entered username and password does not exist.",
                                         JOptionPane.INFORMATION_MESSAGE);
-                            } else {
+                            } else { //user successfully registered
                                 //Changes window to full message app
                                 message("You've successfully registered!",
                                         JOptionPane.INFORMATION_MESSAGE);
                                 clientUsername = userText.getText();
-                                runMessageApp(messageField, sendButton);
+                                runMessageApp();
                             }
                         }
                     }

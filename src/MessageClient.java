@@ -15,10 +15,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @version November 30th, 2020
  */
 public class MessageClient {
-    //Other Fields
+    //Global Fields
     private static String clientMessage;
     private static final String title = "Social Messaging App";
-    private static int scenePhase;
+    private static JFrame frame;
+    private static String clientUsername;
 
     //Runs actions for login or button based on true (login) or false (register) param
     public static void setClientMessage(boolean loginOrRegister, String username, char[] passwordArray) {
@@ -40,6 +41,12 @@ public class MessageClient {
             //Send info for register
             clientMessage = String.format("R:%s:%s", username, password);
         }
+    }
+
+
+    //sets client message for sending an 1->1 message
+    public static void setClientMessage(String message) {
+        clientMessage = String.format("M|%s|%s|%s",clientUsername,"Recipient", message);
     }
 
     /**
@@ -75,19 +82,25 @@ public class MessageClient {
 
 
         //Method to run message application screen
-        public static void runMessageApp(JFrame frame) {
-            //Wipe frame and set new message app screen
+        public static void runMessageApp(JTextField messageField, JButton sendButton) {
+            //wipe and repaint
             frame.getContentPane().removeAll();
             frame.repaint();
-            JPanel panel = new JPanel(null);
-            messageApp(panel);
+
+            JPanel panel = new JPanel();
+
+            panel.add(messageField);
+            panel.add(sendButton);
+
             frame.add(panel);
 
+
             //Set Frame Size, Settings, and Visibility
-            frame.setSize(300, 150); //Up to Change
+            frame.setSize(300, 150);
             frame.setLocationRelativeTo(null);
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setVisible(true);
+
         }
 
     //Simplifies JOptionPane process
@@ -97,8 +110,6 @@ public class MessageClient {
 
     //Main method to run all screens: Login, Register, messageApp
     public static void main(String[] args) {
-        //start by setting first scene as 0
-        scenePhase = 0;
 
         //Declare component fields for login
         JLabel userLbl = new JLabel("Username");
@@ -113,7 +124,7 @@ public class MessageClient {
         JTextField messageField = new JTextField(10);
 
         //frame
-        JFrame frame = new JFrame(title);
+        frame = new JFrame(title);
 
         //Other Fields
         AtomicBoolean loginOrRegister = new AtomicBoolean(true);
@@ -150,8 +161,18 @@ public class MessageClient {
             }
         });
 
+        sendButton.addActionListener(event -> {
+
+            messageSent.set(true);
+
+            if (messageField.getText().isEmpty()) {
+                message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
+            } else {
+                setClientMessage(messageField.getText());
+            }
+        });
+
         //layout for login screen
-        if(scenePhase == 0) {
             //Creating Login Screen
             //Wipe frame and set new login and register screen
             frame.getContentPane().removeAll();
@@ -184,33 +205,11 @@ public class MessageClient {
             frame.setLocationRelativeTo(null);
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setVisible(true);
-        }
-
-        //Messaging UI Layout goes here
-        if(scenePhase == 1){
-
-            //wipe and repaint
-            frame.getContentPane().removeAll();
-            frame.repaint();
-
-            JPanel panel = new JPanel(null);
-
-            panel.add(messageField);
-            panel.add(sendButton);
-
-            frame.add(panel);
-
-
-            //Set Frame Size, Settings, and Visibility
-            frame.setSize(300, 150);
-            frame.setLocationRelativeTo(null);
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.setVisible(true);
-        }
 
         while (true) { //infinite loop for server communication
-            if (buttonClicked.get() || messageSent.get()) { //only sends the message if a button has been clicked for login screen
-                messageSent.set(false);
+            //only sends the message if a button has been clicked for login screen
+            //or if a button has been clicked for messaging
+            if (buttonClicked.get() || messageSent.get()) {
                 try (var socket = new Socket("localhost", 8888);
                      var reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                      var writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
@@ -222,6 +221,13 @@ public class MessageClient {
                     writer.flush();
 
                     //TODO: test if message sending other than button clicked works
+                    if (messageSent.get()){
+                        messageSent.set(false); //reset so it sends once
+
+                        //receive verification from server
+                        System.out.println(reader.readLine());
+                    }
+
 
                     if (buttonClicked.get()) { //we want to communicate about login
                         buttonClicked.set(false);
@@ -235,8 +241,8 @@ public class MessageClient {
                                 //Changes window to full message app
                                 message("You've successfully logged in!",
                                         JOptionPane.INFORMATION_MESSAGE);
-                                scenePhase++; //go to the messaging UI
-                                break;
+                                clientUsername = userText.getText();
+                                runMessageApp(messageField, sendButton);
                             } else {
                                 //Prompts user that entered username is already taken
                                 message("Username is already taken, enter a different username",
@@ -252,8 +258,8 @@ public class MessageClient {
                                 //Changes window to full message app
                                 message("You've successfully registered!",
                                         JOptionPane.INFORMATION_MESSAGE);
-                                scenePhase++; //go to the messaging UI
-                                break;
+                                clientUsername = userText.getText();
+                                runMessageApp(messageField, sendButton);
                             }
                         }
                     }

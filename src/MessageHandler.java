@@ -31,7 +31,10 @@ public class MessageHandler implements Runnable {
     //Run method which uses clientSocket to interact with MessageClient
     @Override
     public void run() {
+
         synchronized (gateKeeper) {
+
+            //try with resources, being the imput and output streams, readers, and writers.
             try (var inputStream = this.clientSocket.getInputStream();
                  var outputStream = this.clientSocket.getOutputStream();
                  var clientReader = new BufferedReader(new InputStreamReader(inputStream));
@@ -39,29 +42,36 @@ public class MessageHandler implements Runnable {
                  var fileReader = new BufferedReader(new FileReader("Accounts.txt"));
                  var fileWriter = new PrintWriter(new FileOutputStream("Accounts.txt", true))) {
 
-                //read in acct info from client
+                //read info from client
                 String clientMessage = clientReader.readLine();
-                System.out.println(clientMessage);
+                System.out.println(clientMessage); //print it for processing purposes
+
                 if (clientMessage.charAt(0) == 'M') { //incoming message is a message to the server
                     //format for incoming messages M|SendingUserName|ReceivingUserName|Message
                     String[] messageSplit = clientMessage.split("|");
+                    //splits message into components to use
                     String userReceived = messageSplit[1];
                     String userToSend = messageSplit[2];
                     String message = messageSplit[3];
 
+                    //for now im just going to have it ping back the message edited
+                    clientWriter.write("Returned:" + clientMessage);
+                    clientWriter.newLine();
+                    clientWriter.flush();
+
 
                 } else { //Login/Register processing
-                    String credentials = clientMessage;
-                    String[] info = credentials.split(":");
+                    String[] info = clientMessage.split(":");
                     String username = info[1];
                     String password = info[2];
 
                     //login
-                    if (credentials.charAt(0) == 'L') {
+                    if (clientMessage.charAt(0) == 'L') {
                         String s = fileReader.readLine();
                         while ((s != null)) {
                             String currentUser = s.substring(0, s.indexOf(","));
                             String currentPass = s.substring(s.indexOf(",") + 1);
+
                             //once username and password is found, is true and break
                             if ((currentUser.equals(username)) && (currentPass.equals(password))) {
                                 clientWriter.write("true");
@@ -78,9 +88,11 @@ public class MessageHandler implements Runnable {
                     }
                     //register
                     else {
+
                         String s = fileReader.readLine();
                         while ((s != null)) {
                             String currentUser = s.substring(0, s.indexOf(","));
+
                             //if username is and password is taken, is true and break
                             if (currentUser.equals(username)) {
                                 clientWriter.write("true");
@@ -90,7 +102,8 @@ public class MessageHandler implements Runnable {
                             }
                             s = fileReader.readLine();
                         }
-                        //if username is unique and now added to list of accts
+
+                        //if username is unique and now added to list of accounts
                         fileWriter.println(username + "," + password);
                         clientWriter.write("false");
                         clientWriter.newLine();

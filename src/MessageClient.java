@@ -46,8 +46,8 @@ public class MessageClient {
 
 
     //sets client message for sending an 1->1 message
-    public static void setClientMessage(String message) {
-        clientMessage = String.format("M|%s|%s|%s",clientUsername,"Recipient", message);
+    public static void setClientMessage(String message, String recipient) {
+        clientMessage = String.format("M|%s|%s|%s", clientUsername, recipient, message);
     }
 
     /**
@@ -83,46 +83,46 @@ public class MessageClient {
     }
 
 
-        //Method to run message application GUI,
-        //TODO: Create the actual GUI for this
-        public static void runMessageApp() {
-            //wipe and repaint
-            frame.getContentPane().removeAll();
-            frame.repaint();
+    //Method to run message application GUI,
+    //TODO: Create the actual GUI for this
+    public static void runMessageApp() {
+        //wipe and repaint
+        frame.getContentPane().removeAll();
+        frame.repaint();
 
-            //components for messaging
-            JButton sendButton = new JButton("Send");
-            JTextField messageField = new JTextField(10);
-            JTextField userToSendTo = new JTextField(10);
-            JLabel recipient = new JLabel("Recipient");
+        //components for messaging
+        JButton sendButton = new JButton("Send");
+        JTextField messageField = new JTextField(10);
+        JTextField userToSendTo = new JTextField(10);
+        JLabel recipientLabel = new JLabel("Recipient");
 
-            JPanel panel = new JPanel();
+        JPanel panel = new JPanel();
 
-            //action listener
-            sendButton.addActionListener(event -> {
+        //action listener
+        sendButton.addActionListener(event -> {
 
-                messageSent.set(true);
+            messageSent.set(true);
 
-                if (messageField.getText().isEmpty()) {
-                    message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    setClientMessage(messageField.getText());
-                }
-            });
+            if (messageField.getText().isEmpty()) {
+                message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
+            } else {
+                setClientMessage(messageField.getText(), userToSendTo.getText());
+            }
+        });
 
-            panel.add(messageField);
-            panel.add(sendButton);
-            panel.add(recipient);
-            panel.add(userToSendTo);
-            frame.add(panel);
+        panel.add(messageField);
+        panel.add(sendButton);
+        panel.add(recipientLabel);
+        panel.add(userToSendTo);
+        frame.add(panel);
 
 
-            //Set Frame Size, Settings, and Visibility
-            frame.setSize(300, 150);
-            frame.setLocationRelativeTo(null);
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.setVisible(true);
-        }
+        //Set Frame Size, Settings, and Visibility
+        frame.setSize(300, 150);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setVisible(true);
+    }
 
     //Simplifies JOptionPane process
     public static void message(String message, int type) {
@@ -156,12 +156,13 @@ public class MessageClient {
             char[] password = passText.getPassword();
 
             loginOrRegister.set(true);
-            buttonClicked.set(true);
 
             if (username.isEmpty() || password.length == 0) {
                 message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
+                clientMessage = "";
             } else {
                 setClientMessage(loginOrRegister.get(), username, password);
+                buttonClicked.set(true);
             }
         });
 
@@ -170,67 +171,68 @@ public class MessageClient {
             char[] password = passText.getPassword();
 
             loginOrRegister.set(false);
-            buttonClicked.set(true);
 
             if (username.isEmpty() || password.length == 0) {
                 message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
+                clientMessage = "";
             } else {
                 setClientMessage(loginOrRegister.get(), username, password);
+                buttonClicked.set(true);
             }
         });
 
 
-
         //layout for login screen
-            //Creating Login Screen
-            //Wipe frame and set new login and register screen
-            frame.getContentPane().removeAll();
-            frame.repaint();
+        //Creating Login Screen
+        //Wipe frame and set new login and register screen
+        frame.getContentPane().removeAll();
+        frame.repaint();
 
-            JPanel panel = new JPanel(null);
+        JPanel panel = new JPanel(null);
 
-            //Add components to Login Screen
-            //Sets location of components on Login Screen
-            userLbl.setBounds(10, 10, 80, 25);
-            passLbl.setBounds(10, 40, 160, 25);
-            loginBtn.setBounds(10, 80, 80, 25);
-            registerBtn.setBounds(180, 80, 80, 25);
-            userText.setBounds(100, 10, 160, 25);
-            passText.setBounds(100, 40, 160, 25);
+        //Add components to Login Screen
+        //Sets location of components on Login Screen
+        userLbl.setBounds(10, 10, 80, 25);
+        passLbl.setBounds(10, 40, 160, 25);
+        loginBtn.setBounds(10, 80, 80, 25);
+        registerBtn.setBounds(180, 80, 80, 25);
+        userText.setBounds(100, 10, 160, 25);
+        passText.setBounds(100, 40, 160, 25);
 
-            //Adds components to panel
-            panel.add(userLbl);
-            panel.add(passLbl);
-            panel.add(loginBtn);
-            panel.add(registerBtn);
-            panel.add(userText);
-            panel.add(passText);
+        //Adds components to panel
+        panel.add(userLbl);
+        panel.add(passLbl);
+        panel.add(loginBtn);
+        panel.add(registerBtn);
+        panel.add(userText);
+        panel.add(passText);
 
-            //Add Panel to Frame
-            frame.add(panel);
+        //Add Panel to Frame
+        frame.add(panel);
 
-            //Set Frame Size, Settings, and Visibility
-            frame.setSize(300, 150);
-            frame.setLocationRelativeTo(null);
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.setVisible(true);
+        //Set Frame Size, Settings, and Visibility
+        frame.setSize(300, 150);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setVisible(true);
 
         while (true) { //infinite loop for server communication
             //only sends the message if a button has been clicked for login screen
             //or if a button has been clicked for messaging
             if (buttonClicked.get() || messageSent.get()) {
-                try (var socket = new Socket("localhost", 8888);
+                try (var socket = new Socket("localhost", 8888); //change "Localhost" to the server IP when connecting from another device
                      var reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                      var writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
 
 
                     //Sends message from Client to server
-                    writer.write(clientMessage);
-                    writer.newLine();
-                    writer.flush();
+                    if (clientMessage != null && clientMessage.length() > 0) {
+                        writer.write(clientMessage);
+                        writer.newLine();
+                        writer.flush();
+                    }
 
-                    //TODO: test if message sending other than button clicked works
-                    if (messageSent.get()){
+                    if (messageSent.get()) {
                         messageSent.set(false); //reset so it sends once
 
                         //receive verification from server
@@ -240,7 +242,7 @@ public class MessageClient {
 
                     if (buttonClicked.get()) { //we want to communicate about login
                         buttonClicked.set(false);
-
+                        System.out.println(loginOrRegister);
                         //Boolean represents if login credentials exist
                         boolean userExists = Boolean.parseBoolean(reader.readLine());
 

@@ -3,6 +3,10 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Message Server
@@ -15,11 +19,12 @@ import java.net.UnknownHostException;
  *      Have add/edit/delete functionality of conversations and messages
  *
  *
- * @author Alex Frey, Justin Leddy, Maeve Tra, Yifie Mao, Naveena Erranki
+ * @author Alex Frey, Justin Leddy, Maeve Tra, Yifei Mao, Naveena Erranki
  * @version November 30th, 2020
  */
 public class MessageServer {
     private final ServerSocket serverSocket; //socket for this server
+    private String identity;
 
     /**
      * Constructor for the Message Server
@@ -52,6 +57,7 @@ public class MessageServer {
         while (true) {
             try {
                 clientSocket = this.serverSocket.accept();
+
             } catch (IOException e) {
                 e.printStackTrace();
                 break;
@@ -59,6 +65,13 @@ public class MessageServer {
             messageHandler = new MessageHandler(clientSocket);
             handlerThread = new Thread(messageHandler);
             handlerThread.start();
+            //Get user ip address & port pair
+            InetAddress IP = clientSocket.getInetAddress();
+            int portNum = clientSocket.getPort();
+            identity = IP.toString() + portNum;
+            System.out.println("Identity is: " + portNum);
+            ClientManager.addTrace(identity, messageHandler);
+
         } // end while loop
     }
 

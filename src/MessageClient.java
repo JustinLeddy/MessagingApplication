@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -11,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Takes input from user within application and sends to the MessageServer
  * USE PORT 8888 on LOCALHOST
  *
- * @author Alex Frey, Justin Leddy, Maeve Tra, Yifie Mao, Naveena Erranki
+ * @author Alex Frey, Justin Leddy, Maeve Tra, Yifei Mao, Naveena Erranki
  * @version November 30th, 2020
  */
 public class MessageClient {
@@ -21,6 +22,10 @@ public class MessageClient {
     private static JFrame frame;
     private static String clientUsername;
     private static AtomicBoolean messageSent;
+    private static Socket s = null;
+    private static BufferedReader reader;
+    private static BufferedWriter writer;
+
 
     //Runs actions for login or button based on true (login) or false (register) param
     public static void setClientMessage(boolean loginOrRegister, String username, char[] passwordArray) {
@@ -129,6 +134,18 @@ public class MessageClient {
         JOptionPane.showMessageDialog(null, message, TITLE, type);
     }
 
+    public void connect() {
+        try {
+            s = new Socket("localhost", 8888);
+            reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            writer = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+            System.out.println("connected!");
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     //Main method to run all screens: Login, Register, messageApp
     public static void main(String[] args) {
 
@@ -215,14 +232,22 @@ public class MessageClient {
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
+        new MessageClient().connect();
+
+
+
 
         while (true) { //infinite loop for server communication
             //only sends the message if a button has been clicked for login screen
             //or if a button has been clicked for messaging
+            /*
+            var socket = new Socket("localhost", 8888); //change "Localhost" to the server IP when connecting from another device
+            var reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            var writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))
+             */
+
             if (buttonClicked.get() || messageSent.get()) {
-                try (var socket = new Socket("localhost", 8888); //change "Localhost" to the server IP when connecting from another device
-                     var reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                     var writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
+                try {
 
 
                     //Sends message from Client to server

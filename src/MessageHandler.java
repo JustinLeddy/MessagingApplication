@@ -64,95 +64,89 @@ public class MessageHandler implements Runnable {
 
                 //read info from client
                 String clientMessage = clientReader.readLine();
-                System.out.println(clientMessage); //print it for processing purposes
+
+                while (clientMessage != null) {
+                    System.out.println(clientMessage); //print it for processing purposes
+                    if (clientMessage.charAt(0) == 'M') { //incoming message is a message to the server
+                        //format for incoming messages M|SendingUserName|ReceivingUserName|Message
+                        String[] messageSplit = clientMessage.split("\\|");
+                        //splits message into components to use
+
+                        userFrom = messageSplit[1];
+                        userToSend = messageSplit[2];
+                        message = messageSplit[3];
+                        //storeInfo.put(userName, identity);//stores user info with their ip address & port number pair
+                        //deliverTo.put(identity, clientWriter);//stores user identity with their specific clientWriter
+
+                        //sendToSomeone(userToSend, message);
+                        //echoMessage(userToSend, message);
+                        //sendToAll(message);
+
+                        MessageHandler mh = ClientManager.getTrace(UserManager.getTrace(userToSend));
+                        mh.send(message);
 
 
-
-
-
-                if (clientMessage.charAt(0) == 'M') { //incoming message is a message to the server
-                    //format for incoming messages M|SendingUserName|ReceivingUserName|Message
-                    String[] messageSplit = clientMessage.split("\\|");
-                    //splits message into components to use
-
-                    userFrom = messageSplit[1];
-                    userToSend = messageSplit[2];
-                    message = messageSplit[3];
-                    //storeInfo.put(userName, identity);//stores user info with their ip address & port number pair
-                    //deliverTo.put(identity, clientWriter);//stores user identity with their specific clientWriter
-
-                    //sendToSomeone(userToSend, message);
-                    //echoMessage(userToSend, message);
-                    //sendToAll(message);
-
-                    MessageHandler mh = ClientManager.getTrace(UserManager.getTrace(userToSend));
-                    mh.send(message);
-
-
-                    //for now im just going to have it ping back the message edited
-                    clientWriter.write("Returned:" + clientMessage);
-                    clientWriter.newLine();
-                    clientWriter.flush();
-
-
-
-
-
-
-                } else { //Login/Register processing
-                    String[] info = clientMessage.split(":");
-                    String username = info[1].trim(); //trim removes leading and trailing spaces " "
-                    String password = info[2].trim();
-
-                    //login
-                    if (clientMessage.charAt(0) == 'L') {
-                        String s = fileReader.readLine();
-                        while ((s != null)) {
-                            String currentUser = s.substring(0, s.indexOf(","));
-                            String currentPass = s.substring(s.indexOf(",") + 1);
-
-                            //once username and password is found, is true and break
-                            if ((currentUser.equals(username)) && (currentPass.equals(password))) {
-                                clientWriter.write("true");
-                                clientWriter.newLine();
-                                clientWriter.flush();
-                                //Add the username to the map
-                                UserManager.addTrace(username, identity);
-                                break;
-                            }
-                            s = fileReader.readLine();
-                        }
-                        //if username and password aren't found, is false
-                        clientWriter.write("false");
+                        //for now im just going to have it ping back the message edited
+                        clientWriter.write("Returned:" + clientMessage);
                         clientWriter.newLine();
                         clientWriter.flush();
 
-                    }
-                    //register
-                    else {
 
-                        String s = fileReader.readLine();
-                        while ((s != null)) {
-                            String currentUser = s.substring(0, s.indexOf(","));
+                    } else { //Login/Register processing
+                        String[] info = clientMessage.split(":");
+                        String username = info[1].trim(); //trim removes leading and trailing spaces " "
+                        String password = info[2].trim();
 
-                            //if username is and password is taken, is true and break
-                            if (currentUser.equals(username)) {
-                                clientWriter.write("true");
-                                clientWriter.newLine();
-                                clientWriter.flush();
-                                break;
+                        //login
+                        if (clientMessage.charAt(0) == 'L') {
+                            String s = fileReader.readLine();
+                            while ((s != null)) {
+                                String currentUser = s.substring(0, s.indexOf(","));
+                                String currentPass = s.substring(s.indexOf(",") + 1);
+
+                                //once username and password is found, is true and break
+                                if ((currentUser.equals(username)) && (currentPass.equals(password))) {
+                                    clientWriter.write("true");
+                                    clientWriter.newLine();
+                                    clientWriter.flush();
+                                    //Add the username to the map
+                                    UserManager.addTrace(username, identity);
+                                    break;
+                                }
+                                s = fileReader.readLine();
                             }
-                            s = fileReader.readLine();
+                            //if username and password aren't found, is false
+                            clientWriter.write("false");
+                            clientWriter.newLine();
+                            clientWriter.flush();
+
                         }
+                        //register
+                        else {
+                            System.out.println("Enter registration method");
+                            String s = fileReader.readLine();
+                            while ((s != null)) {
+                                String currentUser = s.substring(0, s.indexOf(","));
 
-                        //if username is unique and now added to list of accounts
-                        fileWriter.println(username + "," + password);
-                        clientWriter.write("false");
-                        clientWriter.newLine();
-                        clientWriter.flush();
+                                //if username is and password is taken, is true and break
+                                if (currentUser.equals(username)) {
+                                    clientWriter.write("true");
+                                    clientWriter.newLine();
+                                    clientWriter.flush();
+                                    break;
+                                }
+                                s = fileReader.readLine();
+                            }
+
+                            //if username is unique and now added to list of accounts
+                            fileWriter.println(username + "," + password);
+                            fileWriter.flush();
+                            clientWriter.write("false");
+                            clientWriter.newLine();
+                            clientWriter.flush();
+                        }
                     }
-
-
+                    clientMessage = clientReader.readLine(); // to read a new line from client
                 }
             } catch (IOException e) {
                 e.printStackTrace();

@@ -23,8 +23,11 @@ public class MessageClient {
     private static String clientUsername;
     private static AtomicBoolean messageSent;
     private static Socket s = null;
+    private static String ipAddress;
+    private static String userName;
     private static BufferedReader reader;
     private static BufferedWriter writer;
+
 
 
     //Runs actions for login or button based on true (login) or false (register) param
@@ -148,7 +151,6 @@ public class MessageClient {
     }
     //Main method to run all screens: Login, Register, messageApp
     public static void main(String[] args) {
-
         //Declare component fields for login
         JLabel userLbl = new JLabel("Username");
         JLabel passLbl = new JLabel("Password");
@@ -235,8 +237,6 @@ public class MessageClient {
         new MessageClient().connect();
 
 
-
-
         while (true) { //infinite loop for server communication
             //only sends the message if a button has been clicked for login screen
             //or if a button has been clicked for messaging
@@ -264,8 +264,8 @@ public class MessageClient {
                         System.out.println(reader.readLine());
                     }
 
-
-                    if (buttonClicked.get()) { //we want to communicate about login
+                    // Login
+                    if (buttonClicked.get()) {
                         buttonClicked.set(false);
                         System.out.println(loginOrRegister);
                         //Boolean represents if login credentials exist

@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class MessageClient {
     //Global Fields
     private static String clientMessage;
-    private static final String title = "Social Messaging App";
+    private static final String TITLE = "Social Messaging App";
     private static JFrame frame;
     private static String clientUsername;
     private static AtomicBoolean messageSent;
@@ -126,7 +126,7 @@ public class MessageClient {
 
     //Simplifies JOptionPane process
     public static void message(String message, int type) {
-        JOptionPane.showMessageDialog(null, message, title, type);
+        JOptionPane.showMessageDialog(null, message, TITLE, type);
     }
 
     //Main method to run all screens: Login, Register, messageApp
@@ -142,7 +142,7 @@ public class MessageClient {
 
 
         //frame
-        frame = new JFrame(title);
+        frame = new JFrame(TITLE);
 
         //Other Fields
         AtomicBoolean loginOrRegister = new AtomicBoolean(true);

@@ -1,6 +1,8 @@
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 /**
  * Message Server
@@ -17,44 +19,71 @@ import java.net.Socket;
  * @version November 30th, 2020
  */
 public class MessageServer {
+    private final ServerSocket serverSocket; //socket for this server
 
-
-    public void serveClient() {
-        //TODO Serve Client using MessageHandler threading
+    /**
+     * Constructor for the Message Server
+     */
+    public MessageServer(int port) throws IOException {
+        this.serverSocket = new ServerSocket(port);
     }
 
-    public static void main(String[] args) {
-        //Temporary
+    /**
+     * Spawn a new Thread to serve each Client connect to the Server
+     */
+    public void serveClient() {
+        InetAddress address;
+        String hostName;
+        int port;
+        Socket clientSocket;
+        MessageHandler messageHandler;
+        Thread handlerThread;
 
         try {
-            var serverSocket = new ServerSocket(8888);
-            serverSocket.setSoTimeout(0);
-            System.out.println("Connected");
-
-
-            while (true) {
-                var socket = serverSocket.accept();
-                System.out.println("Connected to Client");
-
-                //start thread to handle login/register
-                MessageHandler one = new MessageHandler(socket);
-                Thread test = new Thread(one);
-                test.start();
-            }
-        } catch (IOException e) {
+            address = InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
             e.printStackTrace();
+            return;
         }
+        hostName = address.getCanonicalHostName();
+        port = this.serverSocket.getLocalPort();
+        System.out.printf("Host name: %s, port: %d\n", hostName, port); //host computer info
 
-        //Temporary
-
-
-
-
+        while (true) {
+            try {
+                clientSocket = this.serverSocket.accept();
+            } catch (IOException e) {
+                e.printStackTrace();
+                break;
+            }
+            messageHandler = new MessageHandler(clientSocket);
+            handlerThread = new Thread(messageHandler);
+            handlerThread.start();
+        } // end while loop
     }
 
 
 
+    public static void main(String[] args) {
+        MessageServer server;
 
+        try {
+            /* temporary use 8888 because Client is using 8888,
+             * might change to 0 (randomly assigned) later
+             */
+            server = new MessageServer(8888);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
 
-
+        server.serveClient();
+    }
 }
+
+
+
+
+
+
+

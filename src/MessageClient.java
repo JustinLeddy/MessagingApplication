@@ -1,7 +1,9 @@
 import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -22,10 +24,9 @@ public class MessageClient {
     private static String clientUsername;
     private static AtomicBoolean sendMessageClicked;
     private static Socket socket = null;
-    private static String ipAddress;
-    private static String userName;
     private static BufferedReader reader;
     private static BufferedWriter writer;
+    private static ArrayList<Conversation> conversations = new ArrayList<>();
 
     //Runs actions for login or button based on true (login) or false (register) param
     public static void setClientMessage(boolean loginOrRegister, String username, char[] passwordArray) {
@@ -260,14 +261,38 @@ public class MessageClient {
             //read messages from server broadcast
             try {
                 if (reader.ready()) {
-                    System.out.println("Testing");
                     String fromServer = reader.readLine();
                     if (fromServer != null) {
                         System.out.println("Received this from the server: " + fromServer);
 
                         //TODO: message sorting into chats
+                        //M|Sender|Recipient|Message
+                        //M|Sender|&*Recipient1,Recipient2,Recipient3&*|Message
 
-                    } else{
+                        String[] receivedMessage = fromServer.split("\\|");
+                        String sender = receivedMessage[1];
+                        String recipients = receivedMessage[2];
+                        String message = receivedMessage[3];
+                        ArrayList<String> recipientList = new ArrayList<>();
+                        if (recipients.contains(clientUsername)) {
+                            if (recipients.contains("&*")) {
+                                recipients = recipients.substring(2, recipients.length() - 2);
+                                recipientList = (ArrayList<String>) Arrays.asList(recipients.split(","));
+                            } else {
+                                recipientList.add(recipients);
+                            }
+
+                            for (Conversation conversation : conversations) {
+                                ArrayList<String> members = conversation.getMembers();
+                                Collections.sort(members);
+                                if (members.equals(recipientList)) {
+                                    conversation.addMessage(String.format("%s|%s", sender, message));
+                                    break;
+                                }
+                            }
+
+                        }
+                    } else {
                         reader.readLine();
                     }
                 }
@@ -278,3 +303,6 @@ public class MessageClient {
         }
     }
 }
+
+//Special Characters Message: | &*
+//Special Characters Login: , :  (leading and trailing spaces stripped)

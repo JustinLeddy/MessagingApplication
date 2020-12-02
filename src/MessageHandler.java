@@ -27,8 +27,6 @@ public class MessageHandler implements Runnable {
     private BufferedWriter clientWriter;
     private BufferedReader clientReader;
     private String clientMessage;
-    private AtomicBoolean broadcastMessage = new AtomicBoolean(false);
-
 
     //fields
     private File accountList;
@@ -67,7 +65,21 @@ public class MessageHandler implements Runnable {
                     System.out.println(clientMessage); //print it for processing purposes
 
                     if (clientMessage.charAt(0) == 'M') { //incoming message is
-                        broadcastMessage.set(true);
+
+                        HashMap<String, MessageHandler> allClients = ClientManager.getDeliverTo(); //HashMap of all the clients in the client manager
+
+                        for (Map.Entry<String, MessageHandler> client : allClients.entrySet()) { //loops through all message handlers
+                            MessageHandler clientMessageHandler = client.getValue(); //sets socket and message handler for this iteration
+                            Socket socket = clientMessageHandler.getClientSocket();
+
+                            if (socket.isConnected()) { //if this user is connected
+
+                                if (!clientMessageHandler.getClientMessage().equals(clientMessage)) { //check if the client does not have the same message as this messageHandler
+                                    clientMessageHandler.send(clientMessage); //if its different then send our message to that client
+                                }
+                            }
+                        }
+
                     } else { //Login/Register processing
                         String[] info = clientMessage.split(":");
                         String username = info[1].strip(); //strip removes leading and trailing spaces
@@ -149,7 +161,4 @@ public class MessageHandler implements Runnable {
         return clientMessage;
     }
 
-    public AtomicBoolean getBroadcastMessage() {
-        return broadcastMessage;
-    }
 }

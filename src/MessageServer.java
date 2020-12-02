@@ -1,12 +1,8 @@
-import java.io.*;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Message Server
@@ -42,7 +38,7 @@ public class MessageServer {
         Socket clientSocket;
         MessageHandler messageHandler;
         Thread handlerThread;
-        HashMap<String, MessageHandler> allClients;
+
 
         try {
             address = InetAddress.getLocalHost();
@@ -62,36 +58,18 @@ public class MessageServer {
                 System.out.println("Client Disconnected");
                 break;
             }
-            messageHandler = new MessageHandler(clientSocket);
-            handlerThread = new Thread(messageHandler);
-            handlerThread.start();
             //Get user ip address & port pair
             InetAddress IP = clientSocket.getInetAddress();
             int portNum = clientSocket.getPort();
             identity = IP.toString() + portNum;
             System.out.println("Identity is: " + portNum);
+
+            messageHandler = new MessageHandler(clientSocket);
+            handlerThread = new Thread(messageHandler);
+
             ClientManager.addTrace(identity, messageHandler);
 
-            allClients = ClientManager.getDeliverTo();
-
-            for (Map.Entry<String, MessageHandler> client : allClients.entrySet()) {
-                MessageHandler clientMessageHandler = client.getValue();
-                Socket socket = clientMessageHandler.getClientSocket();
-
-
-                if (socket.isConnected()) {
-                    if (clientMessageHandler.getBroadcastMessage().get()) {
-
-                        String clientMessage = clientMessageHandler.getClientMessage();
-
-                        for (Map.Entry<String, MessageHandler> clientToSendTo : allClients.entrySet()) {
-                            if (clientToSendTo.getValue().getClientSocket().isConnected()) {
-                                clientToSendTo.getValue().send(clientMessage);
-                            }
-                        }
-                    }
-                }
-            }
+            handlerThread.start();
 
             //TODO Write to Messages File
 

@@ -1,20 +1,3 @@
-Username,Password
+User,Pass
 Alex,Frey
-Justin,Leddy
-justin,justin
-Justin,Justin
-RandomUSer,password
-RandomUserName,password
-justin ,justin
-alex,alex
-Justin,justin
-helloo,hellooo
-helloo,hellooo
-helloo,hellooo
-helloo,hellooo
-hi,hi
-Catherine,Mao
-Maeve,Tra
-pooo,pooo
-moo,moo
-Maevee,maeve
+

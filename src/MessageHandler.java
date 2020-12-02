@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Message Handler
@@ -22,14 +23,11 @@ public class MessageHandler implements Runnable {
     private final Socket clientSocket;
     private final Object gateKeeper = new Object();
     private String userName;
-    private String userFrom;
-    private String message;
-    private String userToSend;
     private String identity;
     private BufferedWriter clientWriter;
     private BufferedReader clientReader;
-    private InputStream inputStream;
-    private OutputStream outputStream;
+    private String clientMessage;
+    private AtomicBoolean broadcastMessage;
 
 
     //fields
@@ -39,8 +37,8 @@ public class MessageHandler implements Runnable {
     public MessageHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
         try {
-            inputStream = this.clientSocket.getInputStream();
-            outputStream = this.clientSocket.getOutputStream();
+            InputStream inputStream = this.clientSocket.getInputStream();
+            OutputStream outputStream = this.clientSocket.getOutputStream();
             clientReader = new BufferedReader(new InputStreamReader(inputStream));
             clientWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
         } catch (IOException e) {
@@ -63,39 +61,17 @@ public class MessageHandler implements Runnable {
                  var fileWriter = new PrintWriter(new FileOutputStream("Accounts.txt", true))) {
 
                 //read info from client
-                String clientMessage = clientReader.readLine();
+                clientMessage = clientReader.readLine();
 
                 while (clientMessage != null) {
                     System.out.println(clientMessage); //print it for processing purposes
-                    if (clientMessage.charAt(0) == 'M') { //incoming message is a message to the server
-                        //format for incoming messages M|SendingUserName|ReceivingUserName|Message
-                        String[] messageSplit = clientMessage.split("\\|");
-                        //splits message into components to use
 
-                        userFrom = messageSplit[1];
-                        userToSend = messageSplit[2];
-                        message = messageSplit[3];
-                        //storeInfo.put(userName, identity);//stores user info with their ip address & port number pair
-                        //deliverTo.put(identity, clientWriter);//stores user identity with their specific clientWriter
-
-                        //sendToSomeone(userToSend, message);
-                        //echoMessage(userToSend, message);
-                        //sendToAll(message);
-
-                        MessageHandler mh = ClientManager.getTrace(UserManager.getTrace(userToSend));
-                        mh.send(message);
-
-
-                        //for now im just going to have it ping back the message edited
-                        clientWriter.write("Returned:" + clientMessage);
-                        clientWriter.newLine();
-                        clientWriter.flush();
-
-
+                    if (clientMessage.charAt(0) == 'M') { //incoming message is
+                        broadcastMessage.set(true);
                     } else { //Login/Register processing
                         String[] info = clientMessage.split(":");
-                        String username = info[1].trim(); //trim removes leading and trailing spaces " "
-                        String password = info[2].trim();
+                        String username = info[1].strip(); //strip removes leading and trailing spaces
+                        String password = info[2].strip();
 
                         //login
                         if (clientMessage.charAt(0) == 'L') {
@@ -110,6 +86,8 @@ public class MessageHandler implements Runnable {
                                     clientWriter.newLine();
                                     clientWriter.flush();
                                     //Add the username to the map
+                                    System.out.println(username);
+                                    System.out.println(identity);
                                     UserManager.addTrace(username, identity);
                                     break;
                                 }
@@ -133,6 +111,8 @@ public class MessageHandler implements Runnable {
                                     clientWriter.write("true");
                                     clientWriter.newLine();
                                     clientWriter.flush();
+
+                                    UserManager.addTrace(username, identity);
                                     break;
                                 }
                                 s = fileReader.readLine();
@@ -153,54 +133,8 @@ public class MessageHandler implements Runnable {
             }
         }
     }
-//Version one for messaging
-    /*
-    //a method that send to private message to the specific user
-    private synchronized void sendToSomeone(String name,String message) {
-        String ipAddress = storeInfo.get(name);
-        BufferedWriter abc = deliverTo.get(ipAddress);
-        if (abc != null) {
-            try {
-                abc.write(message);
-                abc.newLine();
-                abc.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
 
-    }
-    //Echos user message back to the user who sent it
-    private synchronized void echoMessage(String name,String message) {
-        String ipAddress = storeInfo.get(name);
-        BufferedWriter abc = deliverTo.get(ipAddress);
-        if (abc != null) {
-            try {
-                abc.write("From: " + message);
-                abc.newLine();
-                abc.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-
-    //Right now I'm just gonna let the server send message to all users
-    private synchronized void sendToAll(String message) {
-        for(BufferedWriter out: deliverTo.values()) {
-            try {
-                out.write(message);
-                out.newLine();
-                out.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    */
-
-    //Version 2 of sending message
+    //Sending message
     public void send(String str) {
         try {
             clientWriter.write(str);
@@ -212,6 +146,16 @@ public class MessageHandler implements Runnable {
     }
 
     //Account Format: username,password
+    //get socket
+    public Socket getClientSocket() {
+        return clientSocket;
+    }
 
+    public String getClientMessage() {
+        return clientMessage;
+    }
 
+    public AtomicBoolean getBroadcastMessage() {
+        return broadcastMessage;
+    }
 }

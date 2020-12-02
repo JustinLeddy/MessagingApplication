@@ -1,5 +1,4 @@
 import javax.swing.*;
-import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -21,14 +20,12 @@ public class MessageClient {
     private static final String TITLE = "Social Messaging App";
     private static JFrame frame;
     private static String clientUsername;
-    private static AtomicBoolean messageSent;
-    private static Socket s = null;
+    private static AtomicBoolean sendMessageClicked;
+    private static Socket socket = null;
     private static String ipAddress;
     private static String userName;
     private static BufferedReader reader;
     private static BufferedWriter writer;
-
-
 
     //Runs actions for login or button based on true (login) or false (register) param
     public static void setClientMessage(boolean loginOrRegister, String username, char[] passwordArray) {
@@ -58,39 +55,6 @@ public class MessageClient {
         clientMessage = String.format("M|%s|%s|%s", clientUsername, recipient, message);
     }
 
-    /**
-     * Message App Screen for messaging.
-     * Will implement screens for seeing messages and reading single/group chats.
-     * Will have many functions in side:
-     * Adding, Editing, Deleting Messages (Single or Group)
-     * Adding, Editing, Deleting Entire Conversations (Single or Group)
-     * Edit Own Account
-     * Main Screen with all conversations
-     * Optional (Recommended) Functions:
-     * Notifications
-     * Change Group Names and Background
-     * Possible (Stretch) Functions:
-     * Moderator Role
-     */
-    public static void messageApp(JPanel panel) {
-        //TODO Implement message screen and individual message screen
-        // Communications with server to receive conversations, messages, and their functionality
-
-        //Example for Justin
-
-        String[] test = {"T", "E", "S", "T", "M", "E", "S", "S", "A", "G", "E", "T", "E", "S", "T"};
-
-        JList<String> jList = new JList<>(test);
-
-        JScrollPane jScrollPane = new JScrollPane(jList);
-        panel.setLayout(new FlowLayout());
-        panel.add(jScrollPane);
-
-        //Example for Justin
-        //Justin: ty
-    }
-
-
     //Method to run message application GUI,
     //TODO: Create the actual GUI for this
     public static void runMessageApp() {
@@ -99,29 +63,29 @@ public class MessageClient {
         frame.repaint();
 
         //components for messaging
-        JButton sendButton = new JButton("Send");
-        JTextField messageField = new JTextField(10);
-        JTextField userToSendTo = new JTextField(10);
-        JLabel recipientLabel = new JLabel("Recipient");
+        JButton sendBtn = new JButton("Send");
+        JTextField messageText = new JTextField(10);
+        JTextField recipientText = new JTextField(10);
+        JLabel recipientLbl = new JLabel("Recipient");
 
         JPanel panel = new JPanel();
 
         //action listener
-        sendButton.addActionListener(event -> {
+        sendBtn.addActionListener(event -> {
 
-            messageSent.set(true);
+            sendMessageClicked.set(true);
 
-            if (messageField.getText().isEmpty()) {
+            if (messageText.getText().isEmpty()) {
                 message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
             } else {
-                setClientMessage(messageField.getText(), userToSendTo.getText());
+                setClientMessage(messageText.getText(), recipientText.getText());
             }
         });
 
-        panel.add(messageField);
-        panel.add(sendButton);
-        panel.add(recipientLabel);
-        panel.add(userToSendTo);
+        panel.add(messageText);
+        panel.add(sendBtn);
+        panel.add(recipientLbl);
+        panel.add(recipientText);
         frame.add(panel);
 
 
@@ -139,16 +103,15 @@ public class MessageClient {
 
     public void connect() {
         try {
-            s = new Socket("localhost", 8888);
-            reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            writer = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-            System.out.println("connected!");
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+            socket = new Socket("localhost", 8888);
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            System.out.println("Connected!");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
     //Main method to run all screens: Login, Register, messageApp
     public static void main(String[] args) {
         //Declare component fields for login
@@ -165,11 +128,10 @@ public class MessageClient {
 
         //Other Fields
         AtomicBoolean loginOrRegister = new AtomicBoolean(true);
-        AtomicBoolean buttonClicked = new AtomicBoolean(false);
-        messageSent = new AtomicBoolean(false);
+        AtomicBoolean loginRegisterClicked = new AtomicBoolean(false);
+        sendMessageClicked = new AtomicBoolean(false);
 
         //Add Button Functionality, can adapt this to a better action listener method.
-        //TODO: Adapt action listeners to a method above to make organization better
         loginBtn.addActionListener(event -> {
             String username = userText.getText();
             char[] password = passText.getPassword();
@@ -181,7 +143,7 @@ public class MessageClient {
                 clientMessage = "";
             } else {
                 setClientMessage(loginOrRegister.get(), username, password);
-                buttonClicked.set(true);
+                loginRegisterClicked.set(true);
             }
         });
 
@@ -196,7 +158,7 @@ public class MessageClient {
                 clientMessage = "";
             } else {
                 setClientMessage(loginOrRegister.get(), username, password);
-                buttonClicked.set(true);
+                loginRegisterClicked.set(true);
             }
         });
 
@@ -237,19 +199,15 @@ public class MessageClient {
         new MessageClient().connect();
 
 
-        while (true) { //infinite loop for server communication
-            //only sends the message if a button has been clicked for login screen
-            //or if a button has been clicked for messaging
-            /*
-            var socket = new Socket("localhost", 8888); //change "Localhost" to the server IP when connecting from another device
-            var reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            var writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))
-             */
+        /*
+         * infinite loop for server communication
+         * only sends the message if a button has been clicked for login screen
+         * or if a button has been clicked for messaging
+         */
+        while (true) {
 
-            if (buttonClicked.get() || messageSent.get()) {
+            if (loginRegisterClicked.get() || sendMessageClicked.get()) {
                 try {
-
-
                     //Sends message from Client to server
                     if (clientMessage != null && clientMessage.length() > 0) {
                         writer.write(clientMessage);
@@ -257,16 +215,13 @@ public class MessageClient {
                         writer.flush();
                     }
 
-                    if (messageSent.get()) {
-                        messageSent.set(false); //reset so it sends once
-
-                        //receive verification from server
-                        System.out.println(reader.readLine());
+                    if (sendMessageClicked.get()) {
+                        sendMessageClicked.set(false);
                     }
 
                     // Login
-                    if (buttonClicked.get()) {
-                        buttonClicked.set(false);
+                    if (loginRegisterClicked.get()) {
+                        loginRegisterClicked.set(false);
                         System.out.println(loginOrRegister);
                         //Boolean represents if login credentials exist
                         boolean userExists = Boolean.parseBoolean(reader.readLine());
@@ -303,7 +258,21 @@ public class MessageClient {
                     e.printStackTrace();
                     break;
                 }
+            } else {
+                //read messages from server broadcast
+                try {
+                    if (reader.ready()) {
+                        String fromServer = reader.readLine();
+                        if (fromServer != null) {
+                            System.out.println(fromServer);
+                            //message sorting goes here
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+
 
         }
     }

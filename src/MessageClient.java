@@ -73,12 +73,11 @@ public class MessageClient {
         //action listener
         sendBtn.addActionListener(event -> {
 
-            sendMessageClicked.set(true);
-
             if (messageText.getText().isEmpty()) {
                 message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
             } else {
                 setClientMessage(messageText.getText(), recipientText.getText());
+                sendMessageClicked.set(true);
             }
         });
 
@@ -205,9 +204,12 @@ public class MessageClient {
          * or if a button has been clicked for messaging
          */
         while (true) {
-
             if (loginRegisterClicked.get() || sendMessageClicked.get()) {
                 try {
+                    if (sendMessageClicked.get()) {
+                        sendMessageClicked.set(false);
+                    }
+
                     //Sends message from Client to server
                     if (clientMessage != null && clientMessage.length() > 0) {
                         writer.write(clientMessage);
@@ -215,14 +217,9 @@ public class MessageClient {
                         writer.flush();
                     }
 
-                    if (sendMessageClicked.get()) {
-                        sendMessageClicked.set(false);
-                    }
-
                     // Login
                     if (loginRegisterClicked.get()) {
                         loginRegisterClicked.set(false);
-                        System.out.println(loginOrRegister);
                         //Boolean represents if login credentials exist
                         boolean userExists = Boolean.parseBoolean(reader.readLine());
 
@@ -262,9 +259,10 @@ public class MessageClient {
                 //read messages from server broadcast
                 try {
                     if (reader.ready()) {
+                        System.out.println("Testing");
                         String fromServer = reader.readLine();
                         if (fromServer != null) {
-                            System.out.println(fromServer);
+                            System.out.println("Recieved this from the server:" + fromServer);
                             //message sorting goes here
                         }
                     }

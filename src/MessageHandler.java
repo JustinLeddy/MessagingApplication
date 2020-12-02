@@ -27,7 +27,7 @@ public class MessageHandler implements Runnable {
     private BufferedWriter clientWriter;
     private BufferedReader clientReader;
     private String clientMessage;
-    private AtomicBoolean broadcastMessage;
+    private AtomicBoolean broadcastMessage = new AtomicBoolean(false);
 
 
     //fields
@@ -75,23 +75,19 @@ public class MessageHandler implements Runnable {
 
                         //login
                         if (clientMessage.charAt(0) == 'L') {
-                            String s = fileReader.readLine();
-                            while ((s != null)) {
-                                String currentUser = s.substring(0, s.indexOf(","));
-                                String currentPass = s.substring(s.indexOf(",") + 1);
+                            String line;
+                            while ((line = fileReader.readLine()) != null) {
+                                String currentUser = line.substring(0, line.indexOf(","));
+                                String currentPass = line.substring(line.indexOf(",") + 1);
 
                                 //once username and password is found, is true and break
                                 if ((currentUser.equals(username)) && (currentPass.equals(password))) {
                                     clientWriter.write("true");
                                     clientWriter.newLine();
                                     clientWriter.flush();
-                                    //Add the username to the map
-                                    System.out.println(username);
-                                    System.out.println(identity);
-                                    UserManager.addTrace(username, identity);
+
                                     break;
                                 }
-                                s = fileReader.readLine();
                             }
                             //if username and password aren't found, is false
                             clientWriter.write("false");
@@ -100,11 +96,10 @@ public class MessageHandler implements Runnable {
 
                         }
                         //register
-                        else {
-                            System.out.println("Enter registration method");
-                            String s = fileReader.readLine();
-                            while ((s != null)) {
-                                String currentUser = s.substring(0, s.indexOf(","));
+                        else if (clientMessage.charAt(0) == 'R') {
+                            String line;
+                            while ((line = fileReader.readLine()) != null) {
+                                String currentUser = line.substring(0, line.indexOf(","));
 
                                 //if username is and password is taken, is true and break
                                 if (currentUser.equals(username)) {
@@ -112,10 +107,8 @@ public class MessageHandler implements Runnable {
                                     clientWriter.newLine();
                                     clientWriter.flush();
 
-                                    UserManager.addTrace(username, identity);
                                     break;
                                 }
-                                s = fileReader.readLine();
                             }
 
                             //if username is unique and now added to list of accounts
@@ -129,7 +122,7 @@ public class MessageHandler implements Runnable {
                     clientMessage = clientReader.readLine(); // to read a new line from client
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("Socket Prolly Closed");
             }
         }
     }

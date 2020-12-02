@@ -72,6 +72,7 @@ public class MessageHandler implements Runnable {
                         String[] info = clientMessage.split(":");
                         String username = info[1].strip(); //strip removes leading and trailing spaces
                         String password = info[2].strip();
+                        boolean userExists = false;
 
                         //login
                         if (clientMessage.charAt(0) == 'L') {
@@ -82,18 +83,18 @@ public class MessageHandler implements Runnable {
 
                                 //once username and password is found, is true and break
                                 if ((currentUser.equals(username)) && (currentPass.equals(password))) {
-                                    clientWriter.write("true");
-                                    clientWriter.newLine();
+                                    userExists = true;
+                                    clientWriter.write("true\n");
                                     clientWriter.flush();
-
                                     break;
                                 }
                             }
-                            //if username and password aren't found, is false
-                            clientWriter.write("false");
-                            clientWriter.newLine();
-                            clientWriter.flush();
 
+                            if (!userExists) {
+                                //if username and password aren't found, is false
+                                clientWriter.write("false\n");
+                                clientWriter.flush();
+                            }
                         }
                         //register
                         else if (clientMessage.charAt(0) == 'R') {
@@ -103,20 +104,20 @@ public class MessageHandler implements Runnable {
 
                                 //if username is and password is taken, is true and break
                                 if (currentUser.equals(username)) {
-                                    clientWriter.write("true");
-                                    clientWriter.newLine();
+                                    userExists = true;
+                                    clientWriter.write("true\n");
                                     clientWriter.flush();
-
                                     break;
                                 }
                             }
 
-                            //if username is unique and now added to list of accounts
-                            fileWriter.println(username + "," + password);
-                            fileWriter.flush();
-                            clientWriter.write("false");
-                            clientWriter.newLine();
-                            clientWriter.flush();
+                            if (!userExists) {
+                                //if username is unique and now added to list of accounts
+                                fileWriter.println(username + "," + password);
+                                fileWriter.flush();
+                                clientWriter.write("false\n");
+                                clientWriter.flush();
+                            }
                         }
                     }
                     clientMessage = clientReader.readLine(); // to read a new line from client

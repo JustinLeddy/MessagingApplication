@@ -74,13 +74,14 @@ public class MessageServer {
 
             allClients = ClientManager.getDeliverTo();
 
-            handlerThread.join();
             for (Map.Entry<String, MessageHandler> client : allClients.entrySet()) {
                 MessageHandler clientMessageHandler = client.getValue();
                 Socket socket = clientMessageHandler.getClientSocket();
 
+
                 if (socket.isConnected()) {
                     if (clientMessageHandler.getBroadcastMessage().get()) {
+
                         String clientMessage = clientMessageHandler.getClientMessage();
 
                         for (Map.Entry<String, MessageHandler> clientToSendTo : allClients.entrySet()) {

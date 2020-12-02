@@ -219,10 +219,10 @@ public class MessageClient {
 
                     // Login
                     if (loginRegisterClicked.get()) {
+
                         loginRegisterClicked.set(false);
                         //Boolean represents if login credentials exist
                         boolean userExists = Boolean.parseBoolean(reader.readLine());
-
                         if (userExists) {
                             //If login does exist, check if user is logging in or registering
                             if (loginOrRegister.get()) { //user successfully logged in
@@ -255,22 +255,25 @@ public class MessageClient {
                     e.printStackTrace();
                     break;
                 }
-            } else {
-                //read messages from server broadcast
-                try {
-                    if (reader.ready()) {
-                        System.out.println("Testing");
-                        String fromServer = reader.readLine();
-                        if (fromServer != null) {
-                            System.out.println("Recieved this from the server:" + fromServer);
-                            //message sorting goes here
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
 
+            //read messages from server broadcast
+            try {
+                if (reader.ready()) {
+                    System.out.println("Testing");
+                    String fromServer = reader.readLine();
+                    if (fromServer != null) {
+                        System.out.println("Received this from the server: " + fromServer);
+
+                        //TODO: message sorting into chats
+
+                    } else{
+                        reader.readLine();
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
         }
     }

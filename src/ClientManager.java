@@ -4,14 +4,7 @@ import java.util.Map;
 
 //Map to store user ips with their Message Handler
 public class ClientManager {
-    private static Map<String, MessageHandler> deliverTo;
-
-    private ClientManager() {
-    }
-
-    static {
-        deliverTo = new HashMap<String, MessageHandler>();
-    }
+    private static HashMap<String, MessageHandler> deliverTo = new HashMap<String, MessageHandler>();
 
     public static void addTrace(String key, MessageHandler value) {
         deliverTo.put(key, value);
@@ -30,6 +23,6 @@ public class ClientManager {
     }
 
     public static HashMap<String, MessageHandler> getDeliverTo() {
-        return (HashMap<String, MessageHandler>) deliverTo;
+        return deliverTo;
     }
 }

@@ -231,6 +231,10 @@ public class MessageClient {
                                 message("You've successfully logged in!",
                                         JOptionPane.INFORMATION_MESSAGE);
                                 clientUsername = userText.getText();
+                                //needs to initialize conversations
+                                writer.write("I|" + clientUsername + "\n");
+                                writer.flush();
+                                initializeConversations(reader.readLine());
                                 runMessageApp();
                             } else {
                                 //Prompts user that entered username is already taken
@@ -265,7 +269,6 @@ public class MessageClient {
                     if (fromServer != null) {
                         System.out.println("Received this from the server: " + fromServer);
 
-                        //TODO: message sorting into chats
                         //M|Sender|Recipient|Message
                         //M|Sender|&*Recipient1,Recipient2,Recipient3&*|Message
 
@@ -275,6 +278,8 @@ public class MessageClient {
                         String message = receivedMessage[3];
                         ArrayList<String> recipientList = new ArrayList<>();
                         if (recipients.contains(clientUsername)) {
+                            boolean conversationExists = false;
+
                             if (recipients.contains("&*")) {
                                 recipients = recipients.substring(2, recipients.length() - 2);
                                 recipientList = (ArrayList<String>) Arrays.asList(recipients.split(","));
@@ -287,19 +292,36 @@ public class MessageClient {
                                 Collections.sort(members);
                                 if (members.equals(recipientList)) {
                                     conversation.addMessage(String.format("%s|%s", sender, message));
+                                    conversationExists = true;
                                     break;
                                 }
                             }
 
+                            if (!conversationExists) { //convo doesnt exist
+                                Conversation conversationToAdd = new Conversation(recipientList);
+                                //"System|Your conversation has been created" is always the first message in any conversation.
+                                conversationToAdd.addMessage(message);
+                                conversations.add(conversationToAdd);
+                            }
                         }
-                    } else {
-                        reader.readLine();
                     }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
+        }
+    }
+
+    private static void initializeConversations(String readLine) {
+        //Member1,Member2,Member<*>Username|Message,Username|Message
+        String[] newConversations = readLine.split("<&*>");
+        for (String conversation : newConversations){ //Member1,Member2,Member3<*>Username|Message%&Username|Message%&Username|Message
+          String[] membersAndMessages = conversation.split("<*>");
+          ArrayList<String> members = (ArrayList<String>) Arrays.asList(membersAndMessages[0].split(","));
+          ArrayList<String> messages = (ArrayList<String>) Arrays.asList(membersAndMessages[1].split("%&"));
+
+          conversations.add(new Conversation(members, messages));
         }
     }
 }

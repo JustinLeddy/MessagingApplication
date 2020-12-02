@@ -71,8 +71,6 @@ public class MessageServer {
 
             handlerThread.start();
 
-            //TODO Write to Messages File
-
         } // end while loop
     }
 

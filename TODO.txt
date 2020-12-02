@@ -29,4 +29,7 @@ Classes to Implement (Basic ideas):
 - Client
 - User
 - Conversation?
--
+
+File formatting:
+
+//"System|Your conversation has been created" is always the first message in any conversation.

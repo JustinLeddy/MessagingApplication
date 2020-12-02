@@ -2,7 +2,6 @@ import java.io.*;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Message Handler
@@ -79,6 +78,18 @@ public class MessageHandler implements Runnable {
                                 }
                             }
                         }
+
+                        //File handling for conversations
+                        //step 1: find appropriate conversation, or create new if none found
+                        //step 2: append message to conversation
+
+                        //TODO: Create/Update File of ALLLLL Conversations
+                    } else if (clientMessage.charAt(0) == 'I') {
+                        //Read Conversations from File
+                        //look for every conversation with the username in it
+                        // write them all in one massive line with format explained in Conversations.txt
+
+                        //TODO: Write to Client Conversations
 
                     } else { //Login/Register processing
                         String[] info = clientMessage.split(":");

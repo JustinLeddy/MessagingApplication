@@ -22,11 +22,13 @@ public class MessageClient {
     private static final String TITLE = "Social Messaging App";
     private static JFrame frame;
     private static String clientUsername;
-    private static AtomicBoolean sendMessageClicked;
     private static Socket socket = null;
     private static BufferedReader reader;
     private static BufferedWriter writer;
     private static ArrayList<Conversation> conversations = new ArrayList<>();
+    private static AtomicBoolean loginOrRegister = new AtomicBoolean(true);
+    private static AtomicBoolean loginRegisterClicked = new AtomicBoolean(false);
+    private static AtomicBoolean sendMessageClicked = new AtomicBoolean(false);
 
     //Runs actions for login or button based on true (login) or false (register) param
     public static void setClientMessage(boolean loginOrRegister, String username, char[] passwordArray) {
@@ -58,7 +60,7 @@ public class MessageClient {
 
     //Method to run message application GUI,
     //TODO: Create the actual GUI for this
-    public static void runMessageApp() {
+    /*public static void runMessageApp() {
         //wipe and repaint
         frame.getContentPane().removeAll();
         frame.repaint();
@@ -96,6 +98,8 @@ public class MessageClient {
         frame.setVisible(true);
     }
 
+     */
+
     //Simplifies JOptionPane process
     public static void message(String message, int type) {
         JOptionPane.showMessageDialog(null, message, TITLE, type);
@@ -114,91 +118,9 @@ public class MessageClient {
 
     //Main method to run all screens: Login, Register, messageApp
     public static void main(String[] args) {
-        //Declare component fields for login
-        JLabel userLbl = new JLabel("Username");
-        JLabel passLbl = new JLabel("Password");
-        JButton loginBtn = new JButton("Login");
-        JButton registerBtn = new JButton("Register");
-        JTextField userText = new JTextField(5);
-        JPasswordField passText = new JPasswordField(5);
-
-
-        //frame
-        frame = new JFrame(TITLE);
-
-        //Other Fields
-        AtomicBoolean loginOrRegister = new AtomicBoolean(true);
-        AtomicBoolean loginRegisterClicked = new AtomicBoolean(false);
-        sendMessageClicked = new AtomicBoolean(false);
-
-        //Add Button Functionality, can adapt this to a better action listener method.
-        loginBtn.addActionListener(event -> {
-            String username = userText.getText();
-            char[] password = passText.getPassword();
-
-            loginOrRegister.set(true);
-
-            if (username.isEmpty() || password.length == 0) {
-                message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
-                clientMessage = "";
-            } else {
-                setClientMessage(loginOrRegister.get(), username, password);
-                loginRegisterClicked.set(true);
-            }
-        });
-
-        registerBtn.addActionListener(event -> {
-            String username = userText.getText();
-            char[] password = passText.getPassword();
-
-            loginOrRegister.set(false);
-
-            if (username.isEmpty() || password.length == 0) {
-                message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
-                clientMessage = "";
-            } else {
-                setClientMessage(loginOrRegister.get(), username, password);
-                loginRegisterClicked.set(true);
-            }
-        });
-
-
-        //layout for login screen
-        //Creating Login Screen
-        //Wipe frame and set new login and register screen
-        frame.getContentPane().removeAll();
-        frame.repaint();
-
-        JPanel panel = new JPanel(null);
-
-        //Add components to Login Screen
-        //Sets location of components on Login Screen
-        userLbl.setBounds(10, 10, 80, 25);
-        passLbl.setBounds(10, 40, 160, 25);
-        loginBtn.setBounds(10, 80, 80, 25);
-        registerBtn.setBounds(180, 80, 80, 25);
-        userText.setBounds(100, 10, 160, 25);
-        passText.setBounds(100, 40, 160, 25);
-
-        //Adds components to panel
-        panel.add(userLbl);
-        panel.add(passLbl);
-        panel.add(loginBtn);
-        panel.add(registerBtn);
-        panel.add(userText);
-        panel.add(passText);
-
-        //Add Panel to Frame
-        frame.add(panel);
-
-        //Set Frame Size, Settings, and Visibility
-        frame.setSize(300, 150);
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setVisible(true);
-        new MessageClient().connect();
-
-
+        MessageClient messageClient = new MessageClient();
+        messageClient.connect(); // use Socket to initialize reader and writer
+        LoginGUI login = new LoginGUI(messageClient); //display login page
         /*
          * infinite loop for server communication
          * only sends the message if a button has been clicked for login screen
@@ -230,17 +152,20 @@ public class MessageClient {
                                 //Changes window to full message app
                                 message("You've successfully logged in!",
                                         JOptionPane.INFORMATION_MESSAGE);
-                                clientUsername = userText.getText();
+                                login.close(); //close the login page
+                                new ChatGUI(messageClient); //open chatGUI
+                                //clientUsername = userText.getText();
                                 //needs to initialize conversations
                                 writer.write("I|" + clientUsername + "\n");
                                 writer.flush();
                                 initializeConversations(reader.readLine());
-                                runMessageApp();
                             } else {
                                 //Prompts user that entered username is already taken
                                 message("Username is already taken, enter a different username",
                                         JOptionPane.INFORMATION_MESSAGE);
                             }
+
+
                         } else {
                             //If login does not exist, check if user is logging in or registering
                             if (loginOrRegister.get()) {
@@ -248,11 +173,10 @@ public class MessageClient {
                                 message("Account with entered username and password does not exist.",
                                         JOptionPane.INFORMATION_MESSAGE);
                             } else { //user successfully registered
-                                //Changes window to full message app
                                 message("You've successfully registered!",
                                         JOptionPane.INFORMATION_MESSAGE);
-                                clientUsername = userText.getText();
-                                runMessageApp();
+                                login.close(); //close login page
+                                new ChatGUI(messageClient); //open chatGUI
                             }
                         }
                     }
@@ -280,10 +204,10 @@ public class MessageClient {
                         if (recipients.contains(clientUsername)) {
                             boolean conversationExists = false;
 
-                            if (recipients.contains("&*")) {
+                            if (recipients.contains("&*")) { // for sending to group
                                 recipients = recipients.substring(2, recipients.length() - 2);
                                 recipientList = (ArrayList<String>) Arrays.asList(recipients.split(","));
-                            } else {
+                            } else { // for sending 1->1
                                 recipientList.add(recipients);
                             }
 
@@ -324,7 +248,36 @@ public class MessageClient {
           conversations.add(new Conversation(members, messages));
         }
     }
+    //Special Characters Message: | &*
+    //Special Characters Login: , :  (leading and trailing spaces stripped)
+
+
+    /*
+     * Getters and setters for the fields
+     */
+    public ArrayList<Conversation> getConversations() {
+        return this.conversations;
+    }
+
+    public String getClientUsername() {
+        return this.clientUsername;
+    }
+
+    public void setClientUsername(String username) {
+        this.clientUsername = username;
+    }
+
+    public void setLoginRegisterClicked() {
+        this.loginRegisterClicked.set(true);
+    }
+
+    public void setSendMessageClicked() {
+        this.sendMessageClicked.set(true);
+    }
+
+    public void setLoginOrRegister(boolean loginOrRegister) {
+        this.loginOrRegister.set(loginOrRegister);
+    }
 }
 
-//Special Characters Message: | &*
-//Special Characters Login: , :  (leading and trailing spaces stripped)
+

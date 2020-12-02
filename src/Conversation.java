@@ -43,5 +43,10 @@ public class Conversation {
         return members;
     }
 
+    /*@Override
+    public String toString() {
+        return members.toString();
+    }
 
+     */
 }

@@ -53,9 +53,7 @@ public class MessageHandler implements Runnable {
             try (var inputStream = this.clientSocket.getInputStream();
                  var outputStream = this.clientSocket.getOutputStream();
                  var clientReader = new BufferedReader(new InputStreamReader(inputStream));
-                 var clientWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
-                 var fileReader = new BufferedReader(new FileReader("Accounts.txt"));
-                 var fileWriter = new PrintWriter(new FileOutputStream("Accounts.txt", true))) {
+                 var clientWriter = new BufferedWriter(new OutputStreamWriter(outputStream))) {
 
                 //read info from client
                 clientMessage = clientReader.readLine();
@@ -99,47 +97,56 @@ public class MessageHandler implements Runnable {
 
                         //login
                         if (clientMessage.charAt(0) == 'L') {
-                            String line;
-                            while ((line = fileReader.readLine()) != null) {
-                                String currentUser = line.substring(0, line.indexOf(","));
-                                String currentPass = line.substring(line.indexOf(",") + 1);
+                            try (var fileReader = new BufferedReader(new FileReader("Accounts.txt"))) {
+                                String line;
+                                while ((line = fileReader.readLine()) != null) {
+                                    String currentUser = line.substring(0, line.indexOf(","));
+                                    String currentPass = line.substring(line.indexOf(",") + 1);
 
-                                //once username and password is found, is true and break
-                                if ((currentUser.equals(username)) && (currentPass.equals(password))) {
-                                    userExists = true;
-                                    clientWriter.write("true\n");
-                                    clientWriter.flush();
-                                    break;
+                                    //once username and password is found, is true and break
+                                    if ((currentUser.equals(username)) && (currentPass.equals(password))) {
+                                        userExists = true;
+                                        clientWriter.write("true\n");
+                                        clientWriter.flush();
+                                        break;
+                                    }
                                 }
-                            }
 
-                            if (!userExists) {
-                                //if username and password aren't found, is false
-                                clientWriter.write("false\n");
-                                clientWriter.flush();
+                                if (!userExists) {
+                                    //if username and password aren't found, is false
+                                    clientWriter.write("false\n");
+                                    clientWriter.flush();
+                                }
+                            } catch (IOException e) {
+                                System.out.println("Exception from fileReader/writer");
                             }
                         }
                         //register
                         else if (clientMessage.charAt(0) == 'R') {
-                            String line;
-                            while ((line = fileReader.readLine()) != null) {
-                                String currentUser = line.substring(0, line.indexOf(","));
+                            try (var fileReader = new BufferedReader(new FileReader("Accounts.txt"));
+                                 var fileWriter = new PrintWriter(new FileOutputStream("Accounts.txt", true))) {
+                                String line;
+                                while ((line = fileReader.readLine()) != null) {
+                                    String currentUser = line.substring(0, line.indexOf(","));
 
-                                //if username is and password is taken, is true and break
-                                if (currentUser.equals(username)) {
-                                    userExists = true;
-                                    clientWriter.write("true\n");
-                                    clientWriter.flush();
-                                    break;
+                                    //if username is and password is taken, is true and break
+                                    if (currentUser.equals(username)) {
+                                        userExists = true;
+                                        clientWriter.write("true\n");
+                                        clientWriter.flush();
+                                        break;
+                                    }
                                 }
-                            }
 
-                            if (!userExists) {
-                                //if username is unique and now added to list of accounts
-                                fileWriter.println(username + "," + password);
-                                fileWriter.flush();
-                                clientWriter.write("false\n");
-                                clientWriter.flush();
+                                if (!userExists) {
+                                    //if username is unique and now added to list of accounts
+                                    fileWriter.println(username + "," + password);
+                                    fileWriter.flush();
+                                    clientWriter.write("false\n");
+                                    clientWriter.flush();
+                                }
+                            } catch (IOException e) {
+                                System.out.println("Exception from fileReader/writer");
                             }
                         }
                     }

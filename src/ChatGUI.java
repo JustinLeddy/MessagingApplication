@@ -131,7 +131,7 @@ public class ChatGUI extends JFrame {
                             "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                 } else {
                     MessageClient.setClientMessage(message, new ArrayList<String>(Collections.singletonList("Username")));
-                    //TODO: Change "new ArrayList<String>(Collections.singletonList(""))" to arraylist of chat members
+                    //TODO: Change "new ArrayList<String>(Collections.singletonList("Username"))" to arraylist of chat members
                     messageClient.setSendMessageClicked(true);
                     messageText.setText("Type your message here..."); //add the default text again after clicking send
                     messageText.addFocusListener(focusListener);

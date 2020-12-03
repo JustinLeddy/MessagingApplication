@@ -1,8 +1,13 @@
 God|Jesus<*>Jesus|Message Number One%&Jesus|Message Number two
 TestUser|Username<*>TestUser|Give me your money
 Justin|Username<*>Justin|Hello World%&Justin|GooBoo Baba%&Justin|hello%&Justin|hows your life going%&Justin|Its Justin%&Justin|Happy Days
-Alex|Username<*>Alex|Hello World
+Alex|Username<*>Alex|Hello World%&Alex|Happy Days
 Mario|Username<*>Mario|Its a Mario%&Mario|Wait its a Luigi%&Mario|Hold up no Mario%&Mario|Goodbye
+Alex|Justin<*>Alex|Whats up justin%&Alex|Hello
 
+Alex|Alex|Mario<*>Alex|Hello Mario
+Alex|Mario<*>Alex|Is that really you Mario
+Alex|Big<*>Alex|How's It going%&Big|Bro What's Up
 
+Alex|Jesus<*>Alex|Hello World%&Jesus|Hello
 

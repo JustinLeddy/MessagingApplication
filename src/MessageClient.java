@@ -59,47 +59,6 @@ public class MessageClient {
 
     }
 
-    //Method to run message application GUI,
-    /*public static void runMessageApp() {
-        //wipe and repaint
-        frame.getContentPane().removeAll();
-        frame.repaint();
-
-        //components for messaging
-        JButton sendBtn = new JButton("Send");
-        JTextField messageText = new JTextField(10);
-        JTextField recipientText = new JTextField(10);
-        JLabel recipientLbl = new JLabel("Recipient");
-
-        JPanel panel = new JPanel();
-
-        //action listener
-        sendBtn.addActionListener(event -> {
-
-            if (messageText.getText().isEmpty()) {
-                message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
-            } else {
-                setClientMessage(messageText.getText(), recipientText.getText());
-                sendMessageClicked.set(true);
-            }
-        });
-
-        panel.add(messageText);
-        panel.add(sendBtn);
-        panel.add(recipientLbl);
-        panel.add(recipientText);
-        frame.add(panel);
-
-
-        //Set Frame Size, Settings, and Visibility
-        frame.setSize(300, 150);
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setVisible(true);
-    }
-
-     */
-
     //Simplifies JOptionPane process
     public static void message(String message, int type) {
         JOptionPane.showMessageDialog(null, message, TITLE, type);
@@ -209,7 +168,7 @@ public class MessageClient {
                         String recipients = receivedMessage[2];
                         String message = receivedMessage[3];
                         ArrayList<String> membersList;
-                        if (recipients.contains(clientUsername) || sender.equals(clientUsername)) {
+                        if (recipients.contains(clientUsername)) {
                             boolean conversationExists = false;
 
                             membersList = new ArrayList<>(Arrays.asList(recipients.split(",")));

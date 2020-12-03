@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class ChatGUI extends JFrame {
     private ArrayList<Conversation> conversations = new ArrayList<>();
@@ -186,6 +187,7 @@ public class ChatGUI extends JFrame {
         for (String user : splitName) {
             userToSend.add(user.strip());
         }
+        Collections.sort(userToSend);
         messageClient.setClientMessage(message, userToSend);
         messageClient.setSendMessageClicked(true);//send ArrayList to MessageClient for processing
     }

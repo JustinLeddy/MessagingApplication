@@ -262,6 +262,10 @@ public class MessageClient {
         return clientUsername;
     }
 
+    public void setClientUsername(String username) {
+        clientUsername = username;
+    }
+
     public void setLoginRegisterClicked() {
         loginRegisterClicked.set(true);
     }

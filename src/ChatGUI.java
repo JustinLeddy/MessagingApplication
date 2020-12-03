@@ -125,7 +125,7 @@ public class ChatGUI extends JFrame {
                     JOptionPane.showMessageDialog(null,"There is no message to send!",
                             "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    messageClient.setClientMessage(message, "");
+                    MessageClient.setClientMessage(message, "");
                     messageText.setText("Type your message here..."); //add the default text again after clicking send
                     messageText.addFocusListener(focusListener);
 

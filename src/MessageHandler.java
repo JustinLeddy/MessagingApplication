@@ -1,7 +1,9 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 
 /**
  * Message Handler
@@ -78,16 +80,87 @@ public class MessageHandler implements Runnable {
                         }
 
                         //File handling for conversations
-                        //step 1: find appropriate conversation, or create new if none found
-                        //step 2: append message to conversation
 
-                        //TODO: Create/Update File of ALLLLL Conversations
+                        List<String> lines = Files.readAllLines(Path.of("Conversations.txt"), StandardCharsets.UTF_8);
+                        //Format of clientMessage: M|Sender|Recipient|Message
+                        //Format Of Lines: Member1|Member2|Member3<*>Username|Message%&Username|Message%&Username|Message
+
+                        //Separates clientMessage
+                        String[] receivedMessage = clientMessage.split("\\|");
+                        String sender = receivedMessage[1];
+                        String recipients = receivedMessage[2];
+                        String message = sender + "|" + receivedMessage[3];
+                        ArrayList<String> membersList = new ArrayList<>();
+                        boolean writtenToFile = false;
+
+                        //Sets the membersList and sorts it
+                        membersList = new ArrayList<>(Arrays.asList(recipients.split(",")));
+                        membersList.add(sender);
+                        Collections.sort(membersList);
+
+                        for (int i = 0; i < lines.size(); i++) {
+                            String conversationLine = lines.get(i);
+                            conversationLine.replaceAll("\n", "");
+                            ArrayList<String> line = new ArrayList<>(Arrays.asList(conversationLine.split("<*>")));
+                            ArrayList<String> members = new ArrayList<>(Arrays.asList(line.get(0).split("\\|")));
+
+                            //Sort Members
+                            Collections.sort(members);
+
+                            //displays members and memberslist for testing purposes
+                            System.out.println("Members: " + Arrays.toString(members.toArray()));
+                            System.out.println("MembersList: " + Arrays.toString(membersList.toArray()));
+
+                            if (members.equals(membersList)) {
+                                writtenToFile = true;
+                                String newLine = String.format("%s%%&%s\n", conversationLine, message);
+                                lines.set(i, newLine);
+                                Files.write(Path.of("Conversations.txt"), lines, StandardCharsets.UTF_8);
+                                break;
+                            }
+                        }
+
+                        if (!writtenToFile) {
+                            try (var conversationWriter = new PrintWriter(new FileOutputStream("Conversations.txt", true))) {
+                                String newLine = Arrays.toString(membersList.toArray())
+                                        .replaceAll(", ", "|")
+                                        .replaceAll("\\[|\\]", "")
+                                        + "<*>" + message;
+                                conversationWriter.write(newLine + "\n");
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
                     } else if (clientMessage.charAt(0) == 'I') {
                         //Read Conversations from File
                         //look for every conversation with the username in it
                         // write them all in one massive line with format explained in Conversations.txt
+                        //Format: Member1|Member2|Member3<*>Username|Message&%Username|Message<&*>conversation2<&*>conversation3
 
                         //TODO: Write to Client Conversations
+                        List<String> lines = Files.readAllLines(Path.of("Conversations.txt"), StandardCharsets.UTF_8);
+                        //clientMessage split
+                        String clientUsername = clientMessage.substring(clientMessage.indexOf("|") + 1);
+                        String allConversations = "";
+                        System.out.println(clientUsername);
+                        for (int i = 0; i < lines.size(); i++) {
+                            String conversationLine = lines.get(i);
+                            ArrayList<String> line = new ArrayList<>(Arrays.asList(conversationLine.split("<*>")));
+                            ArrayList<String> members = new ArrayList<>(Arrays.asList(line.get(0).split("\\|")));
+
+                            if (members.contains(clientUsername)) {
+                                allConversations += line + "<&*>";
+                            }
+                        }
+
+                        if (!allConversations.isEmpty()) {
+                            allConversations = allConversations.substring(0, allConversations.length() - 4);
+                        }
+
+                        clientWriter.write(allConversations);
+                        clientWriter.newLine();
+                        clientWriter.flush();
 
                     } else { //Login/Register processing
                         String[] info = clientMessage.split(":");

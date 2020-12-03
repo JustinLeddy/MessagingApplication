@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class ChatGUI extends JFrame {
     private ArrayList<Conversation> conversations = new ArrayList<>();
@@ -125,7 +127,9 @@ public class ChatGUI extends JFrame {
                     JOptionPane.showMessageDialog(null,"There is no message to send!",
                             "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    MessageClient.setClientMessage(message, "");
+                    MessageClient.setClientMessage(message, new ArrayList<String>(Collections.singletonList("Username")));
+                    //TODO: Change "new ArrayList<String>(Collections.singletonList(""))" to arraylist of chat members
+                    messageClient.setSendMessageClicked(true);
                     messageText.setText("Type your message here..."); //add the default text again after clicking send
                     messageText.addFocusListener(focusListener);
 

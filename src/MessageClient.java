@@ -193,13 +193,13 @@ public class MessageClient {
                         System.out.println("Received this from the server: " + fromServer);
 
                         //M|Sender|Recipient|Message
-                        //M|Sender|&*Recipient1,Recipient2,Recipient3&*|Message
+                        //M|Sender|Recipient1,Recipient2,Recipient3|Message
 
                         String[] receivedMessage = fromServer.split("\\|");
                         String sender = receivedMessage[1];
                         String recipients = receivedMessage[2];
                         String message = receivedMessage[3];
-                        ArrayList<String> recipientList = new ArrayList<>();
+                        ArrayList<String> membersList = new ArrayList<>();
                         if (recipients.contains(clientUsername)) {
                             boolean conversationExists = false;
 
@@ -213,7 +213,7 @@ public class MessageClient {
                             for (Conversation conversation : conversations) {
                                 ArrayList<String> members = conversation.getMembers();
                                 Collections.sort(members);
-                                if (members.equals(recipientList)) {
+                                if (members.equals(membersList)) {
                                     conversation.addMessage(String.format("%s|%s", sender, message));
                                     conversationExists = true;
                                     break;

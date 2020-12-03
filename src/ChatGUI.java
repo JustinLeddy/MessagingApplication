@@ -3,7 +3,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class ChatGUI extends JFrame {
     private ArrayList<Conversation> conversations = new ArrayList<>();
@@ -20,7 +19,7 @@ public class ChatGUI extends JFrame {
     JList<String> inboxList;
     DefaultListModel<String> inboxes;
     JFrame messageFrame;
-    DisplayMessageField messageField;
+    DisplayMessageGUI messageField;
 
 
     public ChatGUI(MessageClient client) {
@@ -135,7 +134,7 @@ public class ChatGUI extends JFrame {
 
     //change panel when a chat is selected or create a new chat from the newChatButton
     private void addPanel(Conversation c) {
-        messageField = new DisplayMessageField(c);
+        messageField = new DisplayMessageGUI(c);
         middlePanel.removeAll();
         middlePanel.add(messageField);
         middlePanel.revalidate();

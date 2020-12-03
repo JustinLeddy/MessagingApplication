@@ -3,18 +3,18 @@ import java.awt.*;
 import java.util.ArrayList;
 
 
-public class DisplayMessageField extends JPanel {
+public class DisplayMessageGUI extends JPanel {
     //private final MessageClient client;
     private Conversation conversation;
     //private DefaultListModel<String> list = new DefaultListModel<>();
     //private JList<String> messages = new JList<>(list);
     private final JTextArea messages;
 
-    public DisplayMessageField() {
-        messages = new JTextArea(20,40);
+    public DisplayMessageGUI() {
+        messages = new JTextArea(20, 40);
         messages.setEditable(false);
-
-    public DisplayMessageField(Conversation conversation) {
+    }
+    public DisplayMessageGUI(Conversation conversation) {
         this.conversation = conversation;
 
         messages = new JTextArea(20,40);

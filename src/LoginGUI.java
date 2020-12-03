@@ -82,6 +82,8 @@ public class LoginGUI extends JFrame {
     }
 
 
+
+
     // Declare actionListener for specific functionality
     ActionListener actionListener = new ActionListener() {
         @Override
@@ -90,23 +92,25 @@ public class LoginGUI extends JFrame {
                 String username = userText.getText();
                 char[] password = passText.getPassword();
 
-                client.setLoginOrRegister(true);
+                client.setLoginOrRegister(true); // true = loginButton clicked
 
                 if (username.isEmpty() || password.length == 0) {
                     message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
                 } else {
                     client.setClientMessage(true, username, password);
+                    client.setClientUsername(username);
                     client.setLoginRegisterClicked(); //set to true to notify button click
                 }
             } else if (e.getSource() == registerBtn) {
                 String username = userText.getText();
                 char[] password = passText.getPassword();
 
-                client.setLoginOrRegister(false);
+                client.setLoginOrRegister(false); // false = registerButton clicked
 
                 if (username.isEmpty() || password.length == 0) {
                     message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
                 } else {
+                    client.setClientUsername(username);
                     client.setClientMessage(false, username, password);
                     client.setLoginRegisterClicked(); //set to true to notify button click
                 }

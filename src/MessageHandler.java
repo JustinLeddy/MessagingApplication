@@ -101,7 +101,7 @@ public class MessageHandler implements Runnable {
                         for (int i = 0; i < lines.size(); i++) {
                             String conversationLine = lines.get(i);
                             conversationLine.replaceAll("\n", "");
-                            ArrayList<String> line = new ArrayList<>(Arrays.asList(conversationLine.split("<*>")));
+                            ArrayList<String> line = new ArrayList<>(Arrays.asList(conversationLine.split("<\\*>")));
                             ArrayList<String> members = new ArrayList<>(Arrays.asList(line.get(0).split("\\|")));
 
                             //Sort Members

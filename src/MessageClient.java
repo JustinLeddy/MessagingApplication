@@ -59,7 +59,6 @@ public class MessageClient {
     }
 
     //Method to run message application GUI,
-    //TODO: Create the actual GUI for this
     /*public static void runMessageApp() {
         //wipe and repaint
         frame.getContentPane().removeAll();
@@ -240,12 +239,12 @@ public class MessageClient {
     private static void initializeConversations(String readLine) {
         //Member1,Member2,Member<*>Username|Message,Username|Message
         String[] newConversations = readLine.split("<&*>");
-        for (String conversation : newConversations){ //Member1,Member2,Member3<*>Username|Message%&Username|Message%&Username|Message
-          String[] membersAndMessages = conversation.split("<*>");
-          ArrayList<String> members = (ArrayList<String>) Arrays.asList(membersAndMessages[0].split(","));
-          ArrayList<String> messages = (ArrayList<String>) Arrays.asList(membersAndMessages[1].split("%&"));
+        for (String conversation : newConversations) { //Member1,Member2,Member3<*>Username|Message%&Username|Message%&Username|Message
+            String[] membersAndMessages = conversation.split("<*>");
+            ArrayList<String> members = (ArrayList<String>) Arrays.asList(membersAndMessages[0].split(","));
+            ArrayList<String> messages = (ArrayList<String>) Arrays.asList(membersAndMessages[1].split("%&"));
 
-          conversations.add(new Conversation(members, messages));
+            conversations.add(new Conversation(members, messages));
         }
     }
     //Special Characters Message: | &*
@@ -256,27 +255,23 @@ public class MessageClient {
      * Getters and setters for the fields
      */
     public ArrayList<Conversation> getConversations() {
-        return this.conversations;
+        return conversations;
     }
 
     public String getClientUsername() {
-        return this.clientUsername;
-    }
-
-    public void setClientUsername(String username) {
-        this.clientUsername = username;
+        return clientUsername;
     }
 
     public void setLoginRegisterClicked() {
-        this.loginRegisterClicked.set(true);
+        loginRegisterClicked.set(true);
     }
 
     public void setSendMessageClicked() {
-        this.sendMessageClicked.set(true);
+        sendMessageClicked.set(true);
     }
 
     public void setLoginOrRegister(boolean loginOrRegister) {
-        this.loginOrRegister.set(loginOrRegister);
+        MessageClient.loginOrRegister.set(loginOrRegister);
     }
 }
 

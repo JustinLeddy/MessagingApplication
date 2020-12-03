@@ -100,6 +100,10 @@ public class MessageHandler implements Runnable {
                             try (var fileReader = new BufferedReader(new FileReader("Accounts.txt"))) {
                                 String line;
                                 while ((line = fileReader.readLine()) != null) {
+                                    if (line.strip().isEmpty()) {
+                                        continue;
+                                    }
+
                                     String currentUser = line.substring(0, line.indexOf(","));
                                     String currentPass = line.substring(line.indexOf(",") + 1);
 
@@ -118,7 +122,7 @@ public class MessageHandler implements Runnable {
                                     clientWriter.flush();
                                 }
                             } catch (IOException e) {
-                                System.out.println("Exception from fileReader/writer");
+                                e.printStackTrace();
                             }
                         }
                         //register
@@ -127,6 +131,10 @@ public class MessageHandler implements Runnable {
                                  var fileWriter = new PrintWriter(new FileOutputStream("Accounts.txt", true))) {
                                 String line;
                                 while ((line = fileReader.readLine()) != null) {
+                                    if (line.strip().isEmpty()) {
+                                        continue;
+                                    }
+
                                     String currentUser = line.substring(0, line.indexOf(","));
 
                                     //if username is and password is taken, is true and break
@@ -146,14 +154,14 @@ public class MessageHandler implements Runnable {
                                     clientWriter.flush();
                                 }
                             } catch (IOException e) {
-                                System.out.println("Exception from fileReader/writer");
+                                e.printStackTrace();
                             }
                         }
                     }
                     clientMessage = clientReader.readLine(); // to read a new line from client
                 }
             } catch (IOException e) {
-                System.out.println("Socket Prolly Closed");
+                e.printStackTrace();
             }
         }
     }

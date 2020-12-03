@@ -57,11 +57,10 @@ public class MessageHandler implements Runnable {
                  var clientReader = new BufferedReader(new InputStreamReader(inputStream));
                  var clientWriter = new BufferedWriter(new OutputStreamWriter(outputStream))) {
 
-                //read info from client
-                clientMessage = clientReader.readLine();
 
-                while (clientMessage != null) {
-                    System.out.println(clientMessage); //print it for processing purposes
+
+                while ((clientMessage = clientReader.readLine()) != null) {
+                    //System.out.println(clientMessage); //print it for processing purposes
 
                     if (clientMessage.charAt(0) == 'M') { //incoming message is
 
@@ -73,9 +72,12 @@ public class MessageHandler implements Runnable {
 
                             if (socket.isConnected()) { //if this user is connected
 
-                                if (!clientMessageHandler.getClientMessage().equals(clientMessage)) { //check if the client does not have the same message as this messageHandler
-                                    clientMessageHandler.send(clientMessage); //if its different then send our message to that client
-                                }
+                                //if (!clientMessageHandler.getClientMessage().equals(clientMessage)) {} //check if the client does not have the same message as this messageHandler
+                                /* bounce back the message anyway because UI needs to display real-time message.
+                                 * Check recipient and sender on Client side
+                                 */
+                                clientMessageHandler.send(clientMessage);
+
                             }
                         }
 
@@ -203,7 +205,6 @@ public class MessageHandler implements Runnable {
                                     if (line.strip().isEmpty()) {
                                         continue;
                                     }
-
                                     String currentUser = line.substring(0, line.indexOf(","));
 
                                     //if username is and password is taken, is true and break
@@ -227,7 +228,7 @@ public class MessageHandler implements Runnable {
                             }
                         }
                     }
-                    clientMessage = clientReader.readLine(); // to read a new line from client
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();

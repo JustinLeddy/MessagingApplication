@@ -3,14 +3,16 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 
 public class ChatGUI extends JFrame {
     private ArrayList<Conversation> conversations = new ArrayList<>();
     private String clientUsername;
+    private ArrayList<String> userToSend;
     ChatGUI chatGUI;
     MessageClient messageClient;
 
+    JPanel middlePanel;
     JButton sendButton;
     JButton newChatButton;
     JTextArea messageText;
@@ -18,34 +20,42 @@ public class ChatGUI extends JFrame {
     JList<String> inboxList;
     DefaultListModel<String> inboxes;
     JFrame messageFrame;
+    DisplayMessageField messageField;
 
 
     public ChatGUI(MessageClient client) {
         this.messageClient = client;
         this.clientUsername = client.getClientUsername();
         this.conversations = client.getConversations();
+        this.userToSend = new ArrayList<>();
         showMessagePanel();
     }
 
-    public void showMessagePanel() {
+    private void showMessagePanel() {
         //initialize variables
         messageFrame = new JFrame(String.format("%s's Message", clientUsername));
         messageFrame.getContentPane().removeAll();
         messageFrame.repaint();
-        messageText = new JTextArea("Type your message here...",5,60);
+        messageText = new JTextArea("Type your message here...", 5, 60);
+        messageText.setEditable(false); //only enabled in a chat
         messageText.addFocusListener(focusListener);
         sentText = new JTextArea(20, 40);
-        sentText.setEditable(false); // display messages here
+        sentText.setEditable(false);
+        //fill up inboxes with past conversations
         inboxes = new DefaultListModel<>();
-        inboxList = new JList<>(inboxes);
-        inboxList.setVisibleRowCount(10);
-        // set function for JList
-        inboxList.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                String userToSend = inboxList.getSelectedValue();
+        inboxList = new JList<>();
+        if (!conversations.isEmpty()) {
+            for (Conversation c : this.conversations) {
+                setConversationLabel(c);
             }
-        });
+        }
+
+        inboxList.setVisibleRowCount(10);
+        inboxList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        inboxList.setLayoutOrientation(JList.VERTICAL);
+        // set function for JList
+        inboxList.addMouseListener(mouseListener);
+
 
         sendButton = new JButton("Send");
         sendButton.addActionListener(actionListener);
@@ -54,7 +64,7 @@ public class ChatGUI extends JFrame {
 
         //set up panels
 
-        JPanel middlePanel = new JPanel();
+        middlePanel = new JPanel();
         middlePanel.setLayout(new BorderLayout());
         middlePanel.add(new JScrollPane((sentText)), "Center");
 
@@ -67,14 +77,12 @@ public class ChatGUI extends JFrame {
         userListPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
-
         //Setting constraints for New Chat Button
         constraints.gridx = 2;
         constraints.gridy = 2;
         constraints.weighty = 0.5;
         constraints.anchor = GridBagConstraints.PAGE_END;
         userListPanel.add(newChatButton, constraints);
-
         //Setting constraints for "Inboxes" label
         constraints.anchor = GridBagConstraints.PAGE_START;
         constraints.gridx = 1;
@@ -82,7 +90,6 @@ public class ChatGUI extends JFrame {
         constraints.weighty = 0.0; //reset weighty
         constraints.weightx = 0.0;
         userListPanel.add(new JLabel("Inboxes", JLabel.CENTER), constraints);
-
         //Setting constraints for inboxList
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.ipady = 250;
@@ -93,28 +100,97 @@ public class ChatGUI extends JFrame {
 
         userListPanel.setPreferredSize(new Dimension(150, 5));
 
-        //function for userList
-        inboxList.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() > 1) {
 
-
-                }
-            }
-        });
-
-
+        //add panel to frame
         messageFrame.add(middlePanel, "Center");
         messageFrame.add(botPanel, "South");
         messageFrame.add(userListPanel, "East");
-        messageFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        messageFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         messageFrame.pack();
         messageFrame.setLocationRelativeTo(null);
         messageFrame.setVisible(true);
     }
-    public void run() {
+
+    public void startNewChat(Conversation c) {
+        setConversationLabel(c);
+        inboxList.setSelectedIndex(inboxes.getSize());
+        addPanel(c);
+    }
+
+    private void setConversationLabel(Conversation c) {
+        String sendTo = "";
+        ArrayList<String> members = c.getMembers();
+        for (String m : members) {
+            if (!m.equals(clientUsername)) {
+                sendTo += " " + m;
+            }
+        }
+        sendTo = sendTo.replaceFirst(" ", "");
+        sendTo = sendTo.replaceAll(" ", " \\| ");
+        inboxes.addElement(sendTo);
+        inboxList.setModel(inboxes);
+        //System.out.println("Finished adding label");
 
     }
+
+    //change panel when a chat is selected or create a new chat from the newChatButton
+    private void addPanel(Conversation c) {
+        messageField = new DisplayMessageField(c);
+        middlePanel.removeAll();
+        middlePanel.add(messageField);
+        middlePanel.revalidate();
+        middlePanel.repaint();
+        //System.out.println("Finished adding panel");
+    }
+
+    public void updateCurrentChat() { //for recipients
+        messageField.updateMessage();
+    }
+
+    public void updateCurrentChat(String message) { //display to sender
+        if (messageField == null) {
+            //System.out.println("Entered messagefield null");
+            Conversation temp = new Conversation(userToSend);
+            temp.addMessage(message);
+            startNewChat(temp);
+        } else {
+            System.out.println("message field not null");
+            messageField.updateMessage(message);
+        }
+    }
+
+    // find conversation with the same members
+    private void matchConversation(String selectedValue) {
+        String[] members = selectedValue.split(" \\| ");
+        ArrayList<String> allMembers = new ArrayList(Arrays.asList(members));
+        //update userToSend
+        userToSend.clear();
+        for (String s : allMembers) {
+            userToSend.add(s);
+        }
+        allMembers.add(clientUsername); //add sender to the group
+        for (Conversation c : conversations) {
+            if (c.getMembers().containsAll(allMembers)
+                    && allMembers.containsAll(c.getMembers())) { //find the matched conversation
+                addPanel(c); //create new panel with that conversation
+            }
+        }
+    }
+    public void setUsersToSend(String userNames, String message) {
+        userToSend = new ArrayList<>();
+        userNames = userNames.strip();
+        if (userNames.isEmpty() || message.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "You did not enter a valid input",
+                    "Social Messaging App", JOptionPane.ERROR_MESSAGE);
+        }
+        String[] splitName = userNames.split(",");
+        for (String user : splitName) {
+            userToSend.add(user.strip());
+        }
+        messageClient.setClientMessage(message, userToSend);
+        messageClient.setSendMessageClicked(true);//send ArrayList to MessageClient for processing
+    }
+    //TODO Check if users exist in the system
 
     /**
      * GUI Methods
@@ -122,25 +198,25 @@ public class ChatGUI extends JFrame {
      */
     ActionListener actionListener = new ActionListener() {
         @Override
-        public void actionPerformed(ActionEvent e){
+        public void actionPerformed(ActionEvent e) {
             if (e.getSource() == sendButton) {
                 String message = (String) messageText.getText();
                 System.out.println(message); //print out message for debugging
                 if (message.isEmpty()) {
-                    JOptionPane.showMessageDialog(null,"There is no message to send!",
+                    JOptionPane.showMessageDialog(null, "There is no message to send!",
                             "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    MessageClient.setClientMessage(message, new ArrayList<String>(Collections.singletonList("Username")));
-                    //TODO: Change "new ArrayList<String>(Collections.singletonList(""))" to arraylist of chat members
-                    messageClient.setSendMessageClicked(true);
+                    messageClient.setClientMessage(message, userToSend);
+                    messageClient.setSendMessageClicked(true); //set to TRUE to notify button click
                     messageText.setText("Type your message here..."); //add the default text again after clicking send
                     messageText.addFocusListener(focusListener);
 
                 }
             } else if (e.getSource() == newChatButton) {
-                String userNames = (String) JOptionPane.showInputDialog("Recipient's username in the format [username,username]",
-                        JOptionPane.DEFAULT_OPTION);
-                setUsersToSend(userNames);
+                messageField = null; //set back to null
+                String userNames = JOptionPane.showInputDialog("Type in recipient's username in the format [username,username]");
+                String initialMessage = JOptionPane.showInputDialog("Say something first!");
+                setUsersToSend(userNames, initialMessage);
             }
         }
     };
@@ -159,12 +235,26 @@ public class ChatGUI extends JFrame {
         }
     };
 
-    public void setUsersToSend(String userNames) {
-        String[] splitName = userNames.split(",");
-        for (String user : splitName) {
-            //usersToSend.add(user);
+    MouseListener mouseListener = new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            String selectedConversation = inboxList.getSelectedValue();
+            System.out.println(selectedConversation);
+            messageText.setEditable(true); //enable text field
+            matchConversation(selectedConversation);
+        }
+    };
+
+
+
+
+    //for debugging
+    private void printList() {
+        for (int i = 0; i < inboxes.getSize(); i++) {
+            System.out.println(inboxes.get(i));
         }
     }
+
     public static void main(String[] args) {
         new ChatGUI(new MessageClient());
     }

@@ -52,9 +52,11 @@ public class MessageClient {
         }
     }
 
-
-    //sets client message for sending an 1->1 message
-    public static void setClientMessage(String message, String recipient) {
+    //sets client message for sending a group message
+    public static void setClientMessage(String message, ArrayList<String> members) {
+        String recipient = Arrays.toString(members.toArray())
+                .replaceAll(", ", ",")
+                .replaceAll("\\[|\\]", "");
         clientMessage = String.format("M|%s|%s|%s", clientUsername, recipient, message);
     }
 
@@ -111,7 +113,7 @@ public class MessageClient {
             writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             System.out.println("Connected!");
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(); //TODO: Replace with detailed error popup
         }
     }
 
@@ -141,7 +143,6 @@ public class MessageClient {
 
                     // Login
                     if (loginRegisterClicked.get()) {
-
                         loginRegisterClicked.set(false);
                         //Boolean represents if login credentials exist
                         boolean userExists = Boolean.parseBoolean(reader.readLine());
@@ -154,6 +155,7 @@ public class MessageClient {
                                 login.close(); //close the login page
                                 new ChatGUI(messageClient); //open chatGUI
                                 //clientUsername = userText.getText();
+
                                 //needs to initialize conversations
                                 writer.write("I|" + clientUsername + "\n");
                                 writer.flush();
@@ -180,18 +182,27 @@ public class MessageClient {
                         }
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    e.printStackTrace(); //TODO: Replace with detailed error popup
                     break;
                 }
             }
 
-            //read messages from server broadcast
-            try {
-                if (reader.ready()) {
-                    String fromServer = reader.readLine();
-                    if (fromServer != null) {
-                        System.out.println("Received this from the server: " + fromServer);
 
+            /* read messages from server broadcast
+             * if the message contains the username of this client in the recipient,
+             * then look for a conversation to file this message into
+             * it looks by gathering and sorting the list of recipients,
+             * then it compares it with every member list in all conversations
+             * the user is in.
+             * If it cant find a conversation with matching members then that means
+             * that its a conversation another user created
+             * then it creates a new conversation in the current clients list.
+             */
+            try {
+                if (reader.ready()) { //if there is a message from the server
+                    String fromServer = reader.readLine(); //read message
+                    if (fromServer.substring(0, 2).equals("M|")) {//if it is in the message format
+                        System.out.println("Received this from the server: " + fromServer); //print the message it received from server
                         //M|Sender|Recipient|Message
                         //M|Sender|Recipient1,Recipient2,Recipient3|Message
 
@@ -203,12 +214,10 @@ public class MessageClient {
                         if (recipients.contains(clientUsername)) {
                             boolean conversationExists = false;
 
-                            if (recipients.contains("&*")) { // for sending to group
-                                recipients = recipients.substring(2, recipients.length() - 2);
-                                recipientList = (ArrayList<String>) Arrays.asList(recipients.split(","));
-                            } else { // for sending 1->1
-                                recipientList.add(recipients);
-                            }
+                            membersList = (ArrayList<String>) Arrays.asList(recipients.split(","));
+
+                            membersList.add(sender);
+                            Collections.sort(membersList); //sort membersList
 
                             for (Conversation conversation : conversations) {
                                 ArrayList<String> members = conversation.getMembers();
@@ -220,8 +229,8 @@ public class MessageClient {
                                 }
                             }
 
-                            if (!conversationExists) { //convo doesnt exist
-                                Conversation conversationToAdd = new Conversation(recipientList);
+                            if (!conversationExists) { //conversation doesn't exist
+                                Conversation conversationToAdd = new Conversation(membersList);
                                 //"System|Your conversation has been created" is always the first message in any conversation.
                                 conversationToAdd.addMessage(message);
                                 conversations.add(conversationToAdd);
@@ -230,21 +239,28 @@ public class MessageClient {
                     }
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                e.printStackTrace(); //TODO: Replace with detailed error popup
             }
 
         }
     }
 
     private static void initializeConversations(String readLine) {
+        System.out.println("Initialized Conversations with: " + readLine);
         //Member1,Member2,Member<*>Username|Message,Username|Message
-        String[] newConversations = readLine.split("<&*>");
-        for (String conversation : newConversations) { //Member1,Member2,Member3<*>Username|Message%&Username|Message%&Username|Message
-            String[] membersAndMessages = conversation.split("<*>");
-            ArrayList<String> members = (ArrayList<String>) Arrays.asList(membersAndMessages[0].split(","));
-            ArrayList<String> messages = (ArrayList<String>) Arrays.asList(membersAndMessages[1].split("%&"));
+        if (readLine != null && readLine.length() > 2) {
+            String[] newConversations = readLine.split("<&\\*>");
+            for (String conversation : newConversations) { //Member1,Member2,Member3<*>Username|Message%&Username|Message%&Username|Message
+                String[] membersAndMessages = conversation.split("<\\*>");
+                ArrayList<String> members = new ArrayList<>(Arrays.asList(membersAndMessages[0].split("\\|")));
+                ArrayList<String> messages = new ArrayList<>(Arrays.asList(membersAndMessages[1].split("%%&")));
 
-            conversations.add(new Conversation(members, messages));
+                System.out.println(Arrays.toString(members.toArray()));
+                System.out.println(Arrays.toString(messages.toArray()));
+                conversations.add(new Conversation(members, messages));
+            }
+        } else{
+            System.out.println("User has no conversations on record.");
         }
     }
     //Special Characters Message: | &*
@@ -266,17 +282,24 @@ public class MessageClient {
         clientUsername = username;
     }
 
+    public String getClientMessage() {
+        return clientMessage;
+    }
+
     public void setLoginRegisterClicked() {
         loginRegisterClicked.set(true);
     }
 
-    public void setSendMessageClicked() {
-        sendMessageClicked.set(true);
+    public void setSendMessageClicked(boolean value) {
+        sendMessageClicked.set(value);
     }
+
 
     public void setLoginOrRegister(boolean loginOrRegister) {
         MessageClient.loginOrRegister.set(loginOrRegister);
     }
+
+
 }
 
 

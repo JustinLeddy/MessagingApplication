@@ -146,7 +146,7 @@ public class MessageHandler implements Runnable {
                         System.out.println(clientUsername);
                         for (int i = 0; i < lines.size(); i++) {
                             String conversationLine = lines.get(i);
-                            ArrayList<String> line = new ArrayList<>(Arrays.asList(conversationLine.split("<*>")));
+                            ArrayList<String> line = new ArrayList<>(Arrays.asList(conversationLine.split("<\\*>")));
                             ArrayList<String> members = new ArrayList<>(Arrays.asList(line.get(0).split("\\|")));
 
                             if (members.contains(clientUsername)) {

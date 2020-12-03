@@ -97,8 +97,8 @@ public class LoginGUI extends JFrame {
                 if (username.isEmpty() || password.length == 0) {
                     message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    MessageClient.setClientMessage(true, username, password);
                     client.setClientUsername(username);
+                    MessageClient.setClientMessage(true, username, password);
                     client.setLoginRegisterClicked(); //set to true to notify button click
                 }
             } else if (e.getSource() == registerBtn) {

@@ -67,12 +67,14 @@ public class ChatGUI extends JFrame {
         userListPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
+
         //Setting constraints for New Chat Button
         constraints.gridx = 2;
         constraints.gridy = 2;
         constraints.weighty = 0.5;
         constraints.anchor = GridBagConstraints.PAGE_END;
         userListPanel.add(newChatButton, constraints);
+
         //Setting constraints for "Inboxes" label
         constraints.anchor = GridBagConstraints.PAGE_START;
         constraints.gridx = 1;
@@ -80,6 +82,7 @@ public class ChatGUI extends JFrame {
         constraints.weighty = 0.0; //reset weighty
         constraints.weightx = 0.0;
         userListPanel.add(new JLabel("Inboxes", JLabel.CENTER), constraints);
+
         //Setting constraints for inboxList
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.ipady = 250;

@@ -73,7 +73,7 @@ public class LoginGUI extends JFrame {
         //Set Frame Size, Settings, and Visibility
         frame.setSize(300, 150);
         frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
     }
 
@@ -89,7 +89,7 @@ public class LoginGUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             if(e.getSource() == loginBtn) {
-                String username = userText.getText();
+                String username = userText.getText().strip();
                 char[] password = passText.getPassword();
 
                 client.setLoginOrRegister(true); // true = loginButton clicked

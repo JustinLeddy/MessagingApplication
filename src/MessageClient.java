@@ -20,7 +20,7 @@ public class MessageClient {
     //Global Fields
     private static String clientMessage;
     private static final String TITLE = "Social Messaging App";
-    private static JFrame frame;
+    private static ChatGUI chatGUI;
     private static String clientUsername;
     private static Socket socket = null;
     private static BufferedReader reader;
@@ -40,10 +40,8 @@ public class MessageClient {
             password += character;
         }
 
-        //Checks if fields are empty and displays message if so
-        if (username.isEmpty() || password.isEmpty()) {
-            message("Please Fill All Fields", JOptionPane.ERROR_MESSAGE);
-        } else if (loginOrRegister) {
+        //Already check for empty in LoginGUI
+        if (loginOrRegister) {
             //Send info for login
             clientMessage = String.format("L:%s:%s", username, password);
         } else {
@@ -58,6 +56,7 @@ public class MessageClient {
                 .replaceAll(", ", ",")
                 .replaceAll("\\[|\\]", "");
         clientMessage = String.format("M|%s|%s|%s", clientUsername, recipient, message);
+
     }
 
     //Method to run message application GUI,
@@ -139,6 +138,7 @@ public class MessageClient {
                         writer.write(clientMessage);
                         writer.newLine();
                         writer.flush();
+                        System.out.println("Sent to server: " + clientMessage);
                     }
 
                     // Login
@@ -153,13 +153,11 @@ public class MessageClient {
                                 message("You've successfully logged in!",
                                         JOptionPane.INFORMATION_MESSAGE);
                                 login.close(); //close the login page
-                                new ChatGUI(messageClient); //open chatGUI
-                                //clientUsername = userText.getText();
-
                                 //needs to initialize conversations
                                 writer.write("I|" + clientUsername + "\n");
                                 writer.flush();
                                 initializeConversations(reader.readLine());
+                                chatGUI = new ChatGUI(messageClient); //open chatGUI
                             } else {
                                 //Prompts user that entered username is already taken
                                 message("Username is already taken, enter a different username",
@@ -177,7 +175,7 @@ public class MessageClient {
                                 message("You've successfully registered!",
                                         JOptionPane.INFORMATION_MESSAGE);
                                 login.close(); //close login page
-                                new ChatGUI(messageClient); //open chatGUI
+                                chatGUI = new ChatGUI(messageClient); //open chatGUI
                             }
                         }
                     }
@@ -202,7 +200,7 @@ public class MessageClient {
                 if (reader.ready()) { //if there is a message from the server
                     String fromServer = reader.readLine(); //read message
                     if (fromServer.substring(0, 2).equals("M|")) {//if it is in the message format
-                        System.out.println("Received this from the server: " + fromServer); //print the message it received from server
+                        //System.out.println("Received this from the server: " + fromServer); //print the message it received from server
                         //M|Sender|Recipient|Message
                         //M|Sender|Recipient1,Recipient2,Recipient3|Message
 
@@ -210,11 +208,11 @@ public class MessageClient {
                         String sender = receivedMessage[1];
                         String recipients = receivedMessage[2];
                         String message = receivedMessage[3];
-                        ArrayList<String> membersList = new ArrayList<>();
-                        if (recipients.contains(clientUsername)) {
+                        ArrayList<String> membersList;
+                        if (recipients.contains(clientUsername) || sender.equals(clientUsername)) {
                             boolean conversationExists = false;
 
-                            membersList = (ArrayList<String>) Arrays.asList(recipients.split(","));
+                            membersList = new ArrayList<>(Arrays.asList(recipients.split(",")));
 
                             membersList.add(sender);
                             Collections.sort(membersList); //sort membersList
@@ -224,6 +222,7 @@ public class MessageClient {
                                 Collections.sort(members);
                                 if (members.equals(membersList)) {
                                     conversation.addMessage(String.format("%s|%s", sender, message));
+                                    chatGUI.updateCurrentChat();
                                     conversationExists = true;
                                     break;
                                 }
@@ -232,9 +231,11 @@ public class MessageClient {
                             if (!conversationExists) { //conversation doesn't exist
                                 Conversation conversationToAdd = new Conversation(membersList);
                                 //"System|Your conversation has been created" is always the first message in any conversation.
-                                conversationToAdd.addMessage(message);
+                                conversationToAdd.addMessage(String.format("%s|%s", sender, message));
                                 conversations.add(conversationToAdd);
+                                chatGUI.startNewChat(conversationToAdd);
                             }
+
                         }
                     }
                 }
@@ -253,7 +254,7 @@ public class MessageClient {
             for (String conversation : newConversations) { //Member1,Member2,Member3<*>Username|Message%&Username|Message%&Username|Message
                 String[] membersAndMessages = conversation.split("<\\*>");
                 ArrayList<String> members = new ArrayList<>(Arrays.asList(membersAndMessages[0].split("\\|")));
-                ArrayList<String> messages = new ArrayList<>(Arrays.asList(membersAndMessages[1].split("%%&")));
+                ArrayList<String> messages = new ArrayList<>(Arrays.asList(membersAndMessages[1].split("%&")));
                 conversations.add(new Conversation(members, messages));
             }
         } else{
@@ -295,6 +296,7 @@ public class MessageClient {
     public void setLoginOrRegister(boolean loginOrRegister) {
         MessageClient.loginOrRegister.set(loginOrRegister);
     }
+
 
 
 }

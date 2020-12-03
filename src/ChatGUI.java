@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class ChatGUI extends JFrame {
     private ArrayList<Conversation> conversations = new ArrayList<>();
@@ -65,12 +67,14 @@ public class ChatGUI extends JFrame {
         userListPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
+
         //Setting constraints for New Chat Button
         constraints.gridx = 2;
         constraints.gridy = 2;
         constraints.weighty = 0.5;
         constraints.anchor = GridBagConstraints.PAGE_END;
         userListPanel.add(newChatButton, constraints);
+
         //Setting constraints for "Inboxes" label
         constraints.anchor = GridBagConstraints.PAGE_START;
         constraints.gridx = 1;
@@ -78,6 +82,7 @@ public class ChatGUI extends JFrame {
         constraints.weighty = 0.0; //reset weighty
         constraints.weightx = 0.0;
         userListPanel.add(new JLabel("Inboxes", JLabel.CENTER), constraints);
+
         //Setting constraints for inboxList
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.ipady = 250;
@@ -125,7 +130,9 @@ public class ChatGUI extends JFrame {
                     JOptionPane.showMessageDialog(null,"There is no message to send!",
                             "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    messageClient.setClientMessage(message, "");
+                    MessageClient.setClientMessage(message, new ArrayList<String>(Collections.singletonList("Username")));
+                    //TODO: Change "new ArrayList<String>(Collections.singletonList(""))" to arraylist of chat members
+                    messageClient.setSendMessageClicked(true);
                     messageText.setText("Type your message here..."); //add the default text again after clicking send
                     messageText.addFocusListener(focusListener);
 

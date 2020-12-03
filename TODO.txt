@@ -33,3 +33,17 @@ Classes to Implement (Basic ideas):
 File formatting:
 
 //"System|Your conversation has been created" is always the first message in any conversation.
+//M|Sender|Recipient|Message
+//M|Sender|&*Recipient1,Recipient2,Recipient3&*|Message
+
+Members = (sender,recipient) or (sender,recipient,recipient) UserMessages (clientMessage)
+
+check if members equals to conversationMembers (file)
+check senders
+
+clientMessage: Alex sends: M|Alex|Justin|Message
+        Justin receives: M|Alex|Justin|Message
+        Justins gui shows: message becomes Alex|Message, adds to conversation with Alex,Justin
+
+        Server: Look for conversation with Alex|Justin<*>message1,message2
+        found it : appends Message to conversation which becomes Alex|Justin<*>message1,message2,Message

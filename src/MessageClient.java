@@ -254,9 +254,6 @@ public class MessageClient {
                 String[] membersAndMessages = conversation.split("<\\*>");
                 ArrayList<String> members = new ArrayList<>(Arrays.asList(membersAndMessages[0].split("\\|")));
                 ArrayList<String> messages = new ArrayList<>(Arrays.asList(membersAndMessages[1].split("%%&")));
-
-                System.out.println(Arrays.toString(members.toArray()));
-                System.out.println(Arrays.toString(messages.toArray()));
                 conversations.add(new Conversation(members, messages));
             }
         } else{

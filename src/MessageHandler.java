@@ -107,9 +107,6 @@ public class MessageHandler implements Runnable {
                             //Sort Members
                             Collections.sort(members);
 
-                            //displays members and memberslist for testing purposes
-                            System.out.println("Members: " + Arrays.toString(members.toArray()));
-                            System.out.println("MembersList: " + Arrays.toString(membersList.toArray()));
 
                             if (members.equals(membersList)) {
                                 writtenToFile = true;
@@ -143,14 +140,13 @@ public class MessageHandler implements Runnable {
                         //clientMessage split
                         String clientUsername = clientMessage.substring(clientMessage.indexOf("|") + 1);
                         String allConversations = "";
-                        System.out.println(clientUsername);
                         for (int i = 0; i < lines.size(); i++) {
                             String conversationLine = lines.get(i);
                             ArrayList<String> line = new ArrayList<>(Arrays.asList(conversationLine.split("<\\*>")));
                             ArrayList<String> members = new ArrayList<>(Arrays.asList(line.get(0).split("\\|")));
 
                             if (members.contains(clientUsername)) {
-                                allConversations += line + "<&*>";
+                                allConversations += lines.get(i) + "<&*>";
                             }
                         }
 

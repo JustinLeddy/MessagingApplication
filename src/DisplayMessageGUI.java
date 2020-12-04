@@ -40,7 +40,7 @@ public class DisplayMessageGUI extends JPanel {
             @Override
             public void run() {
                 ArrayList<String> allMessages = conversation.getMessages();
-                messages.append(allMessages.get(allMessages.size() - 1));
+                messages.append(allMessages.get(allMessages.size() - 1) + "\n");
                 messages.setCaretPosition(messages.getDocument().getLength());
             }
         });

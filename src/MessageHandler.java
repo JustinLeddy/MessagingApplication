@@ -84,9 +84,11 @@ public class MessageHandler implements Runnable {
                             MessageHandler clientMessageHandler = client.getValue(); //sets socket and message handler for this iteration
                             Socket socket = clientMessageHandler.getClientSocket();
 
-                            if (socket.isConnected()
+                            if (!socket.isClosed()
                                     && clientMessageHandler.getCurrentClientUsername() != null
                                     && membersList.contains(clientMessageHandler.getCurrentClientUsername())) { //if this user is connected, and is an intended recipient
+                                System.out.println("Members List: " + Arrays.toString(membersList.toArray()));
+                                System.out.println("Client to send to: " + clientMessageHandler.getCurrentClientUsername());
                                 clientMessageHandler.send(clientMessage);
 
                             }
@@ -111,7 +113,7 @@ public class MessageHandler implements Runnable {
 
                             if (members.equals(membersList)) {
                                 writtenToFile = true;
-                                String newLine = String.format("%s%%&%s\n", conversationLine, message);
+                                String newLine = String.format("%s%%&%s", conversationLine, message);
                                 lines.set(i, newLine);
                                 Files.write(Path.of("Conversations.txt"), lines, StandardCharsets.UTF_8);
                                 break;
@@ -254,7 +256,7 @@ public class MessageHandler implements Runnable {
 
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("Client " + currentClientUsername + " disconnected");
             }
         }
     }

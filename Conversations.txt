@@ -29,7 +29,8 @@ Alex|Mario<*>Alex|Is that really you Mario
 Alex|Big<*>Alex|How's It going%&Big|Bro What's Up%&Alex|Test
 
 Alex|Jesus<*>Alex|Hello World%&Jesus|Hello
-Alex|Maeve<*>Alex|Hello Maeve
+Alex|Maeve<*>Alex|Hello Maeve%&Maeve|hay alex
+
 Alex|Justin|Maeve|Mario<*>Alex|Hello People
 Alex|Big|Jesus<*>Alex|Whats up
 Alex|Big|Jesus|Justin<*>Alex|Hello God is Agnostic
@@ -41,3 +42,39 @@ Alex|Baby|Justin<*>Alex|God does maybe do know%&Alex|Please Please Please
 |Alex<*>Alex|TesTing
 Alex|Baby|Jesus|Justin|Maeve<*>Alex|Fuck Off
 Alex|Baby|Big|Jesus|Justin<*>Alex|Testing
+Justin|Tommy<*>Tommy|Hey!%&Justin|whats up%&Tommy|nothing  much%&Justin|did you create this chat?%&Tommy|no%&Justin|why are there no new lines then?%&Tommy|this is wac%&Justin|yo%&Justin|hey%&Justin|hey%&Justin|whaty the heck%&Tommy|this isnt working right%&Justin|hey%&Justin|hey%&Justin|yo%&Justin|hey?%&Tommy|i think its working?%&Justin|yeah looks like it%&Justin|thers a weird socket error though%&Justin|its making it so others cant login%&Justin|weird%&Justin|i hope this keeps working%&Justin|i hope this keeps working
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Justin|Maeve<*>Justin|Hey!%&Maeve|hi%&Justin|is it working fine?%&Justin|I hope%&Maeve|kinda
+
+
+
+
+Justin|Maeve|Tommy<*>Tommy|wazaaa%&Justin|wazaaa%&Maeve|wazaaa%&Tommy|wazaaaa%&Justin|its being weird again :(%&Tommy|huh%&Justin|is is being weird%&Justin|:(
+
+
+
+
+
+
+

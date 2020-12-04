@@ -27,7 +27,6 @@ public class MessageHandler implements Runnable {
     private String userName;
     private String identity;
     private BufferedWriter clientWriter;
-    private BufferedReader clientReader;
     private String clientMessage;
 
     //fields
@@ -39,7 +38,7 @@ public class MessageHandler implements Runnable {
         try {
             InputStream inputStream = this.clientSocket.getInputStream();
             OutputStream outputStream = this.clientSocket.getOutputStream();
-            clientReader = new BufferedReader(new InputStreamReader(inputStream));
+            BufferedReader clientReader = new BufferedReader(new InputStreamReader(inputStream));
             clientWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,11 +70,6 @@ public class MessageHandler implements Runnable {
                             Socket socket = clientMessageHandler.getClientSocket();
 
                             if (socket.isConnected()) { //if this user is connected
-
-                                //if (!clientMessageHandler.getClientMessage().equals(clientMessage)) {} //check if the client does not have the same message as this messageHandler
-                                /* bounce back the message anyway because UI needs to display real-time message.
-                                 * Check recipient and sender on Client side
-                                 */
                                 clientMessageHandler.send(clientMessage);
 
                             }
@@ -234,13 +228,14 @@ public class MessageHandler implements Runnable {
                                 e.printStackTrace();
                             }
                         } else if (firstLetter == 'C') {
+                            partTwo = partTwo.substring(1,partTwo.length() - 1);
                             try (var fileReader = new BufferedReader(new FileReader("Accounts.txt"))) {
                                 List<String> allUsernames = fileReader.lines()
                                         .map(String::strip)
                                         .filter(line -> !line.isEmpty())
                                         .map(line -> line.substring(0, line.indexOf(",")))
                                         .collect(Collectors.toList());
-                                boolean usersExist = allUsernames.containsAll(Arrays.asList(partTwo.split(",")));
+                                boolean usersExist = allUsernames.containsAll(Arrays.asList(partTwo.split(", ")));
 
                                 clientWriter.write(usersExist + "\n");
                                 clientWriter.flush();

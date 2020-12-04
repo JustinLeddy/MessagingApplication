@@ -33,6 +33,7 @@ public class MessageClient {
     private static AtomicBoolean userAccountsExist = new AtomicBoolean(true);
 
 
+
     //Runs actions for login or button based on true (login) or false (register) param
     public static void setClientMessage(boolean loginOrRegister, String username, char[] passwordArray) {
         //Grab username and password
@@ -64,7 +65,9 @@ public class MessageClient {
 
     //Format: C|Recipient1,Recipient2,Recipient3
     public static void setClientMessage(ArrayList<String> usersToSend) {
-        clientMessage = Arrays.toString(usersToSend.toArray());
+        Collections.sort(usersToSend);
+
+        clientMessage = "C|" + Arrays.toString(usersToSend.toArray());
     }
 
     //Simplifies JOptionPane process
@@ -228,7 +231,7 @@ public class MessageClient {
                 ArrayList<String> messages = new ArrayList<>(Arrays.asList(membersAndMessages[1].split("%&")));
                 conversations.add(new Conversation(members, messages));
             }
-        } else{
+        } else {
             System.out.println("User has no conversations on record.");
         }
     }
@@ -271,10 +274,9 @@ public class MessageClient {
         MessageClient.checkUserAccountsExisting.set(value);
     }
 
-    public boolean getUserAccountsExist() {
-        return MessageClient.userAccountsExist.get();
-    }
+    public boolean getUserAccountsExist() { return MessageClient.userAccountsExist.get(); }
 
+    public void setUserAccountsExists(boolean value) { MessageClient.userAccountsExist.set(value); }
 
 }
 

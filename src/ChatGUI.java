@@ -171,6 +171,7 @@ public class ChatGUI extends JFrame {
             }
         }
     }
+
     public void setUsersToSend(String userNames, String message) {
         usersToSend = new ArrayList<>();
         userNames = userNames.strip();
@@ -184,12 +185,24 @@ public class ChatGUI extends JFrame {
         }
         Collections.sort(usersToSend);
 
+        //check for local duplicates
+        ArrayList<Conversation> conversations = messageClient.getConversations();
+        for (int i = 0; i < conversations.size(); i++) {
+            if (conversations.get(i).getMembers().containsAll(usersToSend) && conversations.get(i).getMembers().size() == usersToSend.size()) {
+                JOptionPane.showMessageDialog(null, "This conversation already exists.",
+                        "Social Messaging App", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+        messageClient.setSendMessageClicked(true);//send ArrayList to MessageClient for processing
         messageClient.setCheckUserAccountsExisting(true);
         MessageClient.setClientMessage(usersToSend);
 
         if (!messageClient.getUserAccountsExist()) {
             JOptionPane.showMessageDialog(null, "One or More of the account usernames entered does not exist",
                     "Social Messaging App", JOptionPane.ERROR_MESSAGE);
+            messageClient.setUserAccountsExists(true);
             return;
         }
 
@@ -222,7 +235,7 @@ public class ChatGUI extends JFrame {
                 String group = "For Group Conversations type the usernames separated by a comma like so: username,username,username";
                 messageField = null; //set back to null
                 String userNames = JOptionPane
-                        .showInputDialog(single +"\n" + group);
+                        .showInputDialog(single + "\n" + group);
                 String initialMessage = JOptionPane.showInputDialog("Say something first!");
                 setUsersToSend(userNames, initialMessage);
             }

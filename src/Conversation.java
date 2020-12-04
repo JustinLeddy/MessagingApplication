@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Conversation {
     //Fields
@@ -7,6 +8,7 @@ public class Conversation {
 
 
     public Conversation(ArrayList<String> members) {
+        Collections.sort(members);
         this.members = members;
         this.messages = new ArrayList<>();
     }
@@ -17,17 +19,6 @@ public class Conversation {
     }
 
     //functional methods
-
-    public String membersString() {
-        if (members.size() == 1) {
-            return members.get(0);
-        }
-        String output = "";
-        for (String member : members) {
-            output += member + ",";
-        }
-        return output.substring(0, output.length() - 1);
-    }
 
     //Username|message
     public void addMessage(String message) {

@@ -83,11 +83,11 @@ public class MessageServer {
              * might change to 0 (randomly assigned) later
              */
             server = new MessageServer(8888);
+
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
-
         server.serveClient();
     }
 }

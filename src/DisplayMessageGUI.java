@@ -14,9 +14,10 @@ public class DisplayMessageGUI extends JPanel {
         messages = new JTextArea(20, 40);
         messages.setEditable(false);
     }
+
     public DisplayMessageGUI(Conversation conversation) {
         this.conversation = conversation;
-        messages = new JTextArea(20,40);
+        messages = new JTextArea(20, 40);
         messages.setLineWrap(true);
         messages.setWrapStyleWord(true);
         messages.setEditable(false);
@@ -27,10 +28,10 @@ public class DisplayMessageGUI extends JPanel {
 
     public void displayMessages() {
 
-                ArrayList<String> allMessages = conversation.getMessages();
-                for (String message : allMessages) {
-                    messages.append(message + "\n");
-                }
+        ArrayList<String> allMessages = conversation.getMessages();
+        for (String message : allMessages) {
+            messages.append(message + "\n");
+        }
 
 
     }
@@ -39,9 +40,9 @@ public class DisplayMessageGUI extends JPanel {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                ArrayList<String> allMessages = conversation.getMessages();
-                messages.append(allMessages.get(allMessages.size() - 1) + "\n");
-                messages.setCaretPosition(messages.getDocument().getLength());
+                    ArrayList<String> allMessages = conversation.getMessages();
+                    messages.append(allMessages.get(allMessages.size() - 1) + "\n");
+                    messages.setCaretPosition(messages.getDocument().getLength());
             }
         });
     }
@@ -57,10 +58,8 @@ public class DisplayMessageGUI extends JPanel {
     }
 
 
-
-
     //public void updateMessage(String message) {
-        //list.addElement(message);
+    //list.addElement(message);
     //}
 
     private void formatMessage() {

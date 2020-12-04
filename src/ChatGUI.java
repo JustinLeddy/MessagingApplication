@@ -142,7 +142,9 @@ public class ChatGUI extends JFrame {
     }
 
     public void updateCurrentChat() { //for recipients
-        messageField.updateMessage();
+        if(messageField != null) {
+            messageField.updateMessage();
+        }
     }
 
     public void updateCurrentChat(String message) { //display to sender

@@ -76,7 +76,7 @@ public class MessageClient {
      *
      * @param conversation the conversation with the user
      */
-    public static void setClientMessageDeleteChat(Conversation conversation) {
+    public static void setClientMessageDeleteUser(Conversation conversation) {
         String newMessage = "U<\\*>";
         newMessage += Arrays.toString(conversation.getMembers().toArray())
                 .replaceAll(", ", "<\\*>")
@@ -85,8 +85,8 @@ public class MessageClient {
         newMessage += Arrays.toString(conversation.getMessages().toArray())
                 .replaceAll(", ", "%&")
                 .replaceAll("\\[|\\]", "");
-        clientMessage = newMessage;
-        System.out.println("Client Message is now: " + newMessage);
+        //clientMessage = newMessage;
+        System.out.println("Client Message is now: " + newMessage + ".\n  P.S. This didnt actually change it because I (Justin) commented out the line.");
     }
 
     public static void setClientMessageUpdateChat(Conversation conversation){
@@ -98,8 +98,9 @@ public class MessageClient {
         newMessage += Arrays.toString(conversation.getMessages().toArray())
                 .replaceAll(", ", "%&")
                 .replaceAll("\\[|\\]", "");
-        clientMessage = newMessage;
-        System.out.println("Client Message is now: " + newMessage);
+        //clientMessage = newMessage;
+        System.out.println("Client Message is now: " + newMessage + ".\n  P.S. This didnt actually change it because I (Justin) commented out the line.");
+
     }
     //Simplifies JOptionPane process
     public static void message(String message, int type) {

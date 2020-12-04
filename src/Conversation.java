@@ -19,6 +19,17 @@ public class Conversation {
     }
 
     //functional methods
+    public void removeMessageAtIndex(int index) {
+        messages.remove(index);
+    }
+
+    public void removeMemberWithName(String name) {
+        members.remove(name);
+    }
+
+    public void editMessageAtIndex(int index, String message) {
+        messages.set(index, message);
+    }
 
     //Username|message
     public void addMessage(String message) {
@@ -34,10 +45,4 @@ public class Conversation {
         return members;
     }
 
-    /*@Override
-    public String toString() {
-        return members.toString();
-    }
-
-     */
 }

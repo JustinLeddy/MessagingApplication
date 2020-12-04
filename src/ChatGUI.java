@@ -188,14 +188,17 @@ public class ChatGUI extends JFrame {
 
         //check for local duplicates
         ArrayList<Conversation> conversations = messageClient.getConversations();
+        usersToSend.add(messageClient.getClientUsername());
         for (int i = 0; i < conversations.size(); i++) {
+            System.out.println("Conversations: " + Arrays.toString(conversations.get(i).getMembers().toArray()));
+            System.out.println("UsersToSend: " + usersToSend);
             if (conversations.get(i).getMembers().containsAll(usersToSend) && conversations.get(i).getMembers().size() == usersToSend.size()) {
                 JOptionPane.showMessageDialog(null, "This conversation already exists.",
                         "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
-
+        usersToSend.remove(messageClient.getClientUsername());
         messageClient.setSendMessageClicked(true);//send ArrayList to MessageClient for processing
         messageClient.setCheckUserAccountsExisting(true);
         MessageClient.setClientMessage(usersToSend);
@@ -226,7 +229,7 @@ public class ChatGUI extends JFrame {
                     JOptionPane.showMessageDialog(null, "There is no message to send!",
                             "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    messageClient.setClientMessage(message, usersToSend);
+                    MessageClient.setClientMessage(message, usersToSend);
                     messageClient.setSendMessageClicked(true); //set to TRUE to notify button click
                     messageText.setText("Type your message here..."); //add the default text again after clicking send
                     messageText.addFocusListener(focusListener);
@@ -240,6 +243,7 @@ public class ChatGUI extends JFrame {
                         .showInputDialog(single + "\n" + group);
                 String initialMessage = JOptionPane.showInputDialog("Say something first!");
                 setUsersToSend(userNames, initialMessage);
+
             }
         }
     };

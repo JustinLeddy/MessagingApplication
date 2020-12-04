@@ -190,8 +190,6 @@ public class ChatGUI extends JFrame {
         ArrayList<Conversation> conversations = messageClient.getConversations();
         usersToSend.add(messageClient.getClientUsername());
         for (int i = 0; i < conversations.size(); i++) {
-            System.out.println("Conversations: " + Arrays.toString(conversations.get(i).getMembers().toArray()));
-            System.out.println("UsersToSend: " + usersToSend);
             if (conversations.get(i).getMembers().containsAll(usersToSend) && conversations.get(i).getMembers().size() == usersToSend.size()) {
                 JOptionPane.showMessageDialog(null, "This conversation already exists.",
                         "Social Messaging App", JOptionPane.ERROR_MESSAGE);

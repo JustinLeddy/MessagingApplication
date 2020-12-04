@@ -8,7 +8,7 @@ import java.util.Collections;
 public class ChatGUI extends JFrame {
     private ArrayList<Conversation> conversations = new ArrayList<>();
     private String clientUsername;
-    private ArrayList<String> userToSend;
+    private ArrayList<String> usersToSend;
     ChatGUI chatGUI;
     MessageClient messageClient;
 
@@ -27,13 +27,13 @@ public class ChatGUI extends JFrame {
         this.messageClient = client;
         this.clientUsername = client.getClientUsername();
         this.conversations = client.getConversations();
-        this.userToSend = new ArrayList<>();
+        this.usersToSend = new ArrayList<>();
         showMessagePanel();
     }
 
     private void showMessagePanel() {
         //initialize variables
-        messageFrame = new JFrame(String.format("%s's Message", clientUsername));
+        messageFrame = new JFrame(String.format("%s's Messages", clientUsername));
         messageFrame.getContentPane().removeAll();
         messageFrame.repaint();
         messageText = new JTextArea("Type your message here...", 5, 60);
@@ -129,7 +129,6 @@ public class ChatGUI extends JFrame {
         sendTo = sendTo.replaceAll(" ", " \\| ");
         inboxes.addElement(sendTo);
         inboxList.setModel(inboxes);
-        //System.out.println("Finished adding label");
 
     }
 
@@ -140,7 +139,6 @@ public class ChatGUI extends JFrame {
         middlePanel.add(messageField);
         middlePanel.revalidate();
         middlePanel.repaint();
-        //System.out.println("Finished adding panel");
     }
 
     public void updateCurrentChat() { //for recipients
@@ -149,12 +147,11 @@ public class ChatGUI extends JFrame {
 
     public void updateCurrentChat(String message) { //display to sender
         if (messageField == null) {
-            //System.out.println("Entered messagefield null");
-            Conversation temp = new Conversation(userToSend);
+            Conversation temp = new Conversation(usersToSend);
             temp.addMessage(message);
             startNewChat(temp);
         } else {
-            System.out.println("message field not null");
+            System.out.println("Message field not null");
             messageField.updateMessage(message);
         }
     }
@@ -162,12 +159,10 @@ public class ChatGUI extends JFrame {
     // find conversation with the same members
     private void matchConversation(String selectedValue) {
         String[] members = selectedValue.split(" \\| ");
-        ArrayList<String> allMembers = new ArrayList(Arrays.asList(members));
+        ArrayList<String> allMembers = new ArrayList<>(Arrays.asList(members));
         //update userToSend
-        userToSend.clear();
-        for (String s : allMembers) {
-            userToSend.add(s);
-        }
+        usersToSend.clear();
+        usersToSend.addAll(allMembers);
         allMembers.add(clientUsername); //add sender to the group
         for (Conversation c : conversations) {
             if (c.getMembers().containsAll(allMembers)
@@ -177,7 +172,7 @@ public class ChatGUI extends JFrame {
         }
     }
     public void setUsersToSend(String userNames, String message) {
-        userToSend = new ArrayList<>();
+        usersToSend = new ArrayList<>();
         userNames = userNames.strip();
         if (userNames.isEmpty() || message.isEmpty()) {
             JOptionPane.showMessageDialog(null, "You did not enter a valid input",
@@ -185,13 +180,22 @@ public class ChatGUI extends JFrame {
         }
         String[] splitName = userNames.split(",");
         for (String user : splitName) {
-            userToSend.add(user.strip());
+            usersToSend.add(user.strip());
         }
-        Collections.sort(userToSend);
-        messageClient.setClientMessage(message, userToSend);
+        Collections.sort(usersToSend);
+
+        messageClient.setCheckUserAccountsExisting(true);
+        MessageClient.setClientMessage(usersToSend);
+
+        if (!messageClient.getUserAccountsExist()) {
+            JOptionPane.showMessageDialog(null, "One or More of the account usernames entered does not exist",
+                    "Social Messaging App", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        MessageClient.setClientMessage(message, usersToSend);
         messageClient.setSendMessageClicked(true);//send ArrayList to MessageClient for processing
     }
-    //TODO Check if users exist in the system
 
     /**
      * GUI Methods
@@ -201,21 +205,24 @@ public class ChatGUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == sendButton) {
-                String message = (String) messageText.getText();
+                String message = messageText.getText();
                 System.out.println(message); //print out message for debugging
                 if (message.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "There is no message to send!",
                             "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    messageClient.setClientMessage(message, userToSend);
+                    messageClient.setClientMessage(message, usersToSend);
                     messageClient.setSendMessageClicked(true); //set to TRUE to notify button click
                     messageText.setText("Type your message here..."); //add the default text again after clicking send
                     messageText.addFocusListener(focusListener);
 
                 }
             } else if (e.getSource() == newChatButton) {
+                String single = "For Single Conversations type the username";
+                String group = "For Group Conversations type the usernames separated by a comma like so: username,username,username";
                 messageField = null; //set back to null
-                String userNames = JOptionPane.showInputDialog("Type in recipient's username in the format [username,username]");
+                String userNames = JOptionPane
+                        .showInputDialog(single +"\n" + group);
                 String initialMessage = JOptionPane.showInputDialog("Say something first!");
                 setUsersToSend(userNames, initialMessage);
             }
@@ -240,14 +247,10 @@ public class ChatGUI extends JFrame {
         @Override
         public void mouseClicked(MouseEvent e) {
             String selectedConversation = inboxList.getSelectedValue();
-            System.out.println(selectedConversation);
             messageText.setEditable(true); //enable text field
             matchConversation(selectedConversation);
         }
     };
-
-
-
 
     //for debugging
     private void printList() {

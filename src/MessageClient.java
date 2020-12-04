@@ -29,6 +29,10 @@ public class MessageClient {
     private static AtomicBoolean loginOrRegister = new AtomicBoolean(true);
     private static AtomicBoolean loginRegisterClicked = new AtomicBoolean(false);
     private static AtomicBoolean sendMessageClicked = new AtomicBoolean(false);
+    private static AtomicBoolean checkUserAccountsExisting = new AtomicBoolean(false);
+    private static AtomicBoolean userAccountsExist = new AtomicBoolean(true);
+
+
 
     //Runs actions for login or button based on true (login) or false (register) param
     public static void setClientMessage(boolean loginOrRegister, String username, char[] passwordArray) {
@@ -43,10 +47,10 @@ public class MessageClient {
         //Already check for empty in LoginGUI
         if (loginOrRegister) {
             //Send info for login
-            clientMessage = String.format("L:%s:%s", username, password);
+            clientMessage = String.format("L|%s|%s", username, password);
         } else {
             //Send info for register
-            clientMessage = String.format("R:%s:%s", username, password);
+            clientMessage = String.format("R|%s|%s", username, password);
         }
     }
 
@@ -57,6 +61,13 @@ public class MessageClient {
                 .replaceAll("\\[|\\]", "");
         clientMessage = String.format("M|%s|%s|%s", clientUsername, recipient, message);
 
+    }
+
+    //Format: C|Recipient1,Recipient2,Recipient3
+    public static void setClientMessage(ArrayList<String> usersToSend) {
+        Collections.sort(usersToSend);
+
+        clientMessage = "C|" + Arrays.toString(usersToSend.toArray());
     }
 
     //Simplifies JOptionPane process
@@ -98,6 +109,12 @@ public class MessageClient {
                         writer.newLine();
                         writer.flush();
                         System.out.println("Sent to server: " + clientMessage);
+                    }
+
+                    if (checkUserAccountsExisting.get()) {
+                        checkUserAccountsExisting.set(false);
+
+                        userAccountsExist.set(Boolean.parseBoolean(reader.readLine()));
                     }
 
                     // Login
@@ -159,7 +176,7 @@ public class MessageClient {
                 if (reader.ready()) { //if there is a message from the server
                     String fromServer = reader.readLine(); //read message
                     if (fromServer.substring(0, 2).equals("M|")) {//if it is in the message format
-                        //System.out.println("Received this from the server: " + fromServer); //print the message it received from server
+                        System.out.println("Received this from the server: " + fromServer); //print the message it received from server
                         //M|Sender|Recipient|Message
                         //M|Sender|Recipient1,Recipient2,Recipient3|Message
 
@@ -168,7 +185,7 @@ public class MessageClient {
                         String recipients = receivedMessage[2];
                         String message = receivedMessage[3];
                         ArrayList<String> membersList;
-                        if (recipients.contains(clientUsername)) {
+                        if (recipients.contains(clientUsername) || sender.equals(clientUsername)) {
                             boolean conversationExists = false;
 
                             membersList = new ArrayList<>(Arrays.asList(recipients.split(",")));
@@ -189,7 +206,6 @@ public class MessageClient {
 
                             if (!conversationExists) { //conversation doesn't exist
                                 Conversation conversationToAdd = new Conversation(membersList);
-                                //"System|Your conversation has been created" is always the first message in any conversation.
                                 conversationToAdd.addMessage(String.format("%s|%s", sender, message));
                                 conversations.add(conversationToAdd);
                                 chatGUI.startNewChat(conversationToAdd);
@@ -206,7 +222,6 @@ public class MessageClient {
     }
 
     private static void initializeConversations(String readLine) {
-        System.out.println("Initialized Conversations with: " + readLine);
         //Member1,Member2,Member<*>Username|Message,Username|Message
         if (readLine != null && readLine.length() > 2) {
             String[] newConversations = readLine.split("<&\\*>");
@@ -216,7 +231,7 @@ public class MessageClient {
                 ArrayList<String> messages = new ArrayList<>(Arrays.asList(membersAndMessages[1].split("%&")));
                 conversations.add(new Conversation(members, messages));
             }
-        } else{
+        } else {
             System.out.println("User has no conversations on record.");
         }
     }
@@ -251,12 +266,17 @@ public class MessageClient {
         sendMessageClicked.set(value);
     }
 
-
-    public void setLoginOrRegister(boolean loginOrRegister) {
-        MessageClient.loginOrRegister.set(loginOrRegister);
+    public void setLoginOrRegister(boolean value) {
+        MessageClient.loginOrRegister.set(value);
     }
 
+    public void setCheckUserAccountsExisting(boolean value) {
+        MessageClient.checkUserAccountsExisting.set(value);
+    }
 
+    public boolean getUserAccountsExist() { return MessageClient.userAccountsExist.get(); }
+
+    public void setUserAccountsExists(boolean value) { MessageClient.userAccountsExist.set(value); }
 
 }
 

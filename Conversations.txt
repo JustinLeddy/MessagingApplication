@@ -3,11 +3,41 @@ TestUser|Username<*>TestUser|Give me your money
 Justin|Username<*>Justin|Hello World%&Justin|GooBoo Baba%&Justin|hello%&Justin|hows your life going%&Justin|Its Justin%&Justin|Happy Days
 Alex|Username<*>Alex|Hello World%&Alex|Happy Days
 Mario|Username<*>Mario|Its a Mario%&Mario|Wait its a Luigi%&Mario|Hold up no Mario%&Mario|Goodbye
-Alex|Justin<*>Alex|Whats up justin%&Alex|Hello
+Alex|Justin<*>Alex|Whats up justin%&Alex|Hello%&Alex|Testing%&Alex|Please Work%&Alex|Goodbye%&Alex|Byebye%&Alex|Hello%&Alex|byebitch%&Alex|Ok Please%&Alex|Please%&Justin|something%&Alex|Happy%&Alex|Bitch%&Alex|Are you gonna work now%&Alex|Justin is weird%&Justin|Yo%&Justin|Yo%&Justin|yo%&Justin|wus good%&Justin|yo%&Justin|yo%&Justin|yo%&Justin|yo%&Justin|yo%&Justin|yo%&Justin|its working i think?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Alex|Alex|Mario<*>Alex|Hello Mario
 Alex|Mario<*>Alex|Is that really you Mario
-Alex|Big<*>Alex|How's It going%&Big|Bro What's Up
+Alex|Big<*>Alex|How's It going%&Big|Bro What's Up%&Alex|Test
 
 Alex|Jesus<*>Alex|Hello World%&Jesus|Hello
+Alex|Maeve<*>Alex|Hello Maeve
+Alex|Justin|Maeve|Mario<*>Alex|Hello People
+Alex|Big|Jesus<*>Alex|Whats up
+Alex|Big|Jesus|Justin<*>Alex|Hello God is Agnostic
+Alex|Jesus|Justin<*>Alex|Geeez%&Alex|Happy Days
 
+Alex|Justin|Maeve<*>Alex|Hello Both of Yall
+Alex|Baby|Justin<*>Alex|God does maybe do know%&Alex|Please Please Please
+
+|Alex<*>Alex|TesTing
+Alex|Baby|Jesus|Justin|Maeve<*>Alex|Fuck Off
+Alex|Baby|Big|Jesus|Justin<*>Alex|Testing

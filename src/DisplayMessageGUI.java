@@ -16,7 +16,6 @@ public class DisplayMessageGUI extends JPanel {
     }
     public DisplayMessageGUI(Conversation conversation) {
         this.conversation = conversation;
-
         messages = new JTextArea(20,40);
         messages.setLineWrap(true);
         messages.setWrapStyleWord(true);

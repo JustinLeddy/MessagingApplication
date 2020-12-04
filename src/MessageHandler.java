@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Message Handler
@@ -26,7 +27,6 @@ public class MessageHandler implements Runnable {
     private String userName;
     private String identity;
     private BufferedWriter clientWriter;
-    private BufferedReader clientReader;
     private String clientMessage;
 
     //fields
@@ -38,7 +38,7 @@ public class MessageHandler implements Runnable {
         try {
             InputStream inputStream = this.clientSocket.getInputStream();
             OutputStream outputStream = this.clientSocket.getOutputStream();
-            clientReader = new BufferedReader(new InputStreamReader(inputStream));
+            BufferedReader clientReader = new BufferedReader(new InputStreamReader(inputStream));
             clientWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
         } catch (IOException e) {
             e.printStackTrace();
@@ -58,9 +58,8 @@ public class MessageHandler implements Runnable {
                  var clientWriter = new BufferedWriter(new OutputStreamWriter(outputStream))) {
 
 
-
                 while ((clientMessage = clientReader.readLine()) != null) {
-                    //System.out.println(clientMessage); //print it for processing purposes
+                    System.out.println(clientMessage); //print it for processing purposes
 
                     if (clientMessage.charAt(0) == 'M') { //incoming message is
 
@@ -71,11 +70,6 @@ public class MessageHandler implements Runnable {
                             Socket socket = clientMessageHandler.getClientSocket();
 
                             if (socket.isConnected()) { //if this user is connected
-
-                                //if (!clientMessageHandler.getClientMessage().equals(clientMessage)) {} //check if the client does not have the same message as this messageHandler
-                                /* bounce back the message anyway because UI needs to display real-time message.
-                                 * Check recipient and sender on Client side
-                                 */
                                 clientMessageHandler.send(clientMessage);
 
                             }
@@ -161,13 +155,18 @@ public class MessageHandler implements Runnable {
                         clientWriter.flush();
 
                     } else { //Login/Register processing
-                        String[] info = clientMessage.split(":");
-                        String username = info[1].strip(); //strip removes leading and trailing spaces
-                        String password = info[2].strip();
+                        char firstLetter = clientMessage.charAt(0);
+                        String[] info = clientMessage.split("\\|");
+                        String partTwo = info[1].strip();
+                        String username;
+                        String password;
+
                         boolean userExists = false;
 
                         //login
-                        if (clientMessage.charAt(0) == 'L') {
+                        if (firstLetter == 'L') {
+                            username = partTwo; //strip removes leading and trailing spaces
+                            password = info[2].strip();
                             try (var fileReader = new BufferedReader(new FileReader("Accounts.txt"))) {
                                 String line;
                                 while ((line = fileReader.readLine()) != null) {
@@ -197,7 +196,9 @@ public class MessageHandler implements Runnable {
                             }
                         }
                         //register
-                        else if (clientMessage.charAt(0) == 'R') {
+                        else if (firstLetter == 'R') {
+                            username = partTwo; //strip removes leading and trailing spaces
+                            password = info[2].strip();
                             try (var fileReader = new BufferedReader(new FileReader("Accounts.txt"));
                                  var fileWriter = new PrintWriter(new FileOutputStream("Accounts.txt", true))) {
                                 String line;
@@ -223,6 +224,21 @@ public class MessageHandler implements Runnable {
                                     clientWriter.write("false\n");
                                     clientWriter.flush();
                                 }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } else if (firstLetter == 'C') {
+                            partTwo = partTwo.substring(1,partTwo.length() - 1);
+                            try (var fileReader = new BufferedReader(new FileReader("Accounts.txt"))) {
+                                List<String> allUsernames = fileReader.lines()
+                                        .map(String::strip)
+                                        .filter(line -> !line.isEmpty())
+                                        .map(line -> line.substring(0, line.indexOf(",")))
+                                        .collect(Collectors.toList());
+                                boolean usersExist = allUsernames.containsAll(Arrays.asList(partTwo.split(", ")));
+
+                                clientWriter.write(usersExist + "\n");
+                                clientWriter.flush();
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }

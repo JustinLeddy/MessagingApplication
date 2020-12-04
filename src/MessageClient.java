@@ -33,9 +33,8 @@ public class MessageClient {
     private static AtomicBoolean userAccountsExist = new AtomicBoolean(true);
 
 
-
     //Runs actions for login or button based on true (login) or false (register) param
-    public static void setClientMessage(boolean loginOrRegister, String username, char[] passwordArray) {
+    public static void setClientMessageLoginRegister(boolean loginOrRegister, String username, char[] passwordArray) {
         //Grab username and password
         String password = "";
 
@@ -55,7 +54,7 @@ public class MessageClient {
     }
 
     //sets client message for sending a group message
-    public static void setClientMessage(String message, ArrayList<String> members) {
+    public static void setClientMessageMessaging(String message, ArrayList<String> members) {
         String recipient = Arrays.toString(members.toArray())
                 .replaceAll(", ", ",")
                 .replaceAll("\\[|\\]", "");
@@ -64,12 +63,44 @@ public class MessageClient {
     }
 
     //Format: C|Recipient1,Recipient2,Recipient3
-    public static void setClientMessage(ArrayList<String> usersToSend) {
+    public static void setClientMessageNewChat(ArrayList<String> usersToSend) {
         Collections.sort(usersToSend);
-
         clientMessage = "C|" + Arrays.toString(usersToSend.toArray());
     }
 
+    //setClientMessage update conversation
+
+    /**
+     * Method to set the client message to the correct command
+     * so the server deletes this user from that conversation
+     *
+     * @param conversation the conversation with the user
+     */
+    public static void setClientMessageDeleteChat(Conversation conversation) {
+        String newMessage = "U<\\*>";
+        newMessage += Arrays.toString(conversation.getMembers().toArray())
+                .replaceAll(", ", "<\\*>")
+                .replaceAll("\\[|\\]", "");
+        newMessage += "<\\*>" + clientUsername + "<\\*>";
+        newMessage += Arrays.toString(conversation.getMessages().toArray())
+                .replaceAll(", ", "%&")
+                .replaceAll("\\[|\\]", "");
+        clientMessage = newMessage;
+        System.out.println("Client Message is now: " + newMessage);
+    }
+
+    public static void setClientMessageUpdateChat(Conversation conversation){
+        String newMessage = "U<\\*>";
+        newMessage += Arrays.toString(conversation.getMembers().toArray())
+                .replaceAll(", ", "<\\*>")
+                .replaceAll("\\[|\\]", "");
+        newMessage += "<\\*>" + clientUsername + "<\\*>";
+        newMessage += Arrays.toString(conversation.getMessages().toArray())
+                .replaceAll(", ", "%&")
+                .replaceAll("\\[|\\]", "");
+        clientMessage = newMessage;
+        System.out.println("Client Message is now: " + newMessage);
+    }
     //Simplifies JOptionPane process
     public static void message(String message, int type) {
         JOptionPane.showMessageDialog(null, message, TITLE, type);
@@ -274,9 +305,13 @@ public class MessageClient {
         MessageClient.checkUserAccountsExisting.set(value);
     }
 
-    public boolean getUserAccountsExist() { return MessageClient.userAccountsExist.get(); }
+    public boolean getUserAccountsExist() {
+        return MessageClient.userAccountsExist.get();
+    }
 
-    public void setUserAccountsExists(boolean value) { MessageClient.userAccountsExist.set(value); }
+    public void setUserAccountsExists(boolean value) {
+        MessageClient.userAccountsExist.set(value);
+    }
 
 }
 

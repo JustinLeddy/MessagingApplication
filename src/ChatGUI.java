@@ -201,7 +201,7 @@ public class ChatGUI extends JFrame {
         usersToSend.remove(messageClient.getClientUsername());
         messageClient.setSendMessageClicked(true);//send ArrayList to MessageClient for processing
         messageClient.setCheckUserAccountsExisting(true);
-        MessageClient.setClientMessage(usersToSend);
+        MessageClient.setClientMessageNewChat(usersToSend);
 
         if (!messageClient.getUserAccountsExist()) {
             JOptionPane.showMessageDialog(null, "One or More of the account usernames entered does not exist",
@@ -211,7 +211,7 @@ public class ChatGUI extends JFrame {
         }
 
 
-        MessageClient.setClientMessage(message, usersToSend);
+        MessageClient.setClientMessageMessaging(message, usersToSend);
         messageClient.setSendMessageClicked(true);//send ArrayList to MessageClient for processing
     }
 
@@ -229,7 +229,7 @@ public class ChatGUI extends JFrame {
                     JOptionPane.showMessageDialog(null, "There is no message to send!",
                             "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    MessageClient.setClientMessage(message, usersToSend);
+                    MessageClient.setClientMessageMessaging(message, usersToSend);
                     messageClient.setSendMessageClicked(true); //set to TRUE to notify button click
                     messageText.setText("Type your message here..."); //add the default text again after clicking send
                     messageText.addFocusListener(focusListener);

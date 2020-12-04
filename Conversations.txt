@@ -18,9 +18,10 @@ Alex|Baby|Justin<*>Alex|God does maybe do know%&Alex|Please Please Please
 Alex|Baby|Jesus|Justin|Maeve<*>Alex|Wack
 Alex|Baby|Big|Jesus|Justin<*>Alex|Testing
 Justin|Tommy<*>Tommy|Hey!%&Justin|whats up%&Tommy|nothing  much%&Justin|did you create this chat?%&Tommy|no%&Justin|why are there no new lines then?%&Tommy|this is wac%&Justin|yo%&Justin|hey%&Justin|hey%&Justin|whaty the heck%&Tommy|this isnt working right%&Justin|hey%&Justin|hey%&Justin|yo%&Justin|hey?%&Tommy|i think its working?%&Justin|yeah looks like it%&Justin|thers a weird socket error though%&Justin|its making it so others cant login%&Justin|weird%&Justin|i hope this keeps working%&Justin|i hope this keeps working%&Justin|yo%&Tommy|heyo%&Justin|its doing the weird line thing again%&Tommy|vdrsaresf%&Justin|fuck off%&Justin|man ur mean%&Tommy|hi%&Justin|heyo%&Tommy|heyo%&Tommy|hi%&Tommy|yo%&Justin|hey%&Justin|hey%&Justin|heyo%&Justin|heyo%&Justin|hopefully this times right%&Justin|hi%&Justin|error test this time%&Justin|heyo%&Tommy|hola%&Tommy|hola%&Justin|hola%&Justin|que tal?%&Tommy|a%&Justin|this messaging should be working fine%&Tommy|onsaiveoivfa%&Tommy|hi%&Tommy|iugpiu%&Tommy|yooooo
-Justin|Maeve<*>Justin|Hey!%&Maeve|hi%&Justin|is it working fine?%&Justin|I hope%&Maeve|kinda
+Justin|Maeve<*>Justin|Hey!%&Maeve|hi%&Justin|is it working fine?%&Justin|I hope%&Maeve|kinda%&Justin|Hey Maeve, this is Justin, I hope i didnt screw any of the GUI up, good luck with working on the delete and edit functionality. Thanks for all you've done so far!%&Justin|Hey Maeve, this is Justin, I hope i didnt screw any of the GUI up, good luck with working on the delete and edit functionality. Thanks for all you've done so far!
 Justin|Maeve|Tommy<*>Tommy|wazaaa%&Justin|wazaaa%&Maeve|wazaaa%&Tommy|wazaaaa%&Justin|its being weird again :(%&Tommy|huh%&Justin|is is being weird%&Justin|:(
 Justin|Tom<*>Tom|heyo
 Alex|Tommy<*>Tommy|heyo
 Justin|Test1<*>Justin|Hey!%&Test1|whats up%&Justin|nothing  much
 Big|Justin<*>Justin|Hi
+Jesus|Justin<*>Justin|Kanye did it better. Also according to Ariana youre half female

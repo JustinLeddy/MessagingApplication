@@ -168,7 +168,7 @@ public class MessageClient {
                         String recipients = receivedMessage[2];
                         String message = receivedMessage[3];
                         ArrayList<String> membersList;
-                        if (recipients.contains(clientUsername)) {
+                        if (recipients.contains(clientUsername) || sender.equals(clientUsername)) {
                             boolean conversationExists = false;
 
                             membersList = new ArrayList<>(Arrays.asList(recipients.split(",")));

@@ -28,6 +28,7 @@ public class MessageHandler implements Runnable {
     private String identity;
     private BufferedWriter clientWriter;
     private String clientMessage;
+    private String currentClientUsername;
 
     //fields
     private File accountList;
@@ -61,15 +62,33 @@ public class MessageHandler implements Runnable {
                 while ((clientMessage = clientReader.readLine()) != null) {
                     System.out.println(clientMessage); //print it for processing purposes
 
+
                     if (clientMessage.charAt(0) == 'M') { //incoming message is
 
+                        //Separates clientMessage
+                        String[] receivedMessage = clientMessage.split("\\|");
+                        String sender = receivedMessage[1];
+                        String recipients = receivedMessage[2];
+                        String message = sender + "|" + receivedMessage[3];
+                        ArrayList<String> membersList;
+                        boolean writtenToFile = false;
+
+                        //Sets the membersList and sorts it
+                        membersList = new ArrayList<>(Arrays.asList(recipients.split(",")));
+                        membersList.add(sender);
+                        Collections.sort(membersList);
                         HashMap<String, MessageHandler> allClients = ClientManager.getDeliverTo(); //HashMap of all the clients in the client manager
 
+                        //sends message to appropriate users
                         for (Map.Entry<String, MessageHandler> client : allClients.entrySet()) { //loops through all message handlers
                             MessageHandler clientMessageHandler = client.getValue(); //sets socket and message handler for this iteration
                             Socket socket = clientMessageHandler.getClientSocket();
 
-                            if (socket.isConnected()) { //if this user is connected
+                            if (!socket.isClosed()
+                                    && clientMessageHandler.getCurrentClientUsername() != null
+                                    && membersList.contains(clientMessageHandler.getCurrentClientUsername())) { //if this user is connected, and is an intended recipient
+                                System.out.println("Members List: " + Arrays.toString(membersList.toArray()));
+                                System.out.println("Client to send to: " + clientMessageHandler.getCurrentClientUsername());
                                 clientMessageHandler.send(clientMessage);
 
                             }
@@ -81,22 +100,10 @@ public class MessageHandler implements Runnable {
                         //Format of clientMessage: M|Sender|Recipient|Message
                         //Format Of Lines: Member1|Member2|Member3<*>Username|Message%&Username|Message%&Username|Message
 
-                        //Separates clientMessage
-                        String[] receivedMessage = clientMessage.split("\\|");
-                        String sender = receivedMessage[1];
-                        String recipients = receivedMessage[2];
-                        String message = sender + "|" + receivedMessage[3];
-                        ArrayList<String> membersList = new ArrayList<>();
-                        boolean writtenToFile = false;
-
-                        //Sets the membersList and sorts it
-                        membersList = new ArrayList<>(Arrays.asList(recipients.split(",")));
-                        membersList.add(sender);
-                        Collections.sort(membersList);
 
                         for (int i = 0; i < lines.size(); i++) {
                             String conversationLine = lines.get(i);
-                            conversationLine.replaceAll("\n", "");
+                            conversationLine = conversationLine.replaceAll("\n", "");
                             ArrayList<String> line = new ArrayList<>(Arrays.asList(conversationLine.split("<\\*>")));
                             ArrayList<String> members = new ArrayList<>(Arrays.asList(line.get(0).split("\\|")));
 
@@ -106,7 +113,7 @@ public class MessageHandler implements Runnable {
 
                             if (members.equals(membersList)) {
                                 writtenToFile = true;
-                                String newLine = String.format("%s%%&%s\n", conversationLine, message);
+                                String newLine = String.format("%s%%&%s", conversationLine, message);
                                 lines.set(i, newLine);
                                 Files.write(Path.of("Conversations.txt"), lines, StandardCharsets.UTF_8);
                                 break;
@@ -182,6 +189,7 @@ public class MessageHandler implements Runnable {
                                         userExists = true;
                                         clientWriter.write("true\n");
                                         clientWriter.flush();
+                                        currentClientUsername = username;
                                         break;
                                     }
                                 }
@@ -223,12 +231,13 @@ public class MessageHandler implements Runnable {
                                     fileWriter.flush();
                                     clientWriter.write("false\n");
                                     clientWriter.flush();
+                                    currentClientUsername = username;
                                 }
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         } else if (firstLetter == 'C') {
-                            partTwo = partTwo.substring(1,partTwo.length() - 1);
+                            partTwo = partTwo.substring(1, partTwo.length() - 1);
                             try (var fileReader = new BufferedReader(new FileReader("Accounts.txt"))) {
                                 List<String> allUsernames = fileReader.lines()
                                         .map(String::strip)
@@ -247,7 +256,7 @@ public class MessageHandler implements Runnable {
 
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("Client " + currentClientUsername + " disconnected");
             }
         }
     }
@@ -273,4 +282,11 @@ public class MessageHandler implements Runnable {
         return clientMessage;
     }
 
+    public String getCurrentClientUsername() {
+        return currentClientUsername;
+    }
+
+    public void setCurrentClientUsername(String currentClientUsername) {
+        this.currentClientUsername = currentClientUsername;
+    }
 }

@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LoginGUI extends JFrame {
     private final MessageClient client;
@@ -98,7 +97,7 @@ public class LoginGUI extends JFrame {
                     message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
                 } else {
                     client.setClientUsername(username);
-                    MessageClient.setClientMessage(true, username, password);
+                    MessageClient.setClientMessageLoginRegister(true, username, password);
                     client.setLoginRegisterClicked(); //set to true to notify button click
                 }
             } else if (e.getSource() == registerBtn) {
@@ -111,7 +110,7 @@ public class LoginGUI extends JFrame {
                     message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
                 } else {
                     client.setClientUsername(username);
-                    MessageClient.setClientMessage(false, username, password);
+                    MessageClient.setClientMessageLoginRegister(false, username, password);
                     client.setLoginRegisterClicked(); //set to true to notify button click
                 }
             }

@@ -178,6 +178,7 @@ public class ChatGUI extends JFrame {
         if (userNames.isEmpty() || message.isEmpty()) {
             JOptionPane.showMessageDialog(null, "You did not enter a valid input",
                     "Social Messaging App", JOptionPane.ERROR_MESSAGE);
+            return;
         }
         String[] splitName = userNames.split(",");
         for (String user : splitName) {
@@ -205,6 +206,7 @@ public class ChatGUI extends JFrame {
             messageClient.setUserAccountsExists(true);
             return;
         }
+
 
         MessageClient.setClientMessage(message, usersToSend);
         messageClient.setSendMessageClicked(true);//send ArrayList to MessageClient for processing

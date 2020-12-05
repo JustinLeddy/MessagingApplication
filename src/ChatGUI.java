@@ -1,26 +1,29 @@
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 
 public class ChatGUI extends JFrame {
-    private ArrayList<Conversation> conversations = new ArrayList<>();
-    private String clientUsername;
+    private final MessageClient messageClient;
+    private ArrayList<Conversation> conversations;
+    private final String clientUsername;
     private ArrayList<String> usersToSend;
-    ChatGUI chatGUI;
-    MessageClient messageClient;
+    private Map<String, DisplayMessageGUI> allMessages;
 
+
+    //All GUI fields
     JPanel middlePanel;
     JButton sendButton;
     JButton newChatButton;
     JTextArea messageText;
-    JTextArea sentText;
     JList<String> inboxList;
     DefaultListModel<String> inboxes;
     JFrame messageFrame;
     DisplayMessageGUI messageField;
+    private final JLabel deleteInstruction = new JLabel(
+            "*Double click on any chat or message to edit/delete");
 
 
     public ChatGUI(MessageClient client) {
@@ -28,6 +31,7 @@ public class ChatGUI extends JFrame {
         this.clientUsername = client.getClientUsername();
         this.conversations = client.getConversations();
         this.usersToSend = new ArrayList<>();
+        this.allMessages = new HashMap<>();
         showMessagePanel();
     }
 
@@ -36,21 +40,21 @@ public class ChatGUI extends JFrame {
         messageFrame = new JFrame(String.format("%s's Messages", clientUsername));
         messageFrame.getContentPane().removeAll();
         messageFrame.repaint();
-        messageText = new JTextArea("Type your message here...", 5, 60);
+
+        messageText = new JTextArea("Type your message here...", 5, 50);
         messageText.setEditable(false); //only enabled in a chat
         messageText.addFocusListener(focusListener);
-        sentText = new JTextArea(20, 40);
+        JTextArea sentText = new JTextArea(18, 40); //temp blank area before user choose a chat
         sentText.setEditable(false);
+
         //fill up inboxes with past conversations
         inboxes = new DefaultListModel<>();
-        inboxList = new JList<>();
         if (!conversations.isEmpty()) {
             for (Conversation c : this.conversations) {
-                setConversationLabel(c);
+                createPanel(c); //create a panel with this conversation
             }
         }
-
-        inboxList.setVisibleRowCount(10);
+        inboxList = new JList<>(inboxes);
         inboxList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         inboxList.setLayoutOrientation(JList.VERTICAL);
         // set function for JList
@@ -66,6 +70,8 @@ public class ChatGUI extends JFrame {
 
         middlePanel = new JPanel();
         middlePanel.setLayout(new BorderLayout());
+        deleteInstruction.setFont(new Font("Sans Serif", Font.ITALIC, 10));
+        middlePanel.add(deleteInstruction, "South");
         middlePanel.add(new JScrollPane((sentText)), "Center");
 
         JPanel botPanel = new JPanel();
@@ -83,6 +89,7 @@ public class ChatGUI extends JFrame {
         constraints.weighty = 0.5;
         constraints.anchor = GridBagConstraints.PAGE_END;
         userListPanel.add(newChatButton, constraints);
+
         //Setting constraints for "Inboxes" label
         constraints.anchor = GridBagConstraints.PAGE_START;
         constraints.gridx = 1;
@@ -92,13 +99,15 @@ public class ChatGUI extends JFrame {
         userListPanel.add(new JLabel("Inboxes", JLabel.CENTER), constraints);
         //Setting constraints for inboxList
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.ipady = 250;
+        constraints.ipady = 235;
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 3;
         userListPanel.add(new JScrollPane(inboxList), constraints);
 
-        userListPanel.setPreferredSize(new Dimension(150, 5));
+
+
+        userListPanel.setPreferredSize(new Dimension(150, 6));
 
 
         //add panel to frame
@@ -111,13 +120,29 @@ public class ChatGUI extends JFrame {
         messageFrame.setVisible(true);
     }
 
-    public void startNewChat(Conversation c) {
-        setConversationLabel(c);
-        inboxList.setSelectedIndex(inboxes.getSize());
-        addPanel(c);
+    private void createPanel(Conversation c) {
+        DisplayMessageGUI panelToAdd = new DisplayMessageGUI(c, messageClient);
+        String label = panelToAdd.getMessageLabel();
+        allMessages.put(label, panelToAdd); //put the panel to map
+        inboxes.addElement(label); //add Label to the inboxList
     }
 
-    private void setConversationLabel(Conversation c) {
+    private void displayMessage(String messageLabel) {
+        middlePanel.removeAll();
+        messageField = allMessages.get(messageLabel); //find the panel in the map
+        usersToSend = messageField.getConversation().getMembers(); //set usersToSend to current member
+        usersToSend.remove(clientUsername);
+        middlePanel.add(deleteInstruction, "South");
+        middlePanel.add(messageField, "Center");
+        middlePanel.revalidate();
+        middlePanel.repaint();
+        repaint();
+    }
+
+
+
+
+    /*private void setConversationLabel(Conversation c) {
         String sendTo = "";
         ArrayList<String> members = c.getMembers();
         for (String m : members) {
@@ -132,7 +157,10 @@ public class ChatGUI extends JFrame {
 
     }
 
+     */
+
     //change panel when a chat is selected or create a new chat from the newChatButton
+    /*
     private void addPanel(Conversation c) {
         messageField = new DisplayMessageGUI(c);
         middlePanel.removeAll();
@@ -141,24 +169,31 @@ public class ChatGUI extends JFrame {
         middlePanel.repaint();
     }
 
-    public void updateCurrentChat() { //for recipients
-        if(messageField != null) {
-            messageField.updateMessage();
-        }
-    }
+     */
 
-    public void updateCurrentChat(String message) { //display to sender
-        if (messageField == null) {
-            Conversation temp = new Conversation(usersToSend);
-            temp.addMessage(message);
-            startNewChat(temp);
+    public void updateChat(Conversation c) {
+        if (messageField != null
+                && messageField.getConversation().getMembers().containsAll(c.getMembers())
+                && c.getMembers().containsAll(messageField.getConversation().getMembers())) {
+            // if the user is currently in that chat
+            messageField.updateMessage(c);
         } else {
-            System.out.println("Message field not null");
-            messageField.updateMessage(message);
+            DisplayMessageGUI tempPanel = new DisplayMessageGUI(c, messageClient);
+            String label = tempPanel.setMessageLabel(); // create a temp label for this conversation
+            if (allMessages.containsKey(label)) { //use the label to see if conversation already exist
+                allMessages.get(label).updateMessage(c); //update the message, do not need to display
+            } else { // if panel for this conversation does not exist (aka create new message)
+                createPanel(c); //create a new panel for it
+                displayMessage(label);
+                //display that new panel (label should match already because memberList is sorted in DisplayMessageGUI)
+                inboxList.setSelectedIndex(inboxes.size() - 1);
+            }
+
         }
     }
 
-    // find conversation with the same members
+
+    /*
     private void matchConversation(String selectedValue) {
         String[] members = selectedValue.split(" \\| ");
         ArrayList<String> allMembers = new ArrayList<>(Arrays.asList(members));
@@ -169,15 +204,17 @@ public class ChatGUI extends JFrame {
         for (Conversation c : conversations) {
             if (c.getMembers().containsAll(allMembers)
                     && allMembers.containsAll(c.getMembers())) { //find the matched conversation
-                addPanel(c); //create new panel with that conversation
+                //addPanel(c); //create new panel with that conversation
             }
         }
     }
 
-    public void setUsersToSend(String userNames, String message) {
+     */
+
+    private void setUsersToSend(String userNames, String message) {
         usersToSend = new ArrayList<>();
-        userNames = userNames.strip();
-        if (userNames.isEmpty() || message.isEmpty()) {
+        userNames = userNames.strip(); //strip leading white spaces
+        if (userNames.isEmpty() || message.isEmpty() || userNames.equals(clientUsername)) { //if the user type in their name only
             JOptionPane.showMessageDialog(null, "You did not enter a valid input",
                     "Social Messaging App", JOptionPane.ERROR_MESSAGE);
             return;
@@ -189,19 +226,22 @@ public class ChatGUI extends JFrame {
         Collections.sort(usersToSend);
 
         //check for local duplicates
-        ArrayList<Conversation> conversations = messageClient.getConversations();
-        usersToSend.add(messageClient.getClientUsername());
-        for (int i = 0; i < conversations.size(); i++) {
-            if (conversations.get(i).getMembers().containsAll(usersToSend) && conversations.get(i).getMembers().size() == usersToSend.size()) {
-                JOptionPane.showMessageDialog(null, "This conversation already exists.",
-                        "Social Messaging App", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        DisplayMessageGUI tempPanel = new DisplayMessageGUI(new Conversation(usersToSend), messageClient);
+        String label = tempPanel.setMessageLabel(); // create a temp label for this conversation
+        if (allMessages.containsKey(label)) { //use the label to see if conversation already exist
+                int answer = JOptionPane.showConfirmDialog(null,
+                        "This conversation already exists. Do you want to send this chat to this conversation?",
+                        "Social Messaging App", JOptionPane.YES_NO_OPTION); //ask if the user want to add this message to the conversation or not
+                if (answer == JOptionPane.YES_OPTION) { // if yes
+                    messageClient.setClientMessageMessaging(message, usersToSend); //send message as usual
+                    messageClient.setSendMessageClicked(true); //notify sendButton clicked, this calls the updateCurrentChat
+                    displayMessage(label); //SEE IF IT UPDATE IN TIME, if not, use Thread.sleep maybe
+                    return;
+                }
         }
-        usersToSend.remove(messageClient.getClientUsername());
-        messageClient.setSendMessageClicked(true);//send ArrayList to MessageClient for processing
-        messageClient.setCheckUserAccountsExisting(true);
-        MessageClient.setClientMessageNewChat(usersToSend);
+        messageClient.setSendMessageClicked(true);//notify button click
+        messageClient.setCheckUserAccountsExisting(true); // get the server to check if the recipients are in the system
+        messageClient.setClientMessageNewChat(usersToSend); // start a new chat
 
         if (!messageClient.getUserAccountsExist()) {
             JOptionPane.showMessageDialog(null, "One or More of the account usernames entered does not exist",
@@ -210,29 +250,43 @@ public class ChatGUI extends JFrame {
             return;
         }
 
-
         MessageClient.setClientMessageMessaging(message, usersToSend);
-        messageClient.setSendMessageClicked(true);//send ArrayList to MessageClient for processing
+        messageClient.setSendMessageClicked(true);
     }
+
+    private void removeConversation(String label, int index) {
+        inboxes.remove(index);
+        messageClient.setClientMessageDeleteUser(allMessages.get(label).getConversation());
+        allMessages.remove(label);
+    }
+
+    public void editChat(Conversation c) {
+        DisplayMessageGUI newPanel = new DisplayMessageGUI(c, messageClient);
+        String label = newPanel.setMessageLabel();
+        DisplayMessageGUI oldPanel = allMessages.get(label);
+        allMessages.replace(label, oldPanel, newPanel);
+
+    }
+
 
     /**
      * GUI Methods
-     * All method related to FocusListener, MouseListener, ActionListener
+     * All methods related to FocusListener, MouseListener, ActionListener
      */
     ActionListener actionListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == sendButton) {
+            if (e.getSource() == sendButton) { //sendButton is clicked = new message
                 String message = messageText.getText();
-                System.out.println(message); //print out message for debugging
-                if (message.isEmpty()) {
+                //System.out.println(message); //print out message for debugging
+                if (message.isEmpty()) { //check if there is message to send
                     JOptionPane.showMessageDialog(null, "There is no message to send!",
                             "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    MessageClient.setClientMessageMessaging(message, usersToSend);
+                    messageClient.setClientMessageMessaging(message, usersToSend); //send the message to messageClient
                     messageClient.setSendMessageClicked(true); //set to TRUE to notify button click
                     messageText.setText("Type your message here..."); //add the default text again after clicking send
-                    messageText.addFocusListener(focusListener);
+                    messageText.addFocusListener(focusListener); // just for fancy displaying purpose :)
 
                 }
             } else if (e.getSource() == newChatButton) {
@@ -241,7 +295,13 @@ public class ChatGUI extends JFrame {
                 messageField = null; //set back to null
                 String userNames = JOptionPane
                         .showInputDialog(single + "\n" + group);
+                if (userNames == null) { // user choose cancel
+                    return;
+                }
                 String initialMessage = JOptionPane.showInputDialog("Say something first!");
+                if (initialMessage == null) { // user choose cancel
+                    return;
+                }
                 setUsersToSend(userNames, initialMessage);
 
             }
@@ -265,11 +325,24 @@ public class ChatGUI extends JFrame {
     MouseListener mouseListener = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
-            String selectedConversation = inboxList.getSelectedValue();
-            messageText.setEditable(true); //enable text field
-            matchConversation(selectedConversation);
+            if (e.getClickCount() == 2) { //double click
+                String chatLabel = inboxList.getSelectedValue();
+                int index = inboxList.getSelectedIndex();
+                int choice = JOptionPane.showConfirmDialog(null,
+                        "Are you sure you want to permanently delete this conversation?",
+                        "Delete Conversation", JOptionPane.YES_NO_OPTION);
+                if (choice == JOptionPane.YES_OPTION) {
+                    removeConversation(chatLabel, index);
+                }
+            } else {
+                String selectedConversation = inboxList.getSelectedValue();
+                System.out.println(selectedConversation);
+                messageText.setEditable(true); //enable text field to start typing
+                displayMessage(selectedConversation);
+            }
         }
     };
+
 
     //for debugging
     private void printList() {

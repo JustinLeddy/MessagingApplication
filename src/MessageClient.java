@@ -100,7 +100,7 @@ public class MessageClient {
                 .replaceAll("\\[|\\]", "");
         //clientMessage = newMessage;
         System.out.println("Client Message is now: " + newMessage + ".\n  P.S. This didnt actually change it because I (Justin) commented out the line.");
-
+        //Call editChat in chatGUI to update panel
     }
     //Simplifies JOptionPane process
     public static void message(String message, int type) {
@@ -218,6 +218,7 @@ public class MessageClient {
                         String message = receivedMessage[3];
                         ArrayList<String> membersList;
                         if (recipients.contains(clientUsername) || sender.equals(clientUsername)) {
+                            //update conversations array if the client is a recipient or a sender
                             boolean conversationExists = false;
 
                             membersList = new ArrayList<>(Arrays.asList(recipients.split(",")));
@@ -230,8 +231,8 @@ public class MessageClient {
                                 Collections.sort(members);
                                 if (members.equals(membersList)) {
                                     conversation.addMessage(String.format("%s|%s", sender, message));
-                                    chatGUI.updateCurrentChat();
                                     conversationExists = true;
+                                    chatGUI.updateChat(conversation);
                                     break;
                                 }
                             }
@@ -240,7 +241,7 @@ public class MessageClient {
                                 Conversation conversationToAdd = new Conversation(membersList);
                                 conversationToAdd.addMessage(String.format("%s|%s", sender, message));
                                 conversations.add(conversationToAdd);
-                                chatGUI.startNewChat(conversationToAdd);
+                                chatGUI.updateChat(conversationToAdd);
                             }
 
                         }

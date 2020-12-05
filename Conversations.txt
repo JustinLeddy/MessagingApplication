@@ -3,7 +3,7 @@ TestUser|Username<*>TestUser|Give me your money
 Justin|Username<*>Justin|Hello World%&Justin|GooBoo Baba%&Justin|hello%&Justin|hows your life going%&Justin|Its Justin%&Justin|Happy Days
 Alex|Username<*>Alex|Hello World%&Alex|Happy Days
 Mario|Username<*>Mario|Its a Mario%&Mario|Wait its a Luigi%&Mario|Hold up no Mario%&Mario|Goodbye
-Alex|Justin<*>Alex|Whats up justin%&Alex|Hello%&Alex|Testing%&Alex|Please Work%&Alex|Goodbye%&Alex|Byebye%&Alex|Hello%&Alex|byebitch%&Alex|Ok Please%&Alex|Please%&Justin|something%&Alex|Happy%&Alex|Bitch%&Alex|Are you gonna work now%&Alex|Justin is weird%&Justin|Yo%&Justin|Yo%&Justin|yo%&Justin|wus good%&Justin|yo%&Justin|yo%&Justin|yo%&Justin|yo%&Justin|yo%&Justin|yo%&Justin|its working i think?
+Alex|Justin<*>Alex|Whats up justin%&Alex|Hello%&Alex|Testing%&Alex|Please Work%&Alex|Goodbye%&Alex|Byebye%&Alex|Hello%&Alex|byebitch%&Alex|Ok Please%&Alex|Please%&Justin|something%&Alex|Happy%&Alex|Bitch%&Alex|Are you gonna work now%&Alex|Justin is weird%&Justin|Yo%&Justin|Yo%&Justin|yo%&Justin|wus good%&Justin|yo%&Justin|yo%&Justin|yo%&Justin|yo%&Justin|yo%&Justin|yo%&Justin|its working i think?%&Justin|Hey Alex%&Alex|Hey Justin%&Alex|Seems like it's working huh%&Justin|Hey Alex%&Justin|Yo%&Justin|Yo
 Alex|Alex|Mario<*>Alex|Hello Mario
 Alex|Mario<*>Alex|Is that really you Mario
 Alex|Big<*>Alex|How's It going%&Big|Bro What's Up%&Alex|Test
@@ -14,7 +14,7 @@ Alex|Big|Jesus<*>Alex|Whats up
 Alex|Big|Jesus|Justin<*>Alex|Hello God is Agnostic
 Alex|Jesus|Justin<*>Alex|Geeez%&Alex|Happy Days
 Alex|Justin|Maeve<*>Alex|Hello Both of Yall
-Alex|Baby|Justin<*>Alex|God does maybe do know%&Alex|Please Please Please
+Alex|Baby|Justin<*>Alex|God does maybe do know%&Alex|Please Please Please%&Justin|Ok%&Justin|Hey%&Justin|Hello%&Justin|Oh
 Alex|Baby|Jesus|Justin|Maeve<*>Alex|Wack
 Alex|Baby|Big|Jesus|Justin<*>Alex|Testing
 Justin|Tommy<*>Tommy|Hey!%&Justin|whats up%&Tommy|nothing  much%&Justin|did you create this chat?%&Tommy|no%&Justin|why are there no new lines then?%&Tommy|this is wac%&Justin|yo%&Justin|hey%&Justin|hey%&Justin|whaty the heck%&Tommy|this isnt working right%&Justin|hey%&Justin|hey%&Justin|yo%&Justin|hey?%&Tommy|i think its working?%&Justin|yeah looks like it%&Justin|thers a weird socket error though%&Justin|its making it so others cant login%&Justin|weird%&Justin|i hope this keeps working%&Justin|i hope this keeps working%&Justin|yo%&Tommy|heyo%&Justin|its doing the weird line thing again%&Tommy|vdrsaresf%&Justin|fuck off%&Justin|man ur mean%&Tommy|hi%&Justin|heyo%&Tommy|heyo%&Tommy|hi%&Tommy|yo%&Justin|hey%&Justin|hey%&Justin|heyo%&Justin|heyo%&Justin|hopefully this times right%&Justin|hi%&Justin|error test this time%&Justin|heyo%&Tommy|hola%&Tommy|hola%&Justin|hola%&Justin|que tal?%&Tommy|a%&Justin|this messaging should be working fine%&Tommy|onsaiveoivfa%&Tommy|hi%&Tommy|iugpiu%&Tommy|yooooo
@@ -23,5 +23,6 @@ Justin|Maeve|Tommy<*>Tommy|wazaaa%&Justin|wazaaa%&Maeve|wazaaa%&Tommy|wazaaaa%&J
 Justin|Tom<*>Tom|heyo
 Alex|Tommy<*>Tommy|heyo
 Justin|Test1<*>Justin|Hey!%&Test1|whats up%&Justin|nothing  much
-Big|Justin<*>Justin|Hi
+Big|Justin<*>Justin|Hi%&Justin|Hey
 Jesus|Justin<*>Justin|Kanye did it better. Also according to Ariana youre half female
+Alex|Justin|Test1|Tom<*>Justin|Hey

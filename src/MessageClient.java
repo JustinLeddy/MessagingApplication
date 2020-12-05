@@ -59,7 +59,6 @@ public class MessageClient {
                 .replaceAll(", ", ",")
                 .replaceAll("\\[|\\]", "");
         clientMessage = String.format("M|%s|%s|%s", clientUsername, recipient, message);
-
     }
 
     //Format: C|Recipient1,Recipient2,Recipient3
@@ -69,39 +68,44 @@ public class MessageClient {
     }
 
     //setClientMessage update conversation
-
     /**
      * Method to set the client message to the correct command
      * so the server deletes this user from that conversation
+     * Method automatically uses currentClient as the one to delete
      *
-     * @param conversation the conversation with the user
+     * @param conversation the conversation without the user
      */
     public static void setClientMessageDeleteUser(Conversation conversation) {
-        String newMessage = "U<\\*>";
+        //Format U<*>currentMember1|currentMember2|currentMember3<*>memberToDelete<*>allMessages
+        String newMessage = "U<*>";
         newMessage += Arrays.toString(conversation.getMembers().toArray())
-                .replaceAll(", ", "<\\*>")
+                .replaceAll(", ", "|")
                 .replaceAll("\\[|\\]", "");
-        newMessage += "<\\*>" + clientUsername + "<\\*>";
+        newMessage += "<*>" + clientUsername + "<*>";
         newMessage += Arrays.toString(conversation.getMessages().toArray())
                 .replaceAll(", ", "%&")
                 .replaceAll("\\[|\\]", "");
-        //clientMessage = newMessage;
-        System.out.println("Client Message is now: " + newMessage + ".\n  P.S. This didnt actually change it because I (Justin) commented out the line.");
+        clientMessage = newMessage;
     }
 
-    public static void setClientMessageUpdateChat(Conversation conversation){
-        String newMessage = "U<\\*>";
+    /**
+     * Formats the updated conversation to send to the server and update there
+     *
+     * @param conversation the conversation
+     */
+    public static void setClientMessageUpdateChat(Conversation conversation) {
+        //Format U<*>currentMember1|currentMember2|currentMember3<*>allMessages
+        String newMessage = "U<*>";
         newMessage += Arrays.toString(conversation.getMembers().toArray())
-                .replaceAll(", ", "<\\*>")
+                .replaceAll(", ", "|")
                 .replaceAll("\\[|\\]", "");
-        newMessage += "<\\*>" + clientUsername + "<\\*>";
         newMessage += Arrays.toString(conversation.getMessages().toArray())
                 .replaceAll(", ", "%&")
                 .replaceAll("\\[|\\]", "");
-        //clientMessage = newMessage;
-        System.out.println("Client Message is now: " + newMessage + ".\n  P.S. This didnt actually change it because I (Justin) commented out the line.");
+        clientMessage = newMessage;
         //Call editChat in chatGUI to update panel
     }
+
     //Simplifies JOptionPane process
     public static void message(String message, int type) {
         JOptionPane.showMessageDialog(null, message, TITLE, type);
@@ -207,18 +211,16 @@ public class MessageClient {
             try {
                 if (reader.ready()) { //if there is a message from the server
                     String fromServer = reader.readLine(); //read message
-                    if (fromServer.substring(0, 2).equals("M|")) {//if it is in the message format
-                        System.out.println("Received this from the server: " + fromServer); //print the message it received from server
+                    System.out.println("Received this from the server: " + fromServer); //print the message it received from server
+                    if (fromServer.startsWith("M|")) {//if it is in the message format
                         //M|Sender|Recipient|Message
                         //M|Sender|Recipient1,Recipient2,Recipient3|Message
-
                         String[] receivedMessage = fromServer.split("\\|");
                         String sender = receivedMessage[1];
                         String recipients = receivedMessage[2];
                         String message = receivedMessage[3];
                         ArrayList<String> membersList;
                         if (recipients.contains(clientUsername) || sender.equals(clientUsername)) {
-                            //update conversations array if the client is a recipient or a sender
                             boolean conversationExists = false;
 
                             membersList = new ArrayList<>(Arrays.asList(recipients.split(",")));
@@ -246,6 +248,11 @@ public class MessageClient {
 
                         }
                     }
+
+                    if (fromServer.startsWith("U<*")) {
+                        updateConversation(reader.readLine());
+                    }
+
                 }
             } catch (IOException e) {
                 e.printStackTrace(); //TODO: Replace with detailed error popup
@@ -254,16 +261,60 @@ public class MessageClient {
         }
     }
 
+    private static void updateConversation(String fromServer) {
+        if (fromServer.startsWith("U<*>")) {
+            if (fromServer.split("<\\*>").length == 4) {
+                String[] splitServerMessage = fromServer.split("<\\*>");
+                String removedUser = splitServerMessage[2];
+                String members = splitServerMessage[1] + "|" + removedUser;
+                String messages = splitServerMessage[3];
+                ArrayList<String> memberArray = (ArrayList<String>) Arrays.asList(members.split("\\|"));
+                Collections.sort(memberArray);
+                ArrayList<String> messageArray = (ArrayList<String>) Arrays.asList(messages.split("%&"));
+
+                for (Conversation conversation : conversations) {
+                    if (conversation.getMembers().equals(memberArray)) {
+                        memberArray.remove(removedUser);
+                        conversation.setMembers(memberArray);
+                        conversation.setMessages(messageArray);
+                        break;
+                    }
+                }
+            } else if (fromServer.split("<\\*>").length == 3) {
+
+                String[] splitServerMessage = fromServer.split("<\\*>");
+                String members = splitServerMessage[1];
+                String messages = splitServerMessage[2];
+                ArrayList<String> memberArray = (ArrayList<String>) Arrays.asList(members.split("\\|"));
+                Collections.sort(memberArray);
+                ArrayList<String> messageArray = (ArrayList<String>) Arrays.asList(messages.split("%&"));
+
+                //search for chat to update
+                for (Conversation conversation : conversations) {
+                    if (conversation.getMembers().equals(memberArray)) {
+                        conversation.setMessages(messageArray);
+                        break;
+                    }
+                }
+            }
+        } else {
+            initializeConversations(fromServer);
+        }
+    }
+
+
     private static void initializeConversations(String readLine) {
         //Member1,Member2,Member<*>Username|Message,Username|Message
         if (readLine != null && readLine.length() > 2) {
             String[] newConversations = readLine.split("<&\\*>");
+            ArrayList<Conversation> updatedConversations = new ArrayList<>();
             for (String conversation : newConversations) { //Member1,Member2,Member3<*>Username|Message%&Username|Message%&Username|Message
                 String[] membersAndMessages = conversation.split("<\\*>");
                 ArrayList<String> members = new ArrayList<>(Arrays.asList(membersAndMessages[0].split("\\|")));
                 ArrayList<String> messages = new ArrayList<>(Arrays.asList(membersAndMessages[1].split("%&")));
-                conversations.add(new Conversation(members, messages));
+                updatedConversations.add(new Conversation(members, messages));
             }
+            conversations = updatedConversations;
         } else {
             System.out.println("User has no conversations on record.");
         }

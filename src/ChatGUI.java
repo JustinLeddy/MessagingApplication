@@ -257,16 +257,36 @@ public class ChatGUI extends JFrame {
 
     private void removeConversation(String label, int index) {
         inboxes.remove(index); //remove from inboxes -> not display anymore
-        MessageClient.setClientMessageDeleteUser(allMessages.get(label).getConversation()); //send to client
+        messageClient.setClientMessageDeleteUser(allMessages.get(label).getConversation()); //send to client
+        messageClient.setSendMessageClicked(true); //enter the loop
+        DisplayMessageGUI temp = allMessages.get(label);
+        //if user is currently open the chat
+        if (temp.getConversation().getMembers().containsAll(messageField.getConversation().getMembers())
+                && messageField.getConversation().getMembers().containsAll(temp.getConversation().getMembers())) {
+            middlePanel.removeAll(); //wipe the chat panel
+            messageField = null; //set back to null
+            messageText.setEditable(false);//so they can't type any more
+            middlePanel.revalidate();
+            middlePanel.repaint();
+        }
         allMessages.remove(label); //remove from map
+
     }
 
     public void editChat(Conversation c) {
         DisplayMessageGUI newPanel = new DisplayMessageGUI(c, messageClient);
         String label = newPanel.setMessageLabel();
+        System.out.println(String.format("Label on %s side: %s", clientUsername, label));
         DisplayMessageGUI oldPanel = allMessages.get(label);
-        allMessages.replace(label, oldPanel, newPanel);
-
+        allMessages.replace(label, oldPanel, newPanel); //replace the old panel with new panel
+        if (messageField.getMessageLabel().equals(label)) { //if user currently open this chat
+            //System.out.println("Label match");
+            middlePanel.remove(messageField);
+            messageField = newPanel;
+            middlePanel.add(messageField);
+            middlePanel.revalidate();
+            middlePanel.repaint();
+        }
     }
 
 

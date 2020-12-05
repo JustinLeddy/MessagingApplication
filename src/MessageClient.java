@@ -105,7 +105,6 @@ public class MessageClient {
                 .replaceAll(", ", "%&")
                 .replaceAll("\\[|\\]", "");
         clientMessage = newMessage;
-        //Call editChat in chatGUI to update panel
     }
 
     //Simplifies JOptionPane process

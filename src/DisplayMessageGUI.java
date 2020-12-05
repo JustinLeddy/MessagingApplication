@@ -1,6 +1,4 @@
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -105,7 +103,7 @@ public class DisplayMessageGUI extends JPanel {
                         conversation.editMessageAtIndex(index, message);
                         list.remove(index);
                         list.add(index, message);
-                        notifyChange(0);
+                        notifyChange();
                     }
                     case 1 -> { //delete
                         int choice = JOptionPane.showConfirmDialog(null,
@@ -114,7 +112,7 @@ public class DisplayMessageGUI extends JPanel {
                         if (choice == JOptionPane.YES_OPTION) {
                             conversation.removeMessageAtIndex(index);
                             list.remove(index);
-                            notifyChange(1);
+                            notifyChange();
                         }
                     }
                     default -> {
@@ -125,9 +123,9 @@ public class DisplayMessageGUI extends JPanel {
         }
     };
 
-    private void notifyChange(int editOrDelete) { //send this conversation back to MessageClient
-        MessageClient.setClientMessageUpdateChat(this.conversation);
-        client.setSendMessageClicked(true);
+    private void notifyChange() { //send this conversation back to MessageClient
+        client.setClientMessageUpdateChat(this.conversation);
+        client.setSendMessageClicked(true); //to enter the loop
 
     }
 

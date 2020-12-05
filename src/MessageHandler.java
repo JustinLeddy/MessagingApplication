@@ -158,7 +158,7 @@ public class MessageHandler implements Runnable {
                                         String updatedConversation = Arrays.toString(new ArrayList[]{membersArray}) //format the
                                                 .replaceAll(", ", "|")
                                                 .replaceAll("\\[|\\]", "") + "<*>" + allMessages + "\n";
-                                        allConversations = "U<*>" + userToRemove + "<*>" + allMessages; //format U<*>userRemoved<*>newMemberArray<*>
+                                        allConversations = "U<*>" + userToRemove + "<*>" + allMessages; //format U<*>userRemoved<*>message<*>
                                         lines.set(i, updatedConversation); //set the correct line
                                         break;
                                     }

@@ -45,4 +45,11 @@ public class Conversation {
         return members;
     }
 
+    public void setMembers(ArrayList<String> members) {
+        this.members = members;
+    }
+
+    public void setMessages(ArrayList<String> messages) {
+        this.messages = messages;
+    }
 }

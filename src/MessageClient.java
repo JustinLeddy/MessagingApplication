@@ -4,6 +4,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -96,10 +97,11 @@ public class MessageClient {
     public static void setClientMessageUpdateChat(Conversation conversation) {
         //Format U<*>currentMember1|currentMember2|currentMember3<*>allMessages
         String newMessage = "U<*>";
+        System.out.println(Arrays.toString(conversation.getMembers().toArray()));
         newMessage += Arrays.toString(conversation.getMembers().toArray())
                 .replaceAll(", ", "|")
-                .replaceAll("\\[|\\]", "");
-        newMessage += Arrays.toString(conversation.getMessages().toArray())
+                .replaceAll("\\[|\\]", "") + "|" + clientUsername;
+        newMessage += "<*>" + Arrays.toString(conversation.getMessages().toArray())
                 .replaceAll(", ", "%&")
                 .replaceAll("\\[|\\]", "");
         clientMessage = newMessage;
@@ -211,7 +213,7 @@ public class MessageClient {
             try {
                 if (reader.ready()) { //if there is a message from the server
                     String fromServer = reader.readLine(); //read message
-                    System.out.println("Received this from the server: " + fromServer); //print the message it received from server
+                    System.out.println("Received this from the server: {" + fromServer + "}"); //print the message it received from server
                     if (fromServer.startsWith("M|")) {//if it is in the message format
                         //M|Sender|Recipient|Message
                         //M|Sender|Recipient1,Recipient2,Recipient3|Message
@@ -250,7 +252,7 @@ public class MessageClient {
                     }
 
                     if (fromServer.startsWith("U<*")) {
-                        updateConversation(reader.readLine());
+                        updateConversation(fromServer);
                     }
 
                 }
@@ -264,6 +266,7 @@ public class MessageClient {
     private static void updateConversation(String fromServer) {
         if (fromServer.startsWith("U<*>")) {
             if (fromServer.split("<\\*>").length == 4) {
+                System.out.println("Members have changed");
                 String[] splitServerMessage = fromServer.split("<\\*>");
                 String removedUser = splitServerMessage[2];
                 String members = splitServerMessage[1] + "|" + removedUser;
@@ -280,25 +283,28 @@ public class MessageClient {
                         break;
                     }
                 }
-            } else if (fromServer.split("<\\*>").length == 3) {
 
+            } else if (fromServer.split("<\\*>").length == 3) {
+                System.out.println("Message has changed");
                 String[] splitServerMessage = fromServer.split("<\\*>");
                 String members = splitServerMessage[1];
                 String messages = splitServerMessage[2];
-                ArrayList<String> memberArray = (ArrayList<String>) Arrays.asList(members.split("\\|"));
+                ArrayList<String> memberArray = new ArrayList<>(Arrays.asList(members.split("\\|")));
                 Collections.sort(memberArray);
-                ArrayList<String> messageArray = (ArrayList<String>) Arrays.asList(messages.split("%&"));
+                ArrayList<String> messageArray = new ArrayList<>(Arrays.asList(messages.split("%&")));
 
                 //search for chat to update
                 for (Conversation conversation : conversations) {
-                    if (conversation.getMembers().equals(memberArray)) {
+                    if (memberArray.containsAll(conversation.getMembers()) && conversation.getMembers().size() == memberArray.size() - 1) {
                         conversation.setMessages(messageArray);
+                        chatGUI.editChat(conversation); //supposedly update the list?
                         break;
                     }
                 }
             }
         } else {
-            initializeConversations(fromServer);
+            System.out.println("Initializing conversations");
+            initializeConversations(fromServer.substring(4));
         }
     }
 

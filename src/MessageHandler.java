@@ -178,7 +178,8 @@ public class MessageHandler implements Runnable {
 
                                 if (!socket.isClosed()
                                         && clientMessageHandler.getCurrentClientUsername() != null
-                                        && membersArray.contains(clientMessageHandler.getCurrentClientUsername())) { //if this user is connected, and is an intended recipient
+                                        && membersArray.contains(clientMessageHandler.getCurrentClientUsername())
+                                        && !(currentClientUsername.equals(clientMessageHandler.getCurrentClientUsername()))) { //if this user is connected, and is an intended recipient, and is not the sender
                                     if (allConversations.length() > 1) { //if it still has multiple members
                                         clientMessageHandler.send(clientMessage); //format U<*>memberArray<*>userRemoved<*>messageArray
                                     } else { //send the total initialization to the other client
@@ -212,7 +213,7 @@ public class MessageHandler implements Runnable {
                             //Format U<*>currentMember1|currentMember2|currentMember3<*>allMessages
                             String updateChatMembers = clientMessageSplit[1];
                             String messages = clientMessageSplit[2];
-                            ArrayList<String> membersArray = (ArrayList<String>) Arrays.asList(updateChatMembers.split("\\|"));
+                            List<String> membersArray = Arrays.asList(updateChatMembers.split("\\|"));
                             List<String> lines = Files.readAllLines(Path.of("Conversations.txt"), StandardCharsets.UTF_8);
                             for (int i = 0; i < lines.size(); i++) {
                                 String conversationLine = lines.get(i);
@@ -237,7 +238,9 @@ public class MessageHandler implements Runnable {
 
                                 if (!socket.isClosed()
                                         && clientMessageHandler.getCurrentClientUsername() != null
-                                        && membersArray.contains(clientMessageHandler.getCurrentClientUsername())) { //if this user is connected, and is an intended recipient
+                                        && membersArray.contains(clientMessageHandler.getCurrentClientUsername())
+                                        && !(currentClientUsername.equals(clientMessageHandler.getCurrentClientUsername()))) { //if this user is connected, and is an intended recipient, and is not the sender
+
                                     clientMessageHandler.send(clientMessage); //format U<*>memberArray<*>newMessageArray
 
                                 }

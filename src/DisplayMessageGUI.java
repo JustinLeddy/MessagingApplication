@@ -83,7 +83,7 @@ public class DisplayMessageGUI extends JPanel {
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2) { //double click
                 String message = messages.getSelectedValue();
-                if(!checkUser(message)) { //check if user is the sender
+                if (!checkUser(message)) { //check if user is the sender
                     JOptionPane.showMessageDialog(null,
                             "You can only edit or delete your message!",
                             "Invalid choice", JOptionPane.ERROR_MESSAGE);
@@ -105,7 +105,7 @@ public class DisplayMessageGUI extends JPanel {
                         conversation.editMessageAtIndex(index, message);
                         list.remove(index);
                         list.add(index, message);
-                        notifyChange();
+                        notifyChange(0);
                     }
                     case 1 -> { //delete
                         int choice = JOptionPane.showConfirmDialog(null,
@@ -114,7 +114,7 @@ public class DisplayMessageGUI extends JPanel {
                         if (choice == JOptionPane.YES_OPTION) {
                             conversation.removeMessageAtIndex(index);
                             list.remove(index);
-                            notifyChange();
+                            notifyChange(1);
                         }
                     }
                     default -> {
@@ -125,8 +125,9 @@ public class DisplayMessageGUI extends JPanel {
         }
     };
 
-    private void notifyChange() { //send this conversation back to MessageClient
-        client.setClientMessageUpdateChat(this.conversation);
+    private void notifyChange(int editOrDelete) { //send this conversation back to MessageClient
+        MessageClient.setClientMessageUpdateChat(this.conversation);
+        client.setSendMessageClicked(true);
 
     }
 

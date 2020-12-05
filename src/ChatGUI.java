@@ -107,7 +107,6 @@ public class ChatGUI extends JFrame {
         userListPanel.add(new JScrollPane(inboxList), constraints);
 
 
-
         userListPanel.setPreferredSize(new Dimension(150, 6));
 
 
@@ -231,19 +230,19 @@ public class ChatGUI extends JFrame {
         DisplayMessageGUI tempPanel = new DisplayMessageGUI(new Conversation(usersToSend), messageClient);
         String label = tempPanel.setMessageLabel(); // create a temp label for this conversation
         if (allMessages.containsKey(label)) { //use the label to see if conversation already exist
-                int answer = JOptionPane.showConfirmDialog(null,
-                        "This conversation already exists. Do you want to send this chat to this conversation?",
-                        "Social Messaging App", JOptionPane.YES_NO_OPTION); //ask if the user want to add this message to the conversation or not
-                if (answer == JOptionPane.YES_OPTION) { // if yes
-                    messageClient.setClientMessageMessaging(message, usersToSend); //send message as usual
-                    messageClient.setSendMessageClicked(true); //notify sendButton clicked, this calls the updateCurrentChat
-                    displayMessage(label); //(for future debug) SEE IF IT UPDATE IN TIME, if not, use Thread.sleep maybe
-                    return;
-                }
+            int answer = JOptionPane.showConfirmDialog(null,
+                    "This conversation already exists. Do you want to send this chat to this conversation?",
+                    "Social Messaging App", JOptionPane.YES_NO_OPTION); //ask if the user want to add this message to the conversation or not
+            if (answer == JOptionPane.YES_OPTION) { // if yes
+                MessageClient.setClientMessageMessaging(message, usersToSend); //send message as usual
+                messageClient.setSendMessageClicked(true); //notify sendButton clicked, this calls the updateCurrentChat
+                displayMessage(label); //(for future debug) SEE IF IT UPDATE IN TIME, if not, use Thread.sleep maybe
+                return;
+            }
         }
         messageClient.setSendMessageClicked(true);//notify button click
         messageClient.setCheckUserAccountsExisting(true); // get the server to check if the recipients are in the system
-        messageClient.setClientMessageNewChat(usersToSend); // start a new chat
+        MessageClient.setClientMessageNewChat(usersToSend); // start a new chat
 
         if (!messageClient.getUserAccountsExist()) {
             JOptionPane.showMessageDialog(null, "One or More of the account usernames entered does not exist",
@@ -258,7 +257,7 @@ public class ChatGUI extends JFrame {
 
     private void removeConversation(String label, int index) {
         inboxes.remove(index); //remove from inboxes -> not display anymore
-        messageClient.setClientMessageDeleteUser(allMessages.get(label).getConversation()); //send to client
+        MessageClient.setClientMessageDeleteUser(allMessages.get(label).getConversation()); //send to client
         allMessages.remove(label); //remove from map
     }
 
@@ -285,7 +284,7 @@ public class ChatGUI extends JFrame {
                     JOptionPane.showMessageDialog(null, "There is no message to send!",
                             "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    messageClient.setClientMessageMessaging(message, usersToSend); //send the message to messageClient
+                    MessageClient.setClientMessageMessaging(message, usersToSend); //send the message to messageClient
                     messageClient.setSendMessageClicked(true); //set to TRUE to notify button click
                     messageText.setText("Type your message here..."); //add the default text again after clicking send
                     messageText.addFocusListener(focusListener); // just for fancy displaying purpose :)

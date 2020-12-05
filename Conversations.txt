@@ -1,6 +1,6 @@
 God|Jesus<*>Jesus|Message Number One%&Jesus|Message Number two
 TestUser|Username<*>TestUser|Give me your money
-Justin|Username<*>Justin|Hello World%&Justin|GooBoo Baba%&Justin|hello%&Justin|hows your life going%&Justin|Its Justin%&Justin|Happy Days
+Justin|Username<*>Justin|Hello World%&Justin|GooBoo Baba%&Justin|hello%&Justin|hows your life going%&Justin|Its Justin%&Justin|Happy Days%&Justin|huh
 Alex|Username<*>Alex|Hello World%&Alex|Happy Days
 Mario|Username<*>Mario|Its a Mario%&Mario|Wait its a Luigi%&Mario|Hold up no Mario%&Mario|Goodbye
 Alex|Justin<*>Alex|Whats up justin%&Alex|Hello%&Alex|Testing%&Alex|Please Work%&Alex|Goodbye%&Alex|Byebye%&Alex|Hello%&Alex|byebitch%&Alex|Ok Please%&Alex|Please%&Justin|something%&Alex|Happy%&Alex|Bitch%&Alex|Are you gonna work now%&Alex|Justin is weird%&Justin|Yo%&Justin|Yo%&Justin|yo%&Justin|wus good%&Justin|yo%&Justin|yo%&Justin|yo%&Justin|yo%&Justin|yo%&Justin|yo%&Justin|its working i think?%&Justin|Hey Alex%&Alex|Hey Justin%&Alex|Seems like it's working huh%&Justin|Hey Alex%&Justin|Yo%&Justin|Yo
@@ -24,5 +24,6 @@ Justin|Tom<*>Tom|heyo
 Alex|Tommy<*>Tommy|heyo
 Justin|Test1<*>Justin|Hey!%&Test1|whats up%&Justin|nothing  much
 Big|Justin<*>Justin|Hi%&Justin|Hey
-Jesus|Justin<*>Justin|Kanye did it better. Also according to Ariana youre half female
+Jesus|Justin<*>Justin|Kanye did it better. Also according to Ariana youre half female%&Justin|this should be working%&Justin|heyo%&Justin|hey jesus%&Justin|does this still work?
+Justin|Thomas<*>Thomas|hello%&Justin|hi
 Alex|Justin|Test1|Tom<*>Justin|Hey

@@ -259,7 +259,17 @@ public class ChatGUI extends JFrame {
     private void removeConversation(String label, int index) {
         inboxes.remove(index); //remove from inboxes -> not display anymore
         messageClient.setClientMessageDeleteUser(allMessages.get(label).getConversation()); //send to client
+        DisplayMessageGUI temp = allMessages.get(label);
+        if (temp.getConversation().getMembers().containsAll(messageField.getConversation().getMembers())
+        && messageField.getConversation().getMembers().containsAll(temp.getConversation().getMembers())) {
+            middlePanel.removeAll(); //wipe the chat panel
+            messageField = null; //set back to null
+            messageText.setEditable(false);//so they can't type any more
+            middlePanel.revalidate();
+            middlePanel.repaint();
+        }
         allMessages.remove(label); //remove from map
+
     }
 
     public void editChat(Conversation c) {

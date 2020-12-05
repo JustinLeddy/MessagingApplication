@@ -69,10 +69,10 @@ public class DisplayMessageGUI extends JPanel {
             public void run() {
                 conversation = c;
                 ArrayList<String> allMessages = conversation.getMessages();
-                String message = allMessages.get(allMessages.size() - 1);
+                //String message = allMessages.get(allMessages.size() - 1);
                 //System.out.println(message);
-                list.addElement(allMessages.get(allMessages.size() - 1));
-                messages.ensureIndexIsVisible(list.size() - 1); //auto-scroll to see the latest message
+                list.addElement(allMessages.get(allMessages.size() - 1)); //get the latest message and print out
+                messages.ensureIndexIsVisible(list.size() - 1); //auto-scroll to the latest message
             }
         });
     }
@@ -81,9 +81,9 @@ public class DisplayMessageGUI extends JPanel {
     MouseListener mouseListener = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (e.getClickCount() == 2) {
+            if (e.getClickCount() == 2) { //double click
                 String message = messages.getSelectedValue();
-                if(!checkUser(message)) {
+                if(!checkUser(message)) { //check if user is the sender
                     JOptionPane.showMessageDialog(null,
                             "You can only edit or delete your message!",
                             "Invalid choice", JOptionPane.ERROR_MESSAGE);
@@ -125,8 +125,8 @@ public class DisplayMessageGUI extends JPanel {
         }
     };
 
-    private void notifyChange() {
-        client.setClientMessageUpdateChat(this.conversation); //send this conversation back to MessageClient
+    private void notifyChange() { //send this conversation back to MessageClient
+        client.setClientMessageUpdateChat(this.conversation);
 
     }
 

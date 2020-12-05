@@ -35,6 +35,7 @@ public class ChatGUI extends JFrame {
         showMessagePanel();
     }
 
+    //initial setup thingy
     private void showMessagePanel() {
         //initialize variables
         messageFrame = new JFrame(String.format("%s's Messages", clientUsername));
@@ -120,18 +121,19 @@ public class ChatGUI extends JFrame {
         messageFrame.setVisible(true);
     }
 
+
     private void createPanel(Conversation c) {
         DisplayMessageGUI panelToAdd = new DisplayMessageGUI(c, messageClient);
-        String label = panelToAdd.getMessageLabel();
+        String label = panelToAdd.getMessageLabel(); //set label (already sort member)
         allMessages.put(label, panelToAdd); //put the panel to map
         inboxes.addElement(label); //add Label to the inboxList
     }
 
     private void displayMessage(String messageLabel) {
-        middlePanel.removeAll();
+        middlePanel.removeAll(); //wipe panel
         messageField = allMessages.get(messageLabel); //find the panel in the map
         usersToSend = messageField.getConversation().getMembers(); //set usersToSend to current member
-        usersToSend.remove(clientUsername);
+        usersToSend.remove(clientUsername); //remove sender out of usersToSend
         middlePanel.add(deleteInstruction, "South");
         middlePanel.add(messageField, "Center");
         middlePanel.revalidate();
@@ -186,7 +188,7 @@ public class ChatGUI extends JFrame {
                 createPanel(c); //create a new panel for it
                 displayMessage(label);
                 //display that new panel (label should match already because memberList is sorted in DisplayMessageGUI)
-                inboxList.setSelectedIndex(inboxes.size() - 1);
+                inboxList.setSelectedIndex(inboxes.size() - 1); //new chat is selected/highlighted in the list
             }
 
         }
@@ -235,7 +237,7 @@ public class ChatGUI extends JFrame {
                 if (answer == JOptionPane.YES_OPTION) { // if yes
                     messageClient.setClientMessageMessaging(message, usersToSend); //send message as usual
                     messageClient.setSendMessageClicked(true); //notify sendButton clicked, this calls the updateCurrentChat
-                    displayMessage(label); //SEE IF IT UPDATE IN TIME, if not, use Thread.sleep maybe
+                    displayMessage(label); //(for future debug) SEE IF IT UPDATE IN TIME, if not, use Thread.sleep maybe
                     return;
                 }
         }
@@ -255,9 +257,9 @@ public class ChatGUI extends JFrame {
     }
 
     private void removeConversation(String label, int index) {
-        inboxes.remove(index);
-        messageClient.setClientMessageDeleteUser(allMessages.get(label).getConversation());
-        allMessages.remove(label);
+        inboxes.remove(index); //remove from inboxes -> not display anymore
+        messageClient.setClientMessageDeleteUser(allMessages.get(label).getConversation()); //send to client
+        allMessages.remove(label); //remove from map
     }
 
     public void editChat(Conversation c) {
@@ -334,9 +336,9 @@ public class ChatGUI extends JFrame {
                 if (choice == JOptionPane.YES_OPTION) {
                     removeConversation(chatLabel, index);
                 }
-            } else {
+            } else { //just click to open the chat
                 String selectedConversation = inboxList.getSelectedValue();
-                System.out.println(selectedConversation);
+                //System.out.println(selectedConversation);
                 messageText.setEditable(true); //enable text field to start typing
                 displayMessage(selectedConversation);
             }

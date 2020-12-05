@@ -87,8 +87,6 @@ public class MessageHandler implements Runnable {
                             if (!socket.isClosed()
                                     && clientMessageHandler.getCurrentClientUsername() != null
                                     && membersList.contains(clientMessageHandler.getCurrentClientUsername())) { //if this user is connected, and is an intended recipient
-                                System.out.println("Members List: " + Arrays.toString(membersList.toArray()));
-                                System.out.println("Client to send to: " + clientMessageHandler.getCurrentClientUsername());
                                 clientMessageHandler.send(clientMessage);
 
                             }
@@ -132,14 +130,127 @@ public class MessageHandler implements Runnable {
                             }
                         }
 
+                    } else if (clientMessage.charAt(0) == 'U') {
+                        //edit conversation in file
+                        //look for correct conversation,
+                        String[] clientMessageSplit = clientMessage.split("<\\*>");
+
+                        if (clientMessageSplit.length == 4) { //delete request
+                            //Format U<*>currentMember1|currentMember2|currentMember3<*>memberToDelete<*>allMessages
+                            //get correct fields
+                            String userToRemove = clientMessageSplit[2];
+                            String clientConversationMembers = clientMessageSplit[1] + "|" + userToRemove;
+                            String allMessages = clientMessageSplit[3];
+                            ArrayList<String> membersArray = (ArrayList<String>) Arrays.asList(clientConversationMembers.split("\\|"));
+                            //loop through file and find correct row
+                            List<String> lines = Files.readAllLines(Path.of("Conversations.txt"), StandardCharsets.UTF_8);
+                            String allConversations = "";
+
+                            for (int i = 0; i < lines.size(); i++) {
+                                String conversationLine = lines.get(i);
+                                ArrayList<String> line = new ArrayList<>(Arrays.asList(conversationLine.split("<\\*>")));
+                                ArrayList<String> members = new ArrayList<>(Arrays.asList(line.get(0).split("\\|")));
+
+                                //if the conversation members matches
+                                if (members.containsAll(membersArray) && members.size() == membersArray.size()) {
+                                    membersArray.remove(userToRemove); //remove the user
+                                    if (membersArray.size() > 1) { //if there is still more that two users update the chat, otherwise, remove it.
+                                        String updatedConversation = Arrays.toString(new ArrayList[]{membersArray}) //format the
+                                                .replaceAll(", ", "|")
+                                                .replaceAll("\\[|\\]", "") + "<*>" + allMessages + "\n";
+                                        allConversations = "U<*>" + userToRemove + "<*>" + allMessages; //format U<*>userRemoved<*>newMemberArray<*>
+                                        lines.set(i, updatedConversation); //set the correct line
+                                        break;
+                                    }
+                                    lines.remove(i); //if there is only one user remove the array
+                                    break;
+                                }
+                            }
+
+                            //now update the conversations file.
+                            Files.write(Path.of("Conversations.txt"), lines, StandardCharsets.UTF_8);
+
+                            //send the conversation update to the other members
+                            HashMap<String, MessageHandler> allClients = ClientManager.getDeliverTo();
+                            for (Map.Entry<String, MessageHandler> client : allClients.entrySet()) { //loops through all message handlers
+                                MessageHandler clientMessageHandler = client.getValue(); //sets socket and message handler for this iteration
+                                Socket socket = clientMessageHandler.getClientSocket();
+
+                                if (!socket.isClosed()
+                                        && clientMessageHandler.getCurrentClientUsername() != null
+                                        && membersArray.contains(clientMessageHandler.getCurrentClientUsername())) { //if this user is connected, and is an intended recipient
+                                    if (allConversations.length() > 1) { //if it still has multiple members
+                                        clientMessageHandler.send(clientMessage); //format U<*>memberArray<*>userRemoved<*>messageArray
+                                    } else { //send the total initialization to the other client
+
+                                        //clientMessage split
+                                        String clientUsername = clientMessageHandler.getCurrentClientUsername();
+                                        allConversations = "";
+                                        for (int i = 0; i < lines.size(); i++) {
+                                            String conversationLine = lines.get(i);
+                                            ArrayList<String> line = new ArrayList<>(Arrays.asList(conversationLine.split("<\\*>")));
+                                            ArrayList<String> members = new ArrayList<>(Arrays.asList(line.get(0).split("\\|")));
+
+                                            if (members.contains(clientUsername) && membersArray.contains(clientUsername)) {
+                                                allConversations += lines.get(i) + "<&*>";
+                                            }
+                                        }
+
+                                        if (!allConversations.isEmpty()) {
+                                            allConversations = allConversations.substring(0, allConversations.length() - 4);
+                                        }
+
+                                        clientWriter.write("U<**>" + allConversations);
+                                        clientWriter.newLine();
+                                        clientWriter.flush();
+                                        break;
+                                    }
+                                }
+                            }
+
+                        } else if (clientMessageSplit.length == 3) { //change messages request
+                            //Format U<*>currentMember1|currentMember2|currentMember3<*>allMessages
+                            String updateChatMembers = clientMessageSplit[1];
+                            String messages = clientMessageSplit[2];
+                            ArrayList<String> membersArray = (ArrayList<String>) Arrays.asList(updateChatMembers.split("\\|"));
+                            List<String> lines = Files.readAllLines(Path.of("Conversations.txt"), StandardCharsets.UTF_8);
+                            for (int i = 0; i < lines.size(); i++) {
+                                String conversationLine = lines.get(i);
+                                ArrayList<String> line = new ArrayList<>(Arrays.asList(conversationLine.split("<\\*>")));
+                                ArrayList<String> members = new ArrayList<>(Arrays.asList(line.get(0).split("\\|")));
+
+                                //if the conversation members matches
+                                if (members.containsAll(membersArray) && members.size() == membersArray.size()) {
+                                    lines.set(i, line.get(0) + "<*>" + messages);
+                                    break;
+                                }
+                            }
+
+                            //rewrite conversations file
+                            Files.write(Path.of("Conversations.txt"), lines, StandardCharsets.UTF_8);
+
+                            //send update conversation to
+                            HashMap<String, MessageHandler> allClients = ClientManager.getDeliverTo();
+                            for (Map.Entry<String, MessageHandler> client : allClients.entrySet()) { //loops through all message handlers
+                                MessageHandler clientMessageHandler = client.getValue(); //sets socket and message handler for this iteration
+                                Socket socket = clientMessageHandler.getClientSocket();
+
+                                if (!socket.isClosed()
+                                        && clientMessageHandler.getCurrentClientUsername() != null
+                                        && membersArray.contains(clientMessageHandler.getCurrentClientUsername())) { //if this user is connected, and is an intended recipient
+                                    clientMessageHandler.send(clientMessage); //format U<*>memberArray<*>newMessageArray
+
+                                }
+                            }
+                        }
                     } else if (clientMessage.charAt(0) == 'I') {
                         //Read Conversations from File
                         //look for every conversation with the username in it
                         // write them all in one massive line with format explained in Conversations.txt
                         //Format: Member1|Member2|Member3<*>Username|Message&%Username|Message<&*>conversation2<&*>conversation3
 
-                        //TODO: Write to Client Conversations
                         List<String> lines = Files.readAllLines(Path.of("Conversations.txt"), StandardCharsets.UTF_8);
+
                         //clientMessage split
                         String clientUsername = clientMessage.substring(clientMessage.indexOf("|") + 1);
                         String allConversations = "";

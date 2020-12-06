@@ -267,7 +267,7 @@ public class ChatGUI extends JFrame {
         MESSAGE_CLIENT.setSendMessageClicked(true);//notify button click
 
         try { //wait for server to respond
-            TimeUnit.SECONDS.sleep(1);
+            TimeUnit.MILLISECONDS.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

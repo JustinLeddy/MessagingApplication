@@ -28,12 +28,12 @@ public class Conversation {
     }
 
     public void editMessageAtIndex(int index, String message) {
-        messages.set(index, message);
+        this.messages.set(index, message);
     }
 
     //Username|message
     public void addMessage(String message) {
-        messages.add(message);
+        this.messages.add(message);
     }
 
     //accessors

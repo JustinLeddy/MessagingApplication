@@ -276,7 +276,7 @@ public class ChatGUI extends JFrame {
     public void editChat(Conversation c) {
         DisplayMessageGUI newPanel = new DisplayMessageGUI(c, messageClient);
         String label = newPanel.setMessageLabel();
-        System.out.println(String.format("Label on %s side: %s", clientUsername, label));
+        System.out.printf("Label on %s side: %s%n", clientUsername, label);
         DisplayMessageGUI oldPanel = allMessages.get(label);
         allMessages.replace(label, oldPanel, newPanel); //replace the old panel with new panel
         if (messageField.getMessageLabel().equals(label)) { //if user currently open this chat

@@ -63,7 +63,7 @@ public class MessageHandler implements Runnable {
                     System.out.println(clientMessage); //print it for processing purposes
 
 
-                    if (clientMessage.charAt(0) == 'M') { //incoming message is
+                    if (clientMessage.charAt(0) == 'M') { //its a message to send to other users
 
                         //Separates clientMessage
                         String[] receivedMessage = clientMessage.split("\\|");
@@ -98,7 +98,7 @@ public class MessageHandler implements Runnable {
                         //Format of clientMessage: M|Sender|Recipient|Message
                         //Format Of Lines: Member1|Member2|Member3<*>Username|Message%&Username|Message%&Username|Message
 
-
+                        //loops through every conversation
                         for (int i = 0; i < lines.size(); i++) {
                             String conversationLine = lines.get(i);
                             conversationLine = conversationLine.replaceAll("\n", "");
@@ -108,6 +108,12 @@ public class MessageHandler implements Runnable {
                             //Sort Members
                             Collections.sort(members);
 
+                            //if its a conversation where a member left but wants to join again,
+                            //remove the last entry and add their message
+                            if (line.size() == 3) {
+                                //remove that ending, so it will start displaying to both, hopefully
+                                conversationLine = conversationLine.substring(0, conversationLine.lastIndexOf("<*>"));
+                            }
 
                             if (members.equals(membersList)) {
                                 writtenToFile = true;
@@ -118,11 +124,11 @@ public class MessageHandler implements Runnable {
                             }
                         }
 
-                        if (!writtenToFile) {
+                        if (!writtenToFile) { //if the conversation doesn't exist
                             try (var conversationWriter = new PrintWriter(new FileOutputStream("Conversations.txt", true))) {
                                 String newLine = Arrays.toString(membersList.toArray())
                                         .replaceAll(", ", "|")
-                                        .replaceAll("\\[|\\]", "")
+                                        .replaceAll("[\\[\\]]", "")
                                         + "<*>" + message;
                                 conversationWriter.write(newLine + "\n");
                             } catch (IOException e) {
@@ -135,34 +141,47 @@ public class MessageHandler implements Runnable {
                         //look for correct conversation,
                         String[] clientMessageSplit = clientMessage.split("<\\*>");
 
-                        if (clientMessageSplit.length == 4) { //delete request
-                            //Format U<*>currentMember1|currentMember2|currentMember3<*>memberToDelete<*>allMessages
+                        if (clientMessageSplit.length > 3) { //delete request
+                            //Format U<*>currentMember1|currentMember2|currentMember3<*>memberToDelete<*>allMessages and the optional <*>trueOrFalse
                             //get correct fields
                             String userToRemove = clientMessageSplit[2];
                             String clientConversationMembers = clientMessageSplit[1] + "|" + userToRemove;
                             String allMessages = clientMessageSplit[3];
-                            ArrayList<String> membersArray = (ArrayList<String>) Arrays.asList(clientConversationMembers.split("\\|"));
+                            ArrayList<String> membersArray = new ArrayList<>(Arrays.asList(clientConversationMembers.split("\\|")));
                             //loop through file and find correct row
                             List<String> lines = Files.readAllLines(Path.of("Conversations.txt"), StandardCharsets.UTF_8);
                             String allConversations = "";
-
+                            boolean conversationToUpdate = true;
                             for (int i = 0; i < lines.size(); i++) {
                                 String conversationLine = lines.get(i);
                                 ArrayList<String> line = new ArrayList<>(Arrays.asList(conversationLine.split("<\\*>")));
                                 ArrayList<String> members = new ArrayList<>(Arrays.asList(line.get(0).split("\\|")));
 
+                                if (clientMessageSplit.length == 5) { //if there is only one user left and they tossed a delete, then remove the array
+                                    lines.remove(i);
+                                    conversationToUpdate = false;
+                                    break;
+                                }
+
                                 //if the conversation members matches
                                 if (members.containsAll(membersArray) && members.size() == membersArray.size()) {
                                     membersArray.remove(userToRemove); //remove the user
-                                    if (membersArray.size() > 1) { //if there is still more that two users update the chat, otherwise, remove it.
+                                    if (membersArray.size() > 2) { //if there is still more than two
                                         String updatedConversation = Arrays.toString(new ArrayList[]{membersArray}) //format the
                                                 .replaceAll(", ", "|")
-                                                .replaceAll("\\[|\\]", "") + "<*>" + allMessages + "\n";
+                                                .replaceAll("[\\[\\]]", "") + "<*>" + allMessages;
                                         allConversations = "U<*>" + userToRemove + "<*>" + allMessages; //format U<*>userRemoved<*>message<*>
                                         lines.set(i, updatedConversation); //set the correct line
                                         break;
                                     }
-                                    lines.remove(i); //if there is only one user remove the array
+                                    //theres two members in this chat, then append true if the first user is removed, false if the second user is removed
+                                    String updatedConversation = lines.get(i) + "<*>"; //format U<*>userRemoved<*>message<*>
+                                    if (members.get(0).equals(userToRemove)) {
+                                        updatedConversation += "true";
+                                    } else {
+                                        updatedConversation += "false";
+                                    }
+                                    lines.set(i, updatedConversation); //set the correct line
                                     break;
                                 }
                             }
@@ -172,6 +191,7 @@ public class MessageHandler implements Runnable {
 
                             //send the conversation update to the other members
                             HashMap<String, MessageHandler> allClients = ClientManager.getDeliverTo();
+                            clientConversationMembers = clientConversationMembers.substring(0, clientConversationMembers.lastIndexOf("|"));
                             for (Map.Entry<String, MessageHandler> client : allClients.entrySet()) { //loops through all message handlers
                                 MessageHandler clientMessageHandler = client.getValue(); //sets socket and message handler for this iteration
                                 Socket socket = clientMessageHandler.getClientSocket();
@@ -180,34 +200,16 @@ public class MessageHandler implements Runnable {
                                         && clientMessageHandler.getCurrentClientUsername() != null
                                         && membersArray.contains(clientMessageHandler.getCurrentClientUsername())
                                         && !(currentClientUsername.equals(clientMessageHandler.getCurrentClientUsername()))) { //if this user is connected, and is an intended recipient, and is not the sender
-                                    if (allConversations.length() > 1) { //if it still has multiple members
-                                        clientMessageHandler.send(clientMessage); //format U<*>memberArray<*>userRemoved<*>messageArray
-                                    } else { //send the total initialization to the other client
 
-                                        //clientMessage split
-                                        String clientUsername = clientMessageHandler.getCurrentClientUsername();
-                                        allConversations = "";
-                                        for (int i = 0; i < lines.size(); i++) {
-                                            String conversationLine = lines.get(i);
-                                            ArrayList<String> line = new ArrayList<>(Arrays.asList(conversationLine.split("<\\*>")));
-                                            ArrayList<String> members = new ArrayList<>(Arrays.asList(line.get(0).split("\\|")));
 
-                                            if (members.contains(clientUsername) && membersArray.contains(clientUsername)) {
-                                                allConversations += lines.get(i) + "<&*>";
-                                            }
-                                        }
-
-                                        if (!allConversations.isEmpty()) {
-                                            allConversations = allConversations.substring(0, allConversations.length() - 4);
-                                        }
-
-                                        clientWriter.write("U<**>" + allConversations);
-                                        clientWriter.newLine();
-                                        clientWriter.flush();
-                                        break;
+                                    //format M|System|membersArr|System message:
+                                    clientMessageHandler.send("M|" + userToRemove + "|" + clientConversationMembers.replaceAll("\\|", ",") + "|System message: this user has left the chat.");
+                                    if (conversationToUpdate) {
+                                        clientMessageHandler.send(clientMessage);
                                     }
                                 }
                             }
+
 
                         } else if (clientMessageSplit.length == 3) { //change messages request
                             //Format U<*>currentMember1|currentMember2|currentMember3<*>allMessages
@@ -215,6 +217,7 @@ public class MessageHandler implements Runnable {
                             String messages = clientMessageSplit[2];
                             List<String> membersArray = Arrays.asList(updateChatMembers.split("\\|"));
                             List<String> lines = Files.readAllLines(Path.of("Conversations.txt"), StandardCharsets.UTF_8);
+
                             for (int i = 0; i < lines.size(); i++) {
                                 String conversationLine = lines.get(i);
                                 ArrayList<String> line = new ArrayList<>(Arrays.asList(conversationLine.split("<\\*>")));
@@ -232,6 +235,7 @@ public class MessageHandler implements Runnable {
 
                             //send update conversation to
                             HashMap<String, MessageHandler> allClients = ClientManager.getDeliverTo();
+
                             for (Map.Entry<String, MessageHandler> client : allClients.entrySet()) { //loops through all message handlers
                                 MessageHandler clientMessageHandler = client.getValue(); //sets socket and message handler for this iteration
                                 Socket socket = clientMessageHandler.getClientSocket();
@@ -257,6 +261,7 @@ public class MessageHandler implements Runnable {
                         //clientMessage split
                         String clientUsername = clientMessage.substring(clientMessage.indexOf("|") + 1);
                         String allConversations = "";
+
                         for (int i = 0; i < lines.size(); i++) {
                             String conversationLine = lines.get(i);
                             ArrayList<String> line = new ArrayList<>(Arrays.asList(conversationLine.split("<\\*>")));
@@ -276,6 +281,7 @@ public class MessageHandler implements Runnable {
                         clientWriter.flush();
 
                     } else { //Login/Register processing
+
                         char firstLetter = clientMessage.charAt(0);
                         String[] info = clientMessage.split("\\|");
                         String partTwo = info[1].strip();
@@ -288,6 +294,7 @@ public class MessageHandler implements Runnable {
                         if (firstLetter == 'L') {
                             username = partTwo; //strip removes leading and trailing spaces
                             password = info[2].strip();
+
                             try (var fileReader = new BufferedReader(new FileReader("Accounts.txt"))) {
                                 String line;
                                 while ((line = fileReader.readLine()) != null) {
@@ -321,6 +328,7 @@ public class MessageHandler implements Runnable {
                         else if (firstLetter == 'R') {
                             username = partTwo; //strip removes leading and trailing spaces
                             password = info[2].strip();
+
                             try (var fileReader = new BufferedReader(new FileReader("Accounts.txt"));
                                  var fileWriter = new PrintWriter(new FileOutputStream("Accounts.txt", true))) {
                                 String line;
@@ -352,6 +360,7 @@ public class MessageHandler implements Runnable {
                             }
                         } else if (firstLetter == 'C') {
                             partTwo = partTwo.substring(1, partTwo.length() - 1);
+
                             try (var fileReader = new BufferedReader(new FileReader("Accounts.txt"))) {
                                 List<String> allUsernames = fileReader.lines()
                                         .map(String::strip)
@@ -362,6 +371,7 @@ public class MessageHandler implements Runnable {
 
                                 clientWriter.write(usersExist + "\n");
                                 clientWriter.flush();
+
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }

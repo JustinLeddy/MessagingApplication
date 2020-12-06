@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -101,8 +102,7 @@ public class DisplayMessageGUI extends JPanel {
                         }
                         message = edit;
                         conversation.editMessageAtIndex(index, message);
-                        list.remove(index);
-                        list.add(index, message);
+                        list.set(index, message);
                         notifyChange();
                     }
                     case 1 -> { //delete
@@ -124,7 +124,7 @@ public class DisplayMessageGUI extends JPanel {
     };
 
     private void notifyChange() { //send this conversation back to MessageClient
-        client.setClientMessageUpdateChat(this.conversation);
+        MessageClient.setClientMessageUpdateChat(this.conversation);
         client.setSendMessageClicked(true); //to enter the loop
 
     }

@@ -26,6 +26,9 @@ public class ChatGUI extends JFrame {
             "*Double click on any chat or message to edit/delete");
     private final JLabel EDIT_ACCOUNT = new JLabel("[Edit your account]");
 
+    //Dark mode maybe
+    private JToggleButton switchButton;
+
 
     public ChatGUI(MessageClient client) {
         this.MESSAGE_CLIENT = client;
@@ -337,6 +340,9 @@ public class ChatGUI extends JFrame {
     private FocusListener focusListener = new FocusListener() {
         @Override
         public void focusGained(FocusEvent e) {
+            if (messageField == null) {
+                return;
+            }
             messageText.setText("");
             messageText.removeFocusListener(this);
         }

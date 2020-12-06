@@ -233,6 +233,7 @@ public class ChatGUI extends JFrame {
     private void setUsersToSend(String userNames, String message) {
         usersToSend = new ArrayList<>();
         userNames = userNames.strip(); //strip leading white spaces
+        userNames = userNames.replaceAll(", ", ",");
         if (userNames.isEmpty() || message.isEmpty() || userNames.equals(CLIENT_USERNAME)) { //if the user type in their name only
             JOptionPane.showMessageDialog(null, "You did not enter a valid input",
                     "Social Messaging App", JOptionPane.ERROR_MESSAGE);
@@ -252,14 +253,14 @@ public class ChatGUI extends JFrame {
                     "This conversation already exists. Do you want to send this chat to this conversation?",
                     "Social Messaging App", JOptionPane.YES_NO_OPTION); //ask if the user want to add this message to the conversation or not
             if (answer == JOptionPane.YES_OPTION) { // if yes
-                MESSAGE_CLIENT.setClientMessageMessaging(message, usersToSend); //send message as usual
+                MessageClient.setClientMessageMessaging(message, usersToSend); //send message as usual
                 MESSAGE_CLIENT.setSendMessageClicked(true); //notify sendButton clicked, this calls the updateCurrentChat
                 displayMessage(label); //(for future debug) SEE IF IT UPDATE IN TIME, if not, use Thread.sleep maybe
                 return;
             }
         }
         MESSAGE_CLIENT.setCheckUserAccountsExisting(true); // get the server to check if the recipients are in the system
-        MESSAGE_CLIENT.setClientMessageNewChat(usersToSend); // start a new chat
+        MessageClient.setClientMessageNewChat(usersToSend); // start a new chat
         MESSAGE_CLIENT.setSendMessageClicked(true);//notify button click
 
         if (!MESSAGE_CLIENT.getUserAccountsExist()) {
@@ -269,7 +270,7 @@ public class ChatGUI extends JFrame {
             return;
         }
 
-        MESSAGE_CLIENT.setClientMessageMessaging(message, usersToSend);
+        MessageClient.setClientMessageMessaging(message, usersToSend);
         MESSAGE_CLIENT.setSendMessageClicked(true);
     }
 
@@ -307,7 +308,7 @@ public class ChatGUI extends JFrame {
                     JOptionPane.showMessageDialog(null, "There is no message to send!",
                             "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    MESSAGE_CLIENT.setClientMessageMessaging(message, usersToSend); //send the message to messageClient
+                    MessageClient.setClientMessageMessaging(message, usersToSend); //send the message to messageClient
                     MESSAGE_CLIENT.setSendMessageClicked(true); //set to TRUE to notify button click
                     messageText.setText("Type your message here..."); //add the default text again after clicking send
                     messageText.addFocusListener(focusListener); // just for fancy displaying purpose :)

@@ -82,7 +82,7 @@ public class MessageClient {
     //Format: C|Recipient1,Recipient2,Recipient3
     public static void setClientMessageNewChat(ArrayList<String> usersToSend) {
         Collections.sort(usersToSend);
-        clientMessage = "C|" + Arrays.toString(usersToSend.toArray());
+        clientMessage = "C|" + Arrays.toString(usersToSend.toArray()).replaceAll("[\\[\\]]", "");
     }
 
     //setClientMessage update conversation

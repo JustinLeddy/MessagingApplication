@@ -397,15 +397,13 @@ public class MessageHandler implements Runnable {
                                 e.printStackTrace();
                             }
                         } else if (firstLetter == 'C') { //check user exist
-                            partTwo = partTwo.substring(1, partTwo.length() - 1);
-
                             try (var fileReader = new BufferedReader(new FileReader("Accounts.txt"))) {
                                 List<String> allUsernames = fileReader.lines()
                                         .map(String::strip)
                                         .filter(line -> !line.isEmpty())
                                         .map(line -> line.substring(0, line.indexOf(",")))
                                         .collect(Collectors.toList());
-                                boolean usersExist = allUsernames.containsAll(Arrays.asList(partTwo.split(", ")));
+                                boolean usersExist = allUsernames.containsAll(Arrays.asList(partTwo.split(",")));
                                 System.out.println(userExists);
                                 clientWriter.write(usersExist + "\n");
                                 clientWriter.flush();

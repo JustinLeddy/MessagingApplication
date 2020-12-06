@@ -59,7 +59,7 @@ public class MessageHandler implements Runnable {
 
 
                 while ((clientMessage = clientReader.readLine()) != null) {
-                    System.out.println(clientMessage); //print it for processing purposes
+                    System.out.println("Received from client: " + clientMessage); //print it for processing purposes
 
 
                     if (clientMessage.charAt(0) == 'M') { //its a message to send to other users
@@ -204,23 +204,25 @@ public class MessageHandler implements Runnable {
                                 //if the conversation members matches
                                 if (members.containsAll(membersArray) && members.size() == membersArray.size()) {
                                     membersArray.remove(userToRemove); //remove the user
-                                    if (membersArray.size() > 2) { //if there is still more than two
+                                    if (membersArray.size() > 1) { //if there is still more than two
                                         String updatedConversation = Arrays.toString(new ArrayList[]{membersArray}) //format the
                                                 .replaceAll(", ", "|")
-                                                .replaceAll("[\\[\\]]", "") + "<*>" + allMessages;
+                                                .replaceAll("[\\[\\]]", "") + "<*>" + allMessages + "<*>System|" + userToRemove + " has left the chat.";
+                                        //keep record of user leaving chat to display later
                                         allConversations = "U<*>" + userToRemove + "<*>" + allMessages; //format U<*>userRemoved<*>message<*>
                                         lines.set(i, updatedConversation); //set the correct line
                                         break;
-                                    }
-                                    //theres two members in this chat, then append true if the first user is removed, false if the second user is removed
-                                    String updatedConversation = lines.get(i) + "<*>"; //format U<*>userRemoved<*>message<*>
-                                    if (members.get(0).equals(userToRemove)) {
-                                        updatedConversation += "true";
                                     } else {
-                                        updatedConversation += "false";
+                                        //theres two members in this chat, then append true if the first user is removed, false if the second user is removed
+                                        String updatedConversation = lines.get(i) + "<*>"; //format U<*>userRemoved<*>message<*>
+                                        if (members.get(0).equals(userToRemove)) {
+                                            updatedConversation += "true";
+                                        } else {
+                                            updatedConversation += "false";
+                                        }
+                                        lines.set(i, updatedConversation); //set the correct line
+                                        break;
                                     }
-                                    lines.set(i, updatedConversation); //set the correct line
-                                    break;
                                 }
                             }
 
@@ -239,9 +241,6 @@ public class MessageHandler implements Runnable {
                                         && membersArray.contains(clientMessageHandler.getCurrentClientUsername())
                                         && !(currentClientUsername.equals(clientMessageHandler.getCurrentClientUsername()))) { //if this user is connected, and is an intended recipient, and is not the sender
 
-
-                                    //format M|System|membersArr|System message:
-                                    clientMessageHandler.send("M|" + userToRemove + "|" + clientConversationMembers.replaceAll("\\|", ",") + "|System message: this user has left the chat.");
                                     if (conversationToUpdate) {
                                         clientMessageHandler.send(clientMessage);
                                     }
@@ -396,7 +395,7 @@ public class MessageHandler implements Runnable {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                        } else if (firstLetter == 'C') {
+                        } else if (firstLetter == 'C') { //check user exist
                             partTwo = partTwo.substring(1, partTwo.length() - 1);
 
                             try (var fileReader = new BufferedReader(new FileReader("Accounts.txt"))) {

@@ -304,7 +304,7 @@ public class MessageClient {
                 if (conversation.getMembers().equals(memberArray)) {
                     memberArray.remove(removedUser); //remove the removed user
                     conversation.setMembers(memberArray); //reset the members
-                    chatGUI.editChat(conversation); //updates the conversation?
+                    chatGUI.userLeft(conversation, removedUser); //updates the conversation?
                     break;
                 }
             }
@@ -405,6 +405,7 @@ public class MessageClient {
     public void setUserAccountsExists(boolean value) {
         MessageClient.userAccountsExist.set(value);
     }
+
 
 }
 

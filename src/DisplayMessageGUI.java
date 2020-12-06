@@ -43,9 +43,7 @@ public class DisplayMessageGUI extends JPanel {
         ArrayList<String> members = conversation.getMembers();
         Collections.sort(members);
         for (String m : members) {
-            if (!m.equals(CLIENT_USERNAME)) {
-                sendTo += " " + m;
-            }
+            sendTo += " " + m;
         }
         sendTo = sendTo.replaceFirst(" ", "");
         sendTo = sendTo.replaceAll(" ", " \\| ");
@@ -67,10 +65,18 @@ public class DisplayMessageGUI extends JPanel {
             public void run() {
                 conversation = c;
                 ArrayList<String> allMessages = conversation.getMessages();
-                //String message = allMessages.get(allMessages.size() - 1);
-                //System.out.println(message);
                 list.addElement(allMessages.get(allMessages.size() - 1)); //get the latest message and print out
                 messages.ensureIndexIsVisible(list.size() - 1); //auto-scroll to the latest message
+            }
+        });
+    }
+
+    public void notifyUserLeft(String removedUser) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                //conversation = c; //update the conversation var so new msg stop sending to deleted user
+                list.addElement(String.format("System|%s has left the chat.", removedUser));
             }
         });
     }

@@ -5,10 +5,7 @@ import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusListener;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.io.*;
 import java.net.ServerSocket;
 import java.util.*;
@@ -1180,11 +1177,11 @@ public class RunLocalTest {
                 return;
             }
         }
-    }
 
-    /**
-     * Req 3: Each method in every class must have a test verifying that it exists,
-     * along with verifying it has the correct return type and access modifier.
-     */
+
+        /**
+         * Req 3: Each method in every class must have a test verifying that it exists,
+         * along with verifying it has the correct return type and access modifier.
+         */
 
 }

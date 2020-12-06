@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * USE PORT 8888 on LOCALHOST
  *
  * @author Alex Frey, Justin Leddy, Maeve Tra, Yifei Mao, Naveena Erranki
- * @version November 30th, 2020
+ * @version December 7th, 2020
  */
 public class MessageClient {
     //Global Fields
@@ -363,10 +363,6 @@ public class MessageClient {
 
     public void setClientUsername(String username) {
         clientUsername = username;
-    }
-
-    public String getClientMessage() {
-        return clientMessage;
     }
 
     public void setLoginRegisterClicked() {

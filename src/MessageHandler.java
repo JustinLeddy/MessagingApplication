@@ -18,8 +18,9 @@ import java.util.stream.Collectors;
  * Have add/edit/delete functionality of conversations and messages
  *
  * @author Alex Frey, Justin Leddy, Maeve Tra, Yifei Mao, Naveena Erranki
- * @version November 30th, 2020
+ * @version December 7th, 2020
  */
+
 public class MessageHandler implements Runnable {
     //Socket to interact with MessageClient and Synchronized field
     private final Socket CLIENT_SOCKET;
@@ -400,15 +401,7 @@ public class MessageHandler implements Runnable {
         return CLIENT_SOCKET;
     }
 
-    public String getClientMessage() {
-        return clientMessage;
-    }
-
     public String getCurrentClientUsername() {
         return currentClientUsername;
-    }
-
-    public void setCurrentClientUsername(String currentClientUsername) {
-        this.currentClientUsername = currentClientUsername;
     }
 }

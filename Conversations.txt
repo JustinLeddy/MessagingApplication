@@ -1,6 +1,6 @@
 God|Jesus<*>Jesus|Message Number One%&Jesus|Message Number two
 TestUser|Username<*>TestUser|Give me your money
-Alex|Username<*>Alex|Hello World%&Alex|Happy Days
+Alex|Username<*>Alex|Hello World
 Mario|Username<*>Mario|Its a Mario%&Mario|Wait its a Luigi%&Mario|Hold up no Mario%&Mario|Goodbye
 Alex|Mario<*>Alex|Hello Mario
 Alex|Mario<*>Alex|Is that really you Mario
@@ -19,7 +19,7 @@ Justin|Tommy<*>Tommy|Hey!%&Justin|whats up%&Tommy|nothing  much%&Justin|did you 
 Justin|Maeve<*>Justin|Hey!%&Maeve|hi%&Justin|is it working fine?%&Justin|I hope%&Maeve|kinda%&Justin|Hey Maeve, this is Justin, I hope i didnt screw any of the GUI up, good luck with working on the delete and edit functionality. Thanks for all you've done so far!%&Justin|Hey Maeve, this is Justin, I hope i didnt screw any of the GUI up, good luck with working on the delete and edit functionality. Thanks for all you've done so far!%&Justin|hey%&Justin|please work this time%&Justin|whatsup<*>false<*>false
 JustinMaeve<*>Tommy|wazaaa%&Justin|wazaaa%&Maeve|wazaaa%&Tommy|wazaaaa%&Justin|its being weird again :(%&Tommy|huh%&Justin|is is being weird%&Justin|:(%&Justin|huh%&Justin|this wont work%&Justin|yo
 Justin|Tom<*>Tom|heyo<*>true
-Alex|Tommy<*>Tommy|heyo
+Alex|Tommy<*>Tommy|heyo<*>true
 Justin|Test1<*>Justin|Hey!%&Test1|whats up%&Justin|nothing  much
 Big|Justin<*>Justin|Hi%&Justin|Hey
 Jesus|Justin<*>Justin|Kanye did it better. Also according to Ariana youre half female%&Justin|this should be working%&Justin|heyo%&Justin|hey jesus%&Justin|does this still work?

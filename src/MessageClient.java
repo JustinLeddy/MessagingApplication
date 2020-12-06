@@ -63,6 +63,22 @@ public class MessageClient {
         clientMessage = String.format("M|%s|%s|%s", clientUsername, recipient, message.replaceAll("\n", " "));
     }
 
+
+
+    /**
+     * sets client message for  deleting account in the format D|username
+     * README: MAKE SURE TO RUN A LEAVE CONVERSATION ON EVERY CONVERSATION THE USER IS IN BEFORE SENDING THIS MESSAGE
+     */
+    public static void setClientMessageDeleteAccount() {
+        clientMessage = "D|" + clientUsername;
+    }
+
+    //sets client message for changing account password
+    //format D|username
+    public static void setClientMessageChangePassword(String newPassword) {
+        clientMessage = "P|" + clientUsername + "|" + newPassword;
+    }
+
     //Format: C|Recipient1,Recipient2,Recipient3
     public static void setClientMessageNewChat(ArrayList<String> usersToSend) {
         Collections.sort(usersToSend);
@@ -328,6 +344,7 @@ public class MessageClient {
                     ArrayList<String> members = new ArrayList<>(Arrays.asList(membersAndMessages[0].split("\\|")));
                     boolean displayOrNot = Boolean.parseBoolean(membersAndMessages[2]);
 
+                    //displayOrNot true if the first user left, false if the second, this adds the conversation if they're not the user that left
                     if (clientUsername.equals(members.get(0)) != displayOrNot) {
                         members.remove(clientUsername);
                         ArrayList<String> messages = new ArrayList<>(Arrays.asList(membersAndMessages[1].split("%&")));

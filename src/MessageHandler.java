@@ -135,6 +135,45 @@ public class MessageHandler implements Runnable {
                             }
                         }
 
+                    } else if (clientMessage.charAt(0) == 'D') { //delete account
+                        List<String> accountLines = Files.readAllLines(Path.of("Accounts.txt"), StandardCharsets.UTF_8);
+                        //Format of clientMessage: M|Sender|Recipient|Message
+                        //Format Of Lines: Member1|Member2|Member3<*>Username|Message%&Username|Message%&Username|Message
+
+                        //loops through every conversation
+                        for (int i = 0; i < accountLines.size(); i++) {
+                            String[] lineSplit = accountLines.get(i).split(",");
+                            String username = lineSplit[0];
+                            if (username.equalsIgnoreCase(currentClientUsername)) {
+                                accountLines.set(i, currentClientUsername + ","); //sets the password blank so the account cant be accessed, essentially "deleted"
+                                break;
+                            }
+                        }
+
+                        //update accounts
+                        Files.write(Path.of("Accounts.txt"), accountLines, StandardCharsets.UTF_8);
+
+
+                    } else if (clientMessage.charAt(0) == 'P') { //change password
+
+                        String newPassword = clientMessage.split("\\|")[2];
+                        List<String> lines = Files.readAllLines(Path.of("Accounts.txt"), StandardCharsets.UTF_8);
+                        //Format of clientMessage: M|Sender|Recipient|Message
+                        //Format Of Lines: Member1|Member2|Member3<*>Username|Message%&Username|Message%&Username|Message
+
+                        //loops through every conversation
+                        for (int i = 0; i < lines.size(); i++) {
+                            String[] lineSplit = lines.get(i).split(",");
+                            String username = lineSplit[0];
+                            if (username.equalsIgnoreCase(currentClientUsername)) {
+                                lines.set(i, username + "," + newPassword);
+                                break;
+                            }
+                        }
+
+                        //update accounts
+                        Files.write(Path.of("Accounts.txt"), lines, StandardCharsets.UTF_8);
+
                     } else if (clientMessage.charAt(0) == 'U') {
                         //edit conversation in file
                         //look for correct conversation,

@@ -3,20 +3,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class LoginGUI extends JFrame {
-    private final MessageClient client;
+    private final MessageClient CLIENT;
     private static final String TITLE = "Social Messaging App";
     private static JFrame frame;
 
     //Declare component fields for login
-    JLabel userLbl;
-    JLabel passLbl;
-    JButton loginBtn;
-    JButton registerBtn;
-    JTextField userText;
-    JPasswordField passText;
+    private JLabel userLbl;
+    private JLabel passLbl;
+    private JButton loginBtn;
+    private JButton registerBtn;
+    private JTextField userText;
+    private JPasswordField passText;
 
     public LoginGUI(MessageClient client) {
-        this.client = client;
+        this.CLIENT = client;
         showLogin();
     }
 
@@ -91,27 +91,27 @@ public class LoginGUI extends JFrame {
                 String username = userText.getText().strip();
                 char[] password = passText.getPassword();
 
-                client.setLoginOrRegister(true); // true = loginButton clicked
+                CLIENT.setLoginOrRegister(true); // true = loginButton clicked
 
                 if (username.isEmpty() || password.length == 0) {
                     message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    client.setClientUsername(username);
+                    CLIENT.setClientUsername(username);
                     MessageClient.setClientMessageLoginRegister(true, username, password);
-                    client.setLoginRegisterClicked(); //set to true to notify button click
+                    CLIENT.setLoginRegisterClicked(); //set to true to notify button click
                 }
             } else if (e.getSource() == registerBtn) {
                 String username = userText.getText();
                 char[] password = passText.getPassword();
 
-                client.setLoginOrRegister(false); // false = registerButton clicked
+                CLIENT.setLoginOrRegister(false); // false = registerButton clicked
 
                 if (username.isEmpty() || password.length == 0) {
                     message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    client.setClientUsername(username);
+                    CLIENT.setClientUsername(username);
                     MessageClient.setClientMessageLoginRegister(false, username, password);
-                    client.setLoginRegisterClicked(); //set to true to notify button click
+                    CLIENT.setLoginRegisterClicked(); //set to true to notify button click
                 }
             }
         }

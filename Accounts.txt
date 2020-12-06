@@ -7,8 +7,11 @@ Test1,
 Baby,Yoda
 Jesus,Christ
 Big,Brain
-TestUser,PasswordTommy,Ngo
+TestUser,Password
+Tommy,Ngo
 Tommy,Ngo
 Tom,Leddy
 Thomas,Soedel
 EDP456,edp567
+JMAMA,
+JMAMA2,abc123

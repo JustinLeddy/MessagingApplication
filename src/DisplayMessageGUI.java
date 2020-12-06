@@ -101,7 +101,7 @@ public class DisplayMessageGUI extends JPanel {
                         null, options, options[0]);
                 switch (answer) {
                     case 0 -> { //Edit
-                        String edit = JOptionPane.showInputDialog("Make your changes here:", message);
+                        String edit = JOptionPane.showInputDialog("Make your changes here:", message.substring(message.indexOf("|")));
                         if (edit == null) { // cancel
                             return;
                         }

@@ -292,7 +292,7 @@ public class ChatGUI extends JFrame {
      * GUI Methods
      * All methods related to FocusListener, MouseListener, ActionListener
      */
-    ActionListener actionListener = new ActionListener() {
+    private ActionListener actionListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == sendButton) { //sendButton is clicked = new message
@@ -328,7 +328,7 @@ public class ChatGUI extends JFrame {
     };
 
 
-    FocusListener focusListener = new FocusListener() {
+    private FocusListener focusListener = new FocusListener() {
         @Override
         public void focusGained(FocusEvent e) {
             messageText.setText("");
@@ -341,7 +341,7 @@ public class ChatGUI extends JFrame {
         }
     };
 
-    MouseListener mouseListener = new MouseAdapter() {
+    private MouseListener mouseListener = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2) { //double click

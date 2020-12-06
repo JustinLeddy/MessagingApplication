@@ -76,7 +76,7 @@ public class DisplayMessageGUI extends JPanel {
     }
 
 
-    MouseListener mouseListener = new MouseAdapter() {
+    private MouseListener mouseListener = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2) { //double click

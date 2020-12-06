@@ -84,7 +84,7 @@ public class LoginGUI extends JFrame {
 
 
     // Declare actionListener for specific functionality
-    ActionListener actionListener = new ActionListener() {
+    private ActionListener actionListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             if(e.getSource() == loginBtn) {

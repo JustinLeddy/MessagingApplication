@@ -22,10 +22,8 @@ import java.util.stream.Collectors;
  */
 public class MessageHandler implements Runnable {
     //Socket to interact with MessageClient and Synchronized field
-    private final Socket clientSocket;
-    private final Object gateKeeper = new Object();
-    private String userName;
-    private String identity;
+    private final Socket CLIENT_SOCKET;
+    private final Object GATE_KEEPER = new Object();
     private BufferedWriter clientWriter;
     private String clientMessage;
     private String currentClientUsername;
@@ -35,10 +33,10 @@ public class MessageHandler implements Runnable {
 
     //Constructor to initialize clientSocket
     public MessageHandler(Socket clientSocket) {
-        this.clientSocket = clientSocket;
+        this.CLIENT_SOCKET = clientSocket;
         try {
-            InputStream inputStream = this.clientSocket.getInputStream();
-            OutputStream outputStream = this.clientSocket.getOutputStream();
+            InputStream inputStream = this.CLIENT_SOCKET.getInputStream();
+            OutputStream outputStream = this.CLIENT_SOCKET.getOutputStream();
             BufferedReader clientReader = new BufferedReader(new InputStreamReader(inputStream));
             clientWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
         } catch (IOException e) {
@@ -50,11 +48,11 @@ public class MessageHandler implements Runnable {
     @Override
     public void run() {
 
-        synchronized (gateKeeper) {
+        synchronized (GATE_KEEPER) {
 
             //try with resources, being the input and output streams, readers, and writers.
-            try (var inputStream = this.clientSocket.getInputStream();
-                 var outputStream = this.clientSocket.getOutputStream();
+            try (var inputStream = this.CLIENT_SOCKET.getInputStream();
+                 var outputStream = this.CLIENT_SOCKET.getOutputStream();
                  var clientReader = new BufferedReader(new InputStreamReader(inputStream));
                  var clientWriter = new BufferedWriter(new OutputStreamWriter(outputStream))) {
 
@@ -399,7 +397,7 @@ public class MessageHandler implements Runnable {
     //Account Format: username,password
     //get socket
     public Socket getClientSocket() {
-        return clientSocket;
+        return CLIENT_SOCKET;
     }
 
     public String getClientMessage() {

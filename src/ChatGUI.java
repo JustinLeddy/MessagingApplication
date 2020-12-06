@@ -1,14 +1,12 @@
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 
 public class ChatGUI extends JFrame {
-    private final MessageClient messageClient;
+    private final MessageClient MESSAGE_CLIENT;
     private ArrayList<Conversation> conversations;
-    private final String clientUsername;
+    private final String CLIENT_USERNAME;
     private ArrayList<String> usersToSend;
     private Map<String, DisplayMessageGUI> allMessages;
 
@@ -27,8 +25,8 @@ public class ChatGUI extends JFrame {
 
 
     public ChatGUI(MessageClient client) {
-        this.messageClient = client;
-        this.clientUsername = client.getClientUsername();
+        this.MESSAGE_CLIENT = client;
+        this.CLIENT_USERNAME = client.getClientUsername();
         this.conversations = client.getConversations();
         this.usersToSend = new ArrayList<>();
         this.allMessages = new HashMap<>();
@@ -38,7 +36,7 @@ public class ChatGUI extends JFrame {
     //initial setup thingy
     private void showMessagePanel() {
         //initialize variables
-        messageFrame = new JFrame(String.format("%s's Messages", clientUsername));
+        messageFrame = new JFrame(String.format("%s's Messages", CLIENT_USERNAME));
         messageFrame.getContentPane().removeAll();
         messageFrame.repaint();
 
@@ -71,8 +69,8 @@ public class ChatGUI extends JFrame {
 
         middlePanel = new JPanel();
         middlePanel.setLayout(new BorderLayout());
-        deleteInstruction.setFont(new Font("Sans Serif", Font.ITALIC, 10));
-        middlePanel.add(deleteInstruction, "South");
+        DELETE_INSTRUCTION.setFont(new Font("Sans Serif", Font.ITALIC, 10));
+        middlePanel.add(DELETE_INSTRUCTION, "South");
         middlePanel.add(new JScrollPane((sentText)), "Center");
 
         JPanel botPanel = new JPanel();
@@ -122,7 +120,7 @@ public class ChatGUI extends JFrame {
 
 
     private void createPanel(Conversation c) {
-        DisplayMessageGUI panelToAdd = new DisplayMessageGUI(c, messageClient);
+        DisplayMessageGUI panelToAdd = new DisplayMessageGUI(c, MESSAGE_CLIENT);
         String label = panelToAdd.getMessageLabel(); //set label (already sort member)
         allMessages.put(label, panelToAdd); //put the panel to map
         inboxes.addElement(label); //add Label to the inboxList
@@ -132,8 +130,8 @@ public class ChatGUI extends JFrame {
         middlePanel.removeAll(); //wipe panel
         messageField = allMessages.get(messageLabel); //find the panel in the map
         usersToSend = messageField.getConversation().getMembers(); //set usersToSend to current member
-        usersToSend.remove(clientUsername); //remove sender out of usersToSend
-        middlePanel.add(deleteInstruction, "South");
+        usersToSend.remove(CLIENT_USERNAME); //remove sender out of usersToSend
+        middlePanel.add(DELETE_INSTRUCTION, "South");
         middlePanel.add(messageField, "Center");
         middlePanel.revalidate();
         middlePanel.repaint();
@@ -179,7 +177,7 @@ public class ChatGUI extends JFrame {
             // if the user is currently in that chat
             messageField.updateMessage(c);
         } else {
-            DisplayMessageGUI tempPanel = new DisplayMessageGUI(c, messageClient);
+            DisplayMessageGUI tempPanel = new DisplayMessageGUI(c, MESSAGE_CLIENT);
             String label = tempPanel.setMessageLabel(); // create a temp label for this conversation
             if (allMessages.containsKey(label)) { //use the label to see if conversation already exist
                 allMessages.get(label).updateMessage(c); //update the message, do not need to display
@@ -215,7 +213,7 @@ public class ChatGUI extends JFrame {
     private void setUsersToSend(String userNames, String message) {
         usersToSend = new ArrayList<>();
         userNames = userNames.strip(); //strip leading white spaces
-        if (userNames.isEmpty() || message.isEmpty() || userNames.equals(clientUsername)) { //if the user type in their name only
+        if (userNames.isEmpty() || message.isEmpty() || userNames.equals(CLIENT_USERNAME)) { //if the user type in their name only
             JOptionPane.showMessageDialog(null, "You did not enter a valid input",
                     "Social Messaging App", JOptionPane.ERROR_MESSAGE);
             return;
@@ -227,7 +225,7 @@ public class ChatGUI extends JFrame {
         Collections.sort(usersToSend);
 
         //check for local duplicates
-        DisplayMessageGUI tempPanel = new DisplayMessageGUI(new Conversation(usersToSend), messageClient);
+        DisplayMessageGUI tempPanel = new DisplayMessageGUI(new Conversation(usersToSend), MESSAGE_CLIENT);
         String label = tempPanel.setMessageLabel(); // create a temp label for this conversation
         if (allMessages.containsKey(label)) { //use the label to see if conversation already exist
             int answer = JOptionPane.showConfirmDialog(null,
@@ -235,30 +233,30 @@ public class ChatGUI extends JFrame {
                     "Social Messaging App", JOptionPane.YES_NO_OPTION); //ask if the user want to add this message to the conversation or not
             if (answer == JOptionPane.YES_OPTION) { // if yes
                 MessageClient.setClientMessageMessaging(message, usersToSend); //send message as usual
-                messageClient.setSendMessageClicked(true); //notify sendButton clicked, this calls the updateCurrentChat
+                MESSAGE_CLIENT.setSendMessageClicked(true); //notify sendButton clicked, this calls the updateCurrentChat
                 displayMessage(label); //(for future debug) SEE IF IT UPDATE IN TIME, if not, use Thread.sleep maybe
                 return;
             }
         }
-        messageClient.setSendMessageClicked(true);//notify button click
-        messageClient.setCheckUserAccountsExisting(true); // get the server to check if the recipients are in the system
+        MESSAGE_CLIENT.setSendMessageClicked(true);//notify button click
+        MESSAGE_CLIENT.setCheckUserAccountsExisting(true); // get the server to check if the recipients are in the system
         MessageClient.setClientMessageNewChat(usersToSend); // start a new chat
 
-        if (!messageClient.getUserAccountsExist()) {
+        if (!MESSAGE_CLIENT.getUserAccountsExist()) {
             JOptionPane.showMessageDialog(null, "One or More of the account usernames entered does not exist",
                     "Social Messaging App", JOptionPane.ERROR_MESSAGE);
-            messageClient.setUserAccountsExists(true);
+            MESSAGE_CLIENT.setUserAccountsExists(true);
             return;
         }
 
         MessageClient.setClientMessageMessaging(message, usersToSend);
-        messageClient.setSendMessageClicked(true);
+        MESSAGE_CLIENT.setSendMessageClicked(true);
     }
 
     private void removeConversation(String label, int index) {
         inboxes.remove(index); //remove from inboxes -> not display anymore
-        messageClient.setClientMessageDeleteUser(allMessages.get(label).getConversation()); //send to client
-        messageClient.setSendMessageClicked(true); //enter the loop
+        MESSAGE_CLIENT.setClientMessageDeleteUser(allMessages.get(label).getConversation()); //send to client
+        MESSAGE_CLIENT.setSendMessageClicked(true); //enter the loop
         DisplayMessageGUI temp = allMessages.get(label);
         //if user is currently open the chat
         if (temp.getConversation().getMembers().containsAll(messageField.getConversation().getMembers())
@@ -274,9 +272,9 @@ public class ChatGUI extends JFrame {
     }
 
     public void editChat(Conversation c) {
-        DisplayMessageGUI newPanel = new DisplayMessageGUI(c, messageClient);
+        DisplayMessageGUI newPanel = new DisplayMessageGUI(c, MESSAGE_CLIENT);
         String label = newPanel.setMessageLabel();
-        System.out.printf("Label on %s side: %s%n", clientUsername, label);
+        System.out.printf("Label on %s side: %s%n", CLIENT_USERNAME, label);
         DisplayMessageGUI oldPanel = allMessages.get(label);
         allMessages.replace(label, oldPanel, newPanel); //replace the old panel with new panel
         if (messageField.getMessageLabel().equals(label)) { //if user currently open this chat
@@ -305,7 +303,7 @@ public class ChatGUI extends JFrame {
                             "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                 } else {
                     MessageClient.setClientMessageMessaging(message, usersToSend); //send the message to messageClient
-                    messageClient.setSendMessageClicked(true); //set to TRUE to notify button click
+                    MESSAGE_CLIENT.setSendMessageClicked(true); //set to TRUE to notify button click
                     messageText.setText("Type your message here..."); //add the default text again after clicking send
                     messageText.addFocusListener(focusListener); // just for fancy displaying purpose :)
 

@@ -20,9 +20,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class MessageClient {
     //Global Fields
     private static String clientMessage;
+    private static String clientUsername;
     private static final String TITLE = "Social Messaging App";
     private static ChatGUI chatGUI;
-    private static String clientUsername;
     private static Socket socket = null;
     private static BufferedReader reader;
     private static BufferedWriter writer;

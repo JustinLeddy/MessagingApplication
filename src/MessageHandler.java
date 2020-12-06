@@ -3,6 +3,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.SQLOutput;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -405,7 +406,7 @@ public class MessageHandler implements Runnable {
                                         .map(line -> line.substring(0, line.indexOf(",")))
                                         .collect(Collectors.toList());
                                 boolean usersExist = allUsernames.containsAll(Arrays.asList(partTwo.split(", ")));
-
+                                System.out.println(userExists);
                                 clientWriter.write(usersExist + "\n");
                                 clientWriter.flush();
 

@@ -161,16 +161,17 @@ public class MessageClient {
 
                     //Sends message from Client to server
                     if (clientMessage != null && clientMessage.length() > 0) {
+                        System.out.println("Sent to server: " + clientMessage);
                         writer.write(clientMessage);
                         writer.newLine();
                         writer.flush();
-                        System.out.println("Sent to server: " + clientMessage);
                     }
 
                     if (checkUserAccountsExisting.get()) {
+                        boolean newUserExist = Boolean.parseBoolean(reader.readLine());
+                        System.out.println(newUserExist);
+                        userAccountsExist.set(newUserExist);
                         checkUserAccountsExisting.set(false);
-
-                        userAccountsExist.set(Boolean.parseBoolean(reader.readLine()));
                     }
 
                     // Login
@@ -398,11 +399,11 @@ public class MessageClient {
         MessageClient.checkUserAccountsExisting.set(value);
     }
 
-    public boolean getUserAccountsExist() {
-        return MessageClient.userAccountsExist.get();
+    public static boolean getUserAccountsExist() {
+        return userAccountsExist.get();
     }
 
-    public void setUserAccountsExists(boolean value) {
+    public static void setUserAccountsExists(boolean value) {
         MessageClient.userAccountsExist.set(value);
     }
 

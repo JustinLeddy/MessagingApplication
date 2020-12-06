@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.TextAttribute;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class ChatGUI extends JFrame {
     private final MessageClient MESSAGE_CLIENT;
@@ -156,8 +157,6 @@ public class ChatGUI extends JFrame {
     }
 
 
-
-
     //delete conversation for recipient
     public void userLeft(Conversation c, String removedUser) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -169,7 +168,7 @@ public class ChatGUI extends JFrame {
                     String label = new DisplayMessageGUI(new Conversation(tempMem), MESSAGE_CLIENT).setMessageLabel();
                     tempMem.remove(removedUser);
                     DisplayMessageGUI oldPanel = allMessages.get(label);
-                    if (c.getMembers().size() == 1) { //only one user left
+                    if (c.getMembers().size() == 0) { //only one user left
                         oldPanel.notifyUserLeft(removedUser); //just notify, don't need to change label
                     } else {
                         DisplayMessageGUI newPanel = new DisplayMessageGUI(c, MESSAGE_CLIENT);
@@ -262,25 +261,31 @@ public class ChatGUI extends JFrame {
                 return;
             }
         }
-        MESSAGE_CLIENT.setCheckUserAccountsExisting(true); // get the server to check if the recipients are in the system
+
         MessageClient.setClientMessageNewChat(usersToSend); // start a new chat
+        MESSAGE_CLIENT.setCheckUserAccountsExisting(true); // get the server to check if the recipients are in the system
         MESSAGE_CLIENT.setSendMessageClicked(true);//notify button click
 
-        if (!MESSAGE_CLIENT.getUserAccountsExist()) {
-            JOptionPane.showMessageDialog(null, "One or More of the account usernames entered does not exist",
-                    "Social Messaging App", JOptionPane.ERROR_MESSAGE);
-            MESSAGE_CLIENT.setUserAccountsExists(true);
-            return;
+        try { //wait for server to respond
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
-        MessageClient.setClientMessageMessaging(message, usersToSend);
-        MESSAGE_CLIENT.setSendMessageClicked(true);
+        if (!MessageClient.getUserAccountsExist()) {
+            JOptionPane.showMessageDialog(null, "One or More of the account usernames entered does not exist",
+                    "Social Messaging App", JOptionPane.ERROR_MESSAGE);
+            MessageClient.setUserAccountsExists(true);
+        } else {
+            MessageClient.setClientMessageMessaging(message, usersToSend);
+            MESSAGE_CLIENT.setSendMessageClicked(true);
+        }
     }
 
     //[GUI method] temp remove conversation for sender and send to user
     private void removeConversation(String label, int index) {
         inboxes.remove(index); //remove from inboxes -> not display anymore
-        MESSAGE_CLIENT.setClientMessageDeleteUser(allMessages.get(label).getConversation()); //send to client
+        MessageClient.setClientMessageDeleteUser(allMessages.get(label).getConversation()); //send to client
         MESSAGE_CLIENT.setSendMessageClicked(true); //enter the loop
         DisplayMessageGUI temp = allMessages.get(label);
         //if user is currently open the chat
@@ -393,7 +398,7 @@ public class ChatGUI extends JFrame {
                                 "Are you sure you want to permanently delete this account?",
                                 "Delete Account", JOptionPane.YES_NO_OPTION);
                         if (choice == JOptionPane.YES_OPTION) {
-                            for (Conversation c: conversations) {
+                            for (Conversation c : conversations) {
                                 MESSAGE_CLIENT.setClientMessageDeleteUser(c);
                                 MESSAGE_CLIENT.setSendMessageClicked(true);
                             }

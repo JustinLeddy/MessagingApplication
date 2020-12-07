@@ -181,6 +181,7 @@ public class ChatGUI extends JFrame {
         middlePanel.add(DELETE_INSTRUCTION, "South");
         middlePanel.add(EDIT_ACCOUNT, "North");
         middlePanel.add(messageField, "Center");
+        messageText.setEditable(true); //enable text field to start typing
         middlePanel.revalidate();
         middlePanel.repaint();
         repaint();
@@ -483,7 +484,7 @@ public class ChatGUI extends JFrame {
                         selectedConversation = selectedConversation.substring(0, selectedConversation.length() - 4);
                         inboxes.setElementAt(selectedConversation, index);
                     }
-                    messageText.setEditable(true); //enable text field to start typing
+
                     displayMessage(selectedConversation);
                 }
             } else if (e.getSource() == EDIT_ACCOUNT) {

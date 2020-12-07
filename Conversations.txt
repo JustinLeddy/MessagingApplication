@@ -35,3 +35,4 @@ Alex|Justin|Mario<*>Maeve|Hello<*>System|Maeve has left the chat.
 Justin|Maeve|Tom|Tommy<*>Justin|hey
 Justin|Maeve2<*>Maeve2|hey
 Alex|Justin|Maeve<*>Justin|Heyo
+Jesus|Maeve<*>Alex|Hey<*>System|Alex has left the chat.

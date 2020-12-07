@@ -126,16 +126,21 @@ public class MessageHandler implements Runnable {
                         membersList = new ArrayList<>(Arrays.asList(recipients.split(",")));
                         membersList.add(sender);
                         Collections.sort(membersList);
-                        HashMap<String, MessageHandler> allClients = ClientManager.getDeliverTo(); //HashMap of all the clients in the client manager
+                        //HashMap of all the clients in the client manager
+                        HashMap<String, MessageHandler> allClients = ClientManager.getDeliverTo();
 
                         //sends message to appropriate users
-                        for (Map.Entry<String, MessageHandler> client : allClients.entrySet()) { //loops through all message handlers
-                            MessageHandler clientMessageHandler = client.getValue(); //sets socket and message handler for this iteration
+                        //loops through all message handlers
+                        for (Map.Entry<String, MessageHandler> client : allClients.entrySet()) {
+                            //sets socket and message handler for this iteration
+                            MessageHandler clientMessageHandler = client.getValue();
                             Socket socket = clientMessageHandler.getClientSocket();
 
+                            //if this user is connected, and is an intended recipient
                             if (!socket.isClosed()
                                     && clientMessageHandler.getCurrentClientUsername() != null
-                                    && membersList.contains(clientMessageHandler.getCurrentClientUsername())) { //if this user is connected, and is an intended recipient
+                                    && membersList.contains(
+                                    clientMessageHandler.getCurrentClientUsername())) {
                                 clientMessageHandler.send(clientMessage);
 
                             }
@@ -145,7 +150,8 @@ public class MessageHandler implements Runnable {
 
                         List<String> lines = Files.readAllLines(Path.of("Conversations.txt"), StandardCharsets.UTF_8);
                         //Format of clientMessage: M|Sender|Recipient|Message
-                        //Format Of Lines: Member1|Member2|Member3<*>Username|Message%&Username|Message%&Username|Message
+                        //Format Of Lines: Member1|Member2|Member3<*>
+                        //Username|Message%&Username|Message%&Username|Message
 
                         //loops through every conversation
                         for (int i = 0; i < lines.size(); i++) {
@@ -174,7 +180,8 @@ public class MessageHandler implements Runnable {
                         }
 
                         if (!writtenToFile) { //if the conversation doesn't exist
-                            try (var conversationWriter = new PrintWriter(new FileOutputStream("Conversations.txt", true))) {
+                            try (var conversationWriter = new PrintWriter(
+                                    new FileOutputStream("Conversations.txt", true))) {
                                 String newLine = Arrays.toString(membersList.toArray())
                                         .replaceAll(", ", "|")
                                         .replaceAll("[\\[\\]]", "")
@@ -188,14 +195,16 @@ public class MessageHandler implements Runnable {
                     } else if (clientMessage.charAt(0) == 'D') { //delete account
                         List<String> accountLines = Files.readAllLines(Path.of("Accounts.txt"), StandardCharsets.UTF_8);
                         //Format of clientMessage: M|Sender|Recipient|Message
-                        //Format Of Lines: Member1|Member2|Member3<*>Username|Message%&Username|Message%&Username|Message
+                        //Format Of Lines: Member1|Member2|Member3<*>
+                        // Username|Message%&Username|Message%&Username|Message
 
                         //loops through every conversation
                         for (int i = 0; i < accountLines.size(); i++) {
                             String[] lineSplit = accountLines.get(i).split(",");
                             String username = lineSplit[0];
                             if (username.equalsIgnoreCase(currentClientUsername)) {
-                                accountLines.set(i, currentClientUsername + ","); //sets the password blank so the account cant be accessed, essentially "deleted"
+                                //sets the password blank so the account cant be accessed, essentially "deleted"
+                                accountLines.set(i, currentClientUsername + ",");
                                 break;
                             }
                         }
@@ -209,7 +218,8 @@ public class MessageHandler implements Runnable {
                         String newPassword = clientMessage.split("\\|")[2];
                         List<String> lines = Files.readAllLines(Path.of("Accounts.txt"), StandardCharsets.UTF_8);
                         //Format of clientMessage: M|Sender|Recipient|Message
-                        //Format Of Lines: Member1|Member2|Member3<*>Username|Message%&Username|Message%&Username|Message
+                        //Format Of Lines:
+                        //Member1|Member2|Member3<*>Username|Message%&Username|Message%&Username|Message
 
                         //loops through every conversation
                         for (int i = 0; i < lines.size(); i++) {
@@ -230,22 +240,27 @@ public class MessageHandler implements Runnable {
                         String[] clientMessageSplit = clientMessage.split("<\\*>");
 
                         if (clientMessageSplit.length > 3) { //delete request
-                            //Format U<*>currentMember1|currentMember2|currentMember3<*>memberToDelete<*>allMessages and the optional <*>trueOrFalse
+                            //Format U<*>currentMember1|currentMember2|currentMember3<*>memberToDelete<*>
+                            // allMessages and the optional <*>trueOrFalse
                             //get correct fields
                             String userToRemove = clientMessageSplit[2];
                             String clientConversationMembers = clientMessageSplit[1] + "|" + userToRemove;
                             String allMessages = clientMessageSplit[3];
-                            ArrayList<String> membersArray = new ArrayList<>(Arrays.asList(clientConversationMembers.split("\\|")));
+                            ArrayList<String> membersArray = new ArrayList<>(Arrays.asList(
+                                    clientConversationMembers.split("\\|")));
                             //loop through file and find correct row
-                            List<String> lines = Files.readAllLines(Path.of("Conversations.txt"), StandardCharsets.UTF_8);
+                            List<String> lines = Files.readAllLines(Path.of("Conversations.txt")
+                                    , StandardCharsets.UTF_8);
                             String allConversations = "";
                             boolean conversationToUpdate = true;
                             for (int i = 0; i < lines.size(); i++) {
                                 String conversationLine = lines.get(i);
-                                ArrayList<String> line = new ArrayList<>(Arrays.asList(conversationLine.split("<\\*>")));
+                                ArrayList<String> line = new ArrayList<>(Arrays.asList(
+                                        conversationLine.split("<\\*>")));
                                 ArrayList<String> members = new ArrayList<>(Arrays.asList(line.get(0).split("\\|")));
 
-                                if (clientMessageSplit.length == 5) { //if there is only one user left and they tossed a delete, then remove the array
+                                //if there is only one user left and they tossed a delete, then remove the array
+                                if (clientMessageSplit.length == 5) {
                                     lines.remove(i);
                                     conversationToUpdate = false;
                                     break;
@@ -255,16 +270,23 @@ public class MessageHandler implements Runnable {
                                 if (members.containsAll(membersArray) && members.size() == membersArray.size()) {
                                     membersArray.remove(userToRemove); //remove the user
                                     if (membersArray.size() > 1) { //if there is still more than two
-                                        String updatedConversation = Arrays.toString(new ArrayList[]{membersArray}) //format the
+                                        String updatedConversation = Arrays.toString(new ArrayList[]
+                                                {membersArray})
                                                 .replaceAll(", ", "|")
-                                                .replaceAll("[\\[\\]]", "") + "<*>" + allMessages + "<*>System|" + userToRemove + " has left the chat.";
+                                                .replaceAll("[\\[\\]]", "")
+                                                + "<*>" + allMessages + "<*>System|" + userToRemove
+                                                + " has left the chat.";
                                         //keep record of user leaving chat to display later
-                                        allConversations = "U<*>" + userToRemove + "<*>" + allMessages; //format U<*>userRemoved<*>message<*>
+                                        //format U<*>userRemoved<*>message<*>
+                                        allConversations = "U<*>" + userToRemove + "<*>" + allMessages;
                                         lines.set(i, updatedConversation); //set the correct line
                                         break;
                                     } else {
-                                        //theres two members in this chat, then append true if the first user is removed, false if the second user is removed
-                                        String updatedConversation = lines.get(i) + "<*>"; //format U<*>userRemoved<*>message<*>
+                                        //theres two members in this chat, then append true
+                                        // if the first user is removed, false if the second user is removed
+
+                                        //format U<*>userRemoved<*>message<*>
+                                        String updatedConversation = lines.get(i) + "<*>";
                                         if (members.get(0).equals(userToRemove)) {
                                             updatedConversation += "true";
                                         } else {
@@ -281,15 +303,20 @@ public class MessageHandler implements Runnable {
 
                             //send the conversation update to the other members
                             HashMap<String, MessageHandler> allClients = ClientManager.getDeliverTo();
-                            clientConversationMembers = clientConversationMembers.substring(0, clientConversationMembers.lastIndexOf("|"));
-                            for (Map.Entry<String, MessageHandler> client : allClients.entrySet()) { //loops through all message handlers
-                                MessageHandler clientMessageHandler = client.getValue(); //sets socket and message handler for this iteration
+                            clientConversationMembers = clientConversationMembers.substring(0,
+                                    clientConversationMembers.lastIndexOf("|"));
+                            //loops through all message handlers
+                            for (Map.Entry<String, MessageHandler> client : allClients.entrySet()) {
+                                //sets socket and message handler for this iteration
+                                MessageHandler clientMessageHandler = client.getValue();
                                 Socket socket = clientMessageHandler.getClientSocket();
 
+                                //if this user is connected, and is an intended recipient, and is not the sender
                                 if (!socket.isClosed()
                                         && clientMessageHandler.getCurrentClientUsername() != null
                                         && membersArray.contains(clientMessageHandler.getCurrentClientUsername())
-                                        && !(currentClientUsername.equals(clientMessageHandler.getCurrentClientUsername()))) { //if this user is connected, and is an intended recipient, and is not the sender
+                                        && !(currentClientUsername.equals(clientMessageHandler
+                                        .getCurrentClientUsername()))) {
 
                                     if (conversationToUpdate) {
                                         clientMessageHandler.send(clientMessage);
@@ -303,11 +330,13 @@ public class MessageHandler implements Runnable {
                             String updateChatMembers = clientMessageSplit[1];
                             String messages = clientMessageSplit[2];
                             List<String> membersArray = Arrays.asList(updateChatMembers.split("\\|"));
-                            List<String> lines = Files.readAllLines(Path.of("Conversations.txt"), StandardCharsets.UTF_8);
+                            List<String> lines = Files.readAllLines(
+                                    Path.of("Conversations.txt"), StandardCharsets.UTF_8);
 
                             for (int i = 0; i < lines.size(); i++) {
                                 String conversationLine = lines.get(i);
-                                ArrayList<String> line = new ArrayList<>(Arrays.asList(conversationLine.split("<\\*>")));
+                                ArrayList<String> line = new ArrayList<>(Arrays.asList(
+                                        conversationLine.split("<\\*>")));
                                 ArrayList<String> members = new ArrayList<>(Arrays.asList(line.get(0).split("\\|")));
 
                                 //if the conversation members matches
@@ -323,14 +352,19 @@ public class MessageHandler implements Runnable {
                             //send update conversation to
                             HashMap<String, MessageHandler> allClients = ClientManager.getDeliverTo();
 
-                            for (Map.Entry<String, MessageHandler> client : allClients.entrySet()) { //loops through all message handlers
-                                MessageHandler clientMessageHandler = client.getValue(); //sets socket and message handler for this iteration
+                            //loops through all message handlers
+                            for (Map.Entry<String, MessageHandler> client : allClients.entrySet()) {
+                                //sets socket and message handler for this iteration
+                                MessageHandler clientMessageHandler = client.getValue();
                                 Socket socket = clientMessageHandler.getClientSocket();
 
+                                //if this user is connected, and is an intended recipient,
+                                // and is not the sender
                                 if (!socket.isClosed()
                                         && clientMessageHandler.getCurrentClientUsername() != null
                                         && membersArray.contains(clientMessageHandler.getCurrentClientUsername())
-                                        && !(currentClientUsername.equals(clientMessageHandler.getCurrentClientUsername()))) { //if this user is connected, and is an intended recipient, and is not the sender
+                                        && !(currentClientUsername.equals(clientMessageHandler.
+                                        getCurrentClientUsername()))) {
 
                                     clientMessageHandler.send(clientMessage); //format U<*>memberArray<*>newMessageArray
 
@@ -341,7 +375,9 @@ public class MessageHandler implements Runnable {
                         //Read Conversations from File
                         //look for every conversation with the username in it
                         // write them all in one massive line with format explained in Conversations.txt
-                        //Format: Member1|Member2|Member3<*>Username|Message&%Username|Message<&*>conversation2<&*>conversation3
+                        //Format:
+                        // Member1|Member2|Member3<*>Username|Message&%Username|Message<&*>conversation2
+                        // <&*>conversation3
 
                         List<String> lines = Files.readAllLines(Path.of("Conversations.txt"), StandardCharsets.UTF_8);
 
@@ -410,9 +446,7 @@ public class MessageHandler implements Runnable {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                        }
-                        //register
-                        else if (firstLetter == 'R') { //register a new account
+                        } else if (firstLetter == 'R') { //register a new account
                             username = partTwo.strip(); //strip removes leading and trailing spaces
                             password = info[2].strip();
 

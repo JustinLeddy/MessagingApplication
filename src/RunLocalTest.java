@@ -15,8 +15,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-//TODO Implement Method Testing in Main
+/**
+ * RunLocalTest
+ * <p>
+ * The run test class to test fields
+ * methods and classes in this
+ * project
+ *
+ * @author Alex Frey, Justin Leddy, Maeve Tra, Yifei Mao, Naveena Erranki
+ * @version December 7th, 2020
+ */
 public class RunLocalTest {
+
     /**
      * Main Method to Run Tests
      */
@@ -31,6 +41,9 @@ public class RunLocalTest {
         }
     }
 
+    /**
+     * Class to test all methods, fields, and classes in this project
+     */
     public static class TestCase {
         private final PrintStream originalOutput = System.out;
         private final InputStream originalSysin = System.in;
@@ -1323,7 +1336,8 @@ public class RunLocalTest {
         @Test(timeout = 1000)
         public void testMessageClientMethodOneDeclaration() {
             try {
-                Method method = MessageClient.class.getDeclaredMethod("setClientMessageLoginRegister", boolean.class, String.class, char[].class);
+                Method method = MessageClient.class
+                        .getDeclaredMethod("setClientMessageLoginRegister", boolean.class, String.class, char[].class);
                 if (method.getModifiers() != Modifier.PUBLIC + Modifier.STATIC) {
                     fail("The method `setClientMessageLoginRegister` in MessageClient is not public and/or static");
                 }
@@ -1340,7 +1354,8 @@ public class RunLocalTest {
         @Test(timeout = 1000)
         public void testMessageClientMethodTwoDeclaration() {
             try {
-                Method method = MessageClient.class.getDeclaredMethod("setClientMessageMessaging", String.class, ArrayList.class);
+                Method method = MessageClient.class
+                        .getDeclaredMethod("setClientMessageMessaging", String.class, ArrayList.class);
                 if (method.getModifiers() != Modifier.PUBLIC + Modifier.STATIC) {
                     fail("The method `setClientMessageMessaging` in MessageClient is not public and/or static");
                 }
@@ -2102,7 +2117,8 @@ public class RunLocalTest {
         @Test(timeout = 1000)
         public void testDisplayMessageGUIConstructorDeclaration() {
             try {
-                Constructor constructor = DisplayMessageGUI.class.getDeclaredConstructor(Conversation.class, MessageClient.class);
+                Constructor constructor = DisplayMessageGUI.class.
+                        getDeclaredConstructor(Conversation.class, MessageClient.class);
                 if (constructor.getModifiers() != Modifier.PUBLIC) {
                     fail("The constructor `DisplayMessageGUI` in DisplayMessageGUI is not public");
                 }
@@ -2251,7 +2267,8 @@ public class RunLocalTest {
         @Test(timeout = 1000)
         public void testDisplayMessageGUIMethodNineDeclaration() {
             try {
-                Method method = Class.forName("DisplayMessageGUI$3").getDeclaredMethod("mouseClicked", MouseEvent.class);
+                Method method = Class.forName("DisplayMessageGUI$3")
+                        .getDeclaredMethod("mouseClicked", MouseEvent.class);
                 if (method.getModifiers() != Modifier.PUBLIC) {
                     fail("The method `mouseClicked` in DisplayMessageGUI is not public");
                 }
@@ -2566,9 +2583,11 @@ public class RunLocalTest {
             String clientMessageLogin = "L|username|password";
             String clientMessageRegister = "R|username|password";
             String clientMessageChangePassword = "P|username|password";
-            String clientMessageUpdateChat = "U<*>member1|member2|member3|username<*>member1|message1%&member2|message2";
+            String clientMessageUpdateChat = "U<*>member1|member2|member3|username<*>" +
+                    "member1|message1%&member2|message2";
             String clientMessageNewChat = "C|member1,member2,member3";
-            String clientMessageDeleteUser = "U<*>member1|member2|member3<*>username<*>member1|message1%&member2|message2";
+            String clientMessageDeleteUser = "U<*>member1|member2|member3<*>" +
+                    "username<*>member1|message1%&member2|message2";
             String username = "username";
             String password = "password";
             String member = "member";
@@ -2706,7 +2725,8 @@ public class RunLocalTest {
 
         public void testDisplayMessageGUI() {
             ArrayList<String> members = new ArrayList<String>(Arrays.asList("member1", "member2", "member3"));
-            ArrayList<String> messages = new ArrayList<String>(Arrays.asList("member1|message1", "member2|message2", "member3|message3"));
+            ArrayList<String> messages = new ArrayList<String>(
+                    Arrays.asList("member1|message1", "member2|message2", "member3|message3"));
             Conversation conversation = new Conversation(members, messages);
             MessageClient messageClient = new MessageClient();
             DisplayMessageGUI displayMessageGUI = new DisplayMessageGUI(conversation, messageClient);

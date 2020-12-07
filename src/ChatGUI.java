@@ -217,8 +217,10 @@ public class ChatGUI extends JFrame {
                         allMessages.remove(label); //remove old panel from map
                         allMessages.put(newLabel, newPanel); //add new panel to map with a new label
                         if (messageField != null
-                                && newPanel.getConversation().getMembers().containsAll(messageField.getConversation().getMembers())
-                                && messageField.getConversation().getMembers().containsAll(newPanel.getConversation().getMembers())) {
+                                && newPanel.getConversation().getMembers()
+                                .containsAll(messageField.getConversation().getMembers())
+                                && messageField.getConversation().getMembers()
+                                .containsAll(newPanel.getConversation().getMembers())) {
                             //user currently open the chat
                             middlePanel.remove(messageField);
                             messageField = newPanel;
@@ -301,8 +303,10 @@ public class ChatGUI extends JFrame {
     }
 
     /**
-     * Called when the new chat button is clicked. Take the recipient list from the user and send to MessageClient to validate
-     * If all recipients are valid, send the message to MessageClient to create new chat. If not, show an error message
+     * Called when the new chat button is clicked. Take the recipient list from the user
+     * and send to MessageClient to validate.
+     * If all recipients are valid, send the message to MessageClient to create new chat.
+     * If not, show an error message
      * If conversation already exists, ask if the user want to add to this conversation or not
      *
      * @param userNames all the recipients the user wants to send to
@@ -312,7 +316,8 @@ public class ChatGUI extends JFrame {
         usersToSend = new ArrayList<>();
         userNames = userNames.strip(); //strip leading white spaces
         userNames = userNames.replaceAll(", ", ",");
-        if (userNames.isEmpty() || message.isEmpty() || userNames.equals(CLIENT_USERNAME)) { //if the user type in their name only
+        //if the user type in their name only
+        if (userNames.isEmpty() || message.isEmpty() || userNames.equals(CLIENT_USERNAME)) {
             JOptionPane.showMessageDialog(null, "You did not enter a valid input",
                     "Social Messaging App", JOptionPane.ERROR_MESSAGE);
             return;
@@ -328,20 +333,23 @@ public class ChatGUI extends JFrame {
         DisplayMessageGUI tempPanel = new DisplayMessageGUI(new Conversation(usersToSend), MESSAGE_CLIENT);
         String label = tempPanel.setMessageLabel(); // create a temp label for this conversation
         if (allMessages.containsKey(label)) { //use the label to see if conversation already exist
+            //ask if the user want to add this message to the conversation or not
             int answer = JOptionPane.showConfirmDialog(null,
                     "This conversation already exists. Do you want to send this chat to this conversation?",
-                    "Social Messaging App", JOptionPane.YES_NO_OPTION); //ask if the user want to add this message to the conversation or not
+                    "Social Messaging App", JOptionPane.YES_NO_OPTION);
             if (answer == JOptionPane.YES_OPTION) { // if yes
                 MessageClient.setClientMessageMessaging(message, usersToSend); //send message as usual
                 MESSAGE_CLIENT.setSendMessageClicked(true); //notify sendButton clicked, this calls the updateCurrentChat
-                displayMessage(label); //(for future debug) SEE IF IT UPDATE IN TIME, if not, use Thread.sleep maybe
+                //(for future debug) SEE IF IT UPDATE IN TIME, if not, use Thread.sleep maybe
+                displayMessage(label);
                 return;
             }
         }
 
         MessageClient.setClientMessageNewChat(usersToSend); // start a new chat
-        MESSAGE_CLIENT.setCheckUserAccountsExisting(true); // get the server to check if the recipients are in the system
-        MESSAGE_CLIENT.setSendMessageClicked(true);//notify button click
+        // get the server to check if the recipients are in the system
+        MESSAGE_CLIENT.setCheckUserAccountsExisting(true);
+        MESSAGE_CLIENT.setSendMessageClicked(true); //notify button click
 
         try { //wait for server to respond
             TimeUnit.MILLISECONDS.sleep(500);
@@ -376,7 +384,7 @@ public class ChatGUI extends JFrame {
                 && messageField.getConversation().getMembers().containsAll(temp.getConversation().getMembers())) {
             middlePanel.removeAll(); //wipe the chat panel
             messageField = null; //set back to null
-            messageText.setEditable(false);//so they can't type any more
+            messageText.setEditable(false); //so they can't type any more
             middlePanel.revalidate();
             middlePanel.repaint();
         }
@@ -401,8 +409,10 @@ public class ChatGUI extends JFrame {
                 if (message.isEmpty()) { //check if there is message to send
                     JOptionPane.showMessageDialog(null, "There is no message to send!",
                             "Social Messaging App", JOptionPane.ERROR_MESSAGE);
-                } else if (message.contains("<*>") || message.contains("|") || message.contains("%&") || message.contains("<&*>")) { //<*> or | or %& or <&*>
-                    JOptionPane.showMessageDialog(null, "Please make sure your message doesnt contain <*> or | or %& or <&*>.",
+                } else if (message.contains("<*>") || message.contains("|")
+                        || message.contains("%&") || message.contains("<&*>")) { //<*> or | or %& or <&*>
+                    JOptionPane.showMessageDialog(null,
+                            "Please make sure your message doesnt contain <*> or | or %& or <&*>.",
                             "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                 } else {
                     MessageClient.setClientMessageMessaging(message, usersToSend); //send the message to messageClient
@@ -424,7 +434,8 @@ public class ChatGUI extends JFrame {
                 if (initialMessage == null) { // user choose cancel
                     return;
                 } else if (initialMessage.contains("<*>") || initialMessage.contains("|") || initialMessage.contains("%&") || initialMessage.contains("<&*>")) { //<*> or | or %& or <&*>
-                    JOptionPane.showMessageDialog(null, "Please make sure your message doesnt contain <*> or | or %& or <&*>.",
+                    JOptionPane.showMessageDialog(null,
+                            "Please make sure your message doesnt contain <*> or | or %& or <&*>.",
                             "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                     return;
                 }

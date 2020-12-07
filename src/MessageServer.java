@@ -66,9 +66,9 @@ public class MessageServer {
                 break;
             }
             //Get user ip address & port pair
-            InetAddress IP = clientSocket.getInetAddress();
+            InetAddress ip = clientSocket.getInetAddress();
             int portNum = clientSocket.getPort();
-            identity = IP.toString() + portNum;
+            identity = ip.toString() + portNum;
             System.out.println("Identity is: " + portNum);
 
             messageHandler = new MessageHandler(clientSocket);

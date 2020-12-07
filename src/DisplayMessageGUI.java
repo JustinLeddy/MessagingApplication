@@ -153,11 +153,14 @@ public class DisplayMessageGUI extends JPanel {
                         null, options, options[0]);
                 switch (answer) {
                     case 0 -> { //Edit
-                        String edit = JOptionPane.showInputDialog("Make your changes here:", message.substring(message.indexOf("|") + 1));
+                        String edit = JOptionPane.showInputDialog("Make your changes here:",
+                                message.substring(message.indexOf("|") + 1));
                         if (edit == null) { // cancel
                             return;
-                        } else if (edit.contains("<*>") || edit.contains("|") || edit.contains("%&") || edit.contains("<&*>")) { //<*> or | or %& or <&*>
-                            JOptionPane.showMessageDialog(null, "Please make sure your message doesnt contain <*> or | or %& or <&*>.",
+                        } else if (edit.contains("<*>") || edit.contains("|")
+                                || edit.contains("%&") || edit.contains("<&*>")) { //<*> or | or %& or <&*>
+                            JOptionPane.showMessageDialog(null,
+                                    "Please make sure your message doesnt contain <*> or | or %& or" + " <&*>.",
                                     "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                             return;
                         }

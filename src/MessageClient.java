@@ -60,11 +60,11 @@ public class MessageClient {
      * Format for logging in is L|username|password
      * and for registering is R|username|password
      *
-     * @param loginOrRegister boolean which determines whether to set the message in the login or register format
+     * @param loginRegister boolean which determines whether to set the message in the login or register format
      * @param username        username of the client
      * @param passwordArray   character array of the password
      */
-    public static void setClientMessageLoginRegister(boolean loginOrRegister, String username, char[] passwordArray) {
+    public static void setClientMessageLoginRegister(boolean loginRegister, String username, char[] passwordArray) {
         //Grab username and password
         String password = "";
 
@@ -74,7 +74,7 @@ public class MessageClient {
         }
 
         //Already check for empty in LoginGUI
-        if (loginOrRegister) {
+        if (loginRegister) {
             //Send info for login
             clientMessage = String.format("L |%s|%s", username, password);
         } else {
@@ -291,7 +291,7 @@ public class MessageClient {
                         }
                     }
                 } catch (IOException e) {
-                    e.printStackTrace(); //TODO: Replace with detailed error popup
+                    e.printStackTrace();
                     break;
                 }
             }
@@ -310,7 +310,6 @@ public class MessageClient {
             try {
                 if (reader.ready()) { //if there is a message from the server
                     String fromServer = reader.readLine(); //read message
-                    //System.out.println("Received this from the server: {" + fromServer + "}"); //print the message it received from server
                     if (fromServer.startsWith("M|")) {//if it is in the message format
                         //M|Sender|Recipient|Message
                         //M|Sender|Recipient1,Recipient2,Recipient3|Message
@@ -431,13 +430,15 @@ public class MessageClient {
         if (readLine != null && readLine.length() > 2) {
             String[] newConversations = readLine.split("<&\\*>");
             ArrayList<Conversation> updatedConversations = new ArrayList<>();
-            for (String conversation : newConversations) { //Member1|Member2|Member3<*>Username|Message%&Username|Message%&Username|Message
+            //Member1|Member2|Member3<*>Username|Message%&Username|Message%&Username|Message
+            for (String conversation : newConversations) {
                 String[] membersAndMessages = conversation.split("<\\*>");
                 if (membersAndMessages.length == 3) {
                     ArrayList<String> members = new ArrayList<>(Arrays.asList(membersAndMessages[0].split("\\|")));
                     boolean displayOrNot = Boolean.parseBoolean(membersAndMessages[2]);
 
-                    //displayOrNot true if the first user left, false if the second, this adds the conversation if they're not the user that left
+                    //displayOrNot true if the first user left,
+                    // false if the second, this adds the conversation if they're not the user that left
                     if (clientUsername.equals(members.get(0)) != displayOrNot) {
                         members.remove(clientUsername);
                         ArrayList<String> messages = new ArrayList<>(Arrays.asList(membersAndMessages[1].split("%&")));

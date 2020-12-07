@@ -107,7 +107,7 @@ The ChatGUI class also has multiple methods devoted to executing commands once a
 Graphic User Interface that displays messages for each conversation. This class is basically a JPanel using JList as a means to display messages. Each panel is unique to a conversation. During initialization, the class runs through the message array of a conversation and adds each message to the list. When the user sends a new chat, this chat will be added at the end of the list. The panel will auto-scroll to the end of the list to make sure the latest message is visible.
 The DisplayMessageGUI class also has a method that is dedicated to executing commands once an event occurs; it uses a MouseListener which takes care of when a user wants to edit/delete messages so that the method can then prompt the user to follow through on said command and then the class sends a message to MessageClient to take note of this on file.
 
-[![Screen-Shot-2020-12-04-at-5-03-46-AM.png](https://i.postimg.cc/C5Kv2JpS/Screen-Shot-2020-12-04-at-5-03-46-AM.png)](https://postimg.cc/JD9cDNh2)
+[![Screen-Shot-2020-12-07-at-1-35-16-AM.png](https://i.postimg.cc/sxWXY2wZ/Screen-Shot-2020-12-07-at-1-35-16-AM.png)](https://postimg.cc/30KY73MK)
 
 ## ClientManager
 A hashmap that stores user identity and thread connection. It assigns user IP/port pair as a key to the value of a MessageHandler instance.

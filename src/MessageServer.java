@@ -24,6 +24,7 @@ public class MessageServer {
     /**
      * Constructs a new MethodServer at the given port
      * Sets the server socket at the port
+     *
      * @param port port to set the server socket at
      * @throws IOException exception thrown when the socket encounters a connection error
      */

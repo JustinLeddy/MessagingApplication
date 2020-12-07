@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
+
 /**
  * DisplayMessageGUI
  * <p>
@@ -29,7 +30,7 @@ public class DisplayMessageGUI extends JPanel {
      * preload the list with old messages
      *
      * @param conversation conversation to display
-     * @param client the current sender of this conversation
+     * @param client       the current sender of this conversation
      */
     public DisplayMessageGUI(Conversation conversation, MessageClient client) {
         this.conversation = conversation;
@@ -58,6 +59,7 @@ public class DisplayMessageGUI extends JPanel {
 
     /**
      * sort the member list and create an appropriate label for this conversation
+     *
      * @return label that is created
      */
     public String setMessageLabel() {
@@ -74,6 +76,7 @@ public class DisplayMessageGUI extends JPanel {
 
     /**
      * Getter for MESSAGE_LABEL
+     *
      * @return current label of the conversation
      */
     public String getMessageLabel() {
@@ -82,6 +85,7 @@ public class DisplayMessageGUI extends JPanel {
 
     /**
      * Getter for conversation
+     *
      * @return conversation in this panel
      */
     public Conversation getConversation() {
@@ -91,6 +95,7 @@ public class DisplayMessageGUI extends JPanel {
     /**
      * Thread-safe implementation of message updating. Add the new message to the list
      * and auto-scroll to the latest message
+     *
      * @param c new conversation that has the new message
      */
     public void updateMessage(Conversation c) {
@@ -107,6 +112,7 @@ public class DisplayMessageGUI extends JPanel {
 
     /**
      * Temporarily display a system message to notify user leaves
+     *
      * @param removedUser user that leaves
      */
     public void notifyUserLeft(String removedUser) {
@@ -122,7 +128,7 @@ public class DisplayMessageGUI extends JPanel {
      * MouseListener to implement edit/delete message.
      * Get the message and prompt the user to edit/delete.
      * Send message to MessageClient to record on file
-     *
+     * <p>
      * Testing (more info in README)
      * - double click on any messages should prompt a pop up window. Tested with single click
      * - edit/delete message should immediately update conversation on all sides
@@ -155,7 +161,7 @@ public class DisplayMessageGUI extends JPanel {
                                     "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
-                        message = message.substring(0,message.indexOf("|") + 1) + edit;
+                        message = message.substring(0, message.indexOf("|") + 1) + edit;
                         conversation.editMessageAtIndex(index, message);
                         list.set(index, message);
                         notifyChange();
@@ -189,6 +195,7 @@ public class DisplayMessageGUI extends JPanel {
 
     /**
      * local check to see if user is the sender
+     *
      * @param message
      * @return
      */

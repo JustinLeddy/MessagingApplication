@@ -4,7 +4,7 @@ import java.awt.event.ActionListener;
 
 /**
  * LoginGUI
- *
+ * <p>
  * The login/register window to take in client's username and password
  * Send client's credentials to MessageClient to process and verify authentication
  * Prompt error message if credentials are invalid and welcoming message if the user is verfied
@@ -28,6 +28,7 @@ public class LoginGUI extends JFrame {
     /**
      * Constructor for LoginGUI
      * Initialize the login frame with all functional buttons and text fields
+     *
      * @param client the specific client is logging in
      */
     public LoginGUI(MessageClient client) {
@@ -37,8 +38,9 @@ public class LoginGUI extends JFrame {
 
     /**
      * Simplifies JOptionPane message dialog
+     *
      * @param message the message to display
-     * @param type the type of JOptionPane message
+     * @param type    the type of JOptionPane message
      */
 
     public static void message(String message, int type) {
@@ -115,7 +117,7 @@ public class LoginGUI extends JFrame {
      * Add functional method for the action listerner called by the buttons
      * Once a button is clicked, check if all fields are filled and send the information to MessageClient
      * to validate.
-     *
+     * <p>
      * Testing (more info in README)
      * - When trying to logged in with non-existed credentials, an error message should pop up
      * - When trying to register with an existed credentials, an error message should pop up
@@ -123,7 +125,7 @@ public class LoginGUI extends JFrame {
     private ActionListener actionListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if(e.getSource() == loginBtn) {
+            if (e.getSource() == loginBtn) {
                 String username = userText.getText().strip();
                 char[] password = passText.getPassword();
 

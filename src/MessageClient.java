@@ -76,7 +76,7 @@ public class MessageClient {
         //Already check for empty in LoginGUI
         if (loginOrRegister) {
             //Send info for login
-            clientMessage = String.format("L|%s|%s", username, password);
+            clientMessage = String.format("L |%s|%s", username, password);
         } else {
             //Send info for register
             clientMessage = String.format("R|%s|%s", username, password);

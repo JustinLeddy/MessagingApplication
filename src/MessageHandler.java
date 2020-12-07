@@ -70,7 +70,7 @@ public class MessageHandler implements Runnable {
 
     /**
      * Run method which uses clientSocket to interact with MessageClient
-     *
+     * <p>
      * The run method for message handler which is run whenever a new thread is started.
      * This method handles all communication with the client it is initialized with
      * at the socket clientSocket. The functions of this method include
@@ -86,7 +86,7 @@ public class MessageHandler implements Runnable {
      * to the MessageHandler
      * Depending on the first character and contents of this message, it will do
      * one of the actions listed above.
-     *
+     * <p>
      * Testing:
      * This method was tested using the debugging window and console printing to verify that inputs
      * and its various outputs sent the correct Strings. For example, to test if the message was being

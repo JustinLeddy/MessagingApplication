@@ -1,6 +1,7 @@
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+
 /**
  * Client Manager
  * <p>
@@ -15,7 +16,8 @@ public class ClientManager {
 
     /**
      * add a client to the map
-     * @param key is their ip address
+     *
+     * @param key   is their ip address
      * @param value a unique MessageHandler
      */
     public static void addTrace(String key, MessageHandler value) {
@@ -24,6 +26,7 @@ public class ClientManager {
 
     /**
      * Getter for deliverTo
+     *
      * @return the map consists of all clients in the system
      */
     public static HashMap<String, MessageHandler> getDeliverTo() {

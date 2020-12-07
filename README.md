@@ -95,6 +95,8 @@ The main method that runs the server. It throws an InterruptedException exceptio
 ## LoginGUI
 Graphic User Interface that displays a login/register window for the users. It will be the first window that pops out to the user when the program launches. This class takes the information, including username and password, from the user and sends this information to the correct method in the MessageClient to process. A window will pop up after the user hits Login or Register to notify if their credentials are valid or not. 
 
+![image]https://imgur.com/tGZsVYG
+
 ## ChatGUI
 This is the main window for this messaging app. All communications between the users and the server are handled through this GUI. 
 The user will gain access to this window once they enter valid credentials in the login window. ChatGUI is unique for each user, which means that it only includes conversations sent from or to this user and group conversations this user is in. 
@@ -105,6 +107,7 @@ The ChatGUI class also has multiple methods devoted to executing commands once a
 Graphic User Interface that displays messages for each conversation. This class is basically a JPanel using JList as a means to display messages. Each panel is unique to a conversation. During initialization, the class runs through the message array of a conversation and adds each message to the list. When the user sends a new chat, this chat will be added at the end of the list. The panel will auto-scroll to the end of the list to make sure the latest message is visible.
 The DisplayMessageGUI class also has a method that is dedicated to executing commands once an event occurs; it uses a MouseListener which takes care of when a user wants to edit/delete messages so that the method can then prompt the user to follow through on said command and then the class sends a message to MessageClient to take note of this on file.
 
+[![Screen-Shot-2020-12-04-at-5-03-46-AM.png](https://i.postimg.cc/C5Kv2JpS/Screen-Shot-2020-12-04-at-5-03-46-AM.png)](https://postimg.cc/JD9cDNh2)
 
 ## ClientManager
 A hashmap that stores user identity and thread connection. It assigns user IP/port pair as a key to the value of a MessageHandler instance.

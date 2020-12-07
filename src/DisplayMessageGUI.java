@@ -5,7 +5,15 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
-
+/**
+ * DisplayMessageGUI
+ * <p>
+ * A unique message display for each conversation.
+ * Handle real-time message updating
+ *
+ * @author Alex Frey, Justin Leddy, Maeve Tra, Yifei Mao, Naveena Erranki
+ * @version December 7th, 2020
+ */
 
 public class DisplayMessageGUI extends JPanel {
     private final MessageClient CLIENT;
@@ -17,9 +25,11 @@ public class DisplayMessageGUI extends JPanel {
 
 
     /**
+     * Constructor for DisplayMessageGUI object. Initialize all the GUI components
+     * preload the list with old messages
      *
-     * @param conversation
-     * @param client
+     * @param conversation conversation to display
+     * @param client the current sender of this conversation
      */
     public DisplayMessageGUI(Conversation conversation, MessageClient client) {
         this.conversation = conversation;
@@ -36,6 +46,9 @@ public class DisplayMessageGUI extends JPanel {
         add(new JScrollPane(messages), "Center");
     }
 
+    /**
+     * Iterate through the message array and preload list with old messages
+     */
     private void initializeList() {
         ArrayList<String> allMessages = conversation.getMessages();
         for (String message : allMessages) {
@@ -43,6 +56,10 @@ public class DisplayMessageGUI extends JPanel {
         }
     }
 
+    /**
+     * sort the member list and create an appropriate label for this conversation
+     * @return label that is created
+     */
     public String setMessageLabel() {
         String sendTo = "";
         ArrayList<String> members = conversation.getMembers();
@@ -55,15 +72,27 @@ public class DisplayMessageGUI extends JPanel {
         return sendTo;
     }
 
+    /**
+     * Getter for MESSAGE_LABEL
+     * @return current label of the conversation
+     */
     public String getMessageLabel() {
         return this.MESSAGE_LABEL;
     }
 
+    /**
+     * Getter for conversation
+     * @return conversation in this panel
+     */
     public Conversation getConversation() {
         return this.conversation;
     }
 
-
+    /**
+     * Thread-safe implementation of message updating. Add the new message to the list
+     * and auto-scroll to the latest message
+     * @param c new conversation that has the new message
+     */
     public void updateMessage(Conversation c) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -76,17 +105,29 @@ public class DisplayMessageGUI extends JPanel {
         });
     }
 
+    /**
+     * Temporarily display a system message to notify user leaves
+     * @param removedUser user that leaves
+     */
     public void notifyUserLeft(String removedUser) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                //conversation = c; //update the conversation var so new msg stop sending to deleted user
                 list.addElement(String.format("System|%s has left the chat.", removedUser));
             }
         });
     }
 
-
+    /**
+     * MouseListener to implement edit/delete message.
+     * Get the message and prompt the user to edit/delete.
+     * Send message to MessageClient to record on file
+     *
+     * Testing (more info in README)
+     * - double click on any messages should prompt a pop up window. Tested with single click
+     * - edit/delete message should immediately update conversation on all sides
+     * - when trying to edit/delete messages that are not yours, an error message will pop up
+     */
     private MouseListener mouseListener = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
@@ -108,6 +149,10 @@ public class DisplayMessageGUI extends JPanel {
                     case 0 -> { //Edit
                         String edit = JOptionPane.showInputDialog("Make your changes here:", message.substring(message.indexOf("|") + 1));
                         if (edit == null) { // cancel
+                            return;
+                        } else if (edit.contains("<*>") || edit.contains("|") || edit.contains("%&") || edit.contains("<&*>")) { //<*> or | or %& or <&*>
+                            JOptionPane.showMessageDialog(null, "Please make sure your message doesnt contain <*> or | or %& or <&*>.",
+                                    "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
                         message = message.substring(0,message.indexOf("|") + 1) + edit;
@@ -133,35 +178,24 @@ public class DisplayMessageGUI extends JPanel {
         }
     };
 
+    /**
+     * notify MessageClient that there is a change in the conversation
+     */
     private void notifyChange() { //send this conversation back to MessageClient
         MessageClient.setClientMessageUpdateChat(this.conversation);
         CLIENT.setSendMessageClicked(true); //to enter the loop
 
     }
 
+    /**
+     * local check to see if user is the sender
+     * @param message
+     * @return
+     */
     private boolean checkUser(String message) { //check if the message is sent by this user or not
         String[] info = message.split("\\|");
         return info[0].equals(CLIENT_USERNAME);
     }
-    /*
-    public void updateMessage(String message) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                list.addElement(message);
-                messages.ensureIndexIsVisible(list.size() - 1); //auto-scroll to see the latest message
-                //messages.setCaretPosition(messages.getDocument().getLength());
-            }
-        });
-    }
 
-
-
-    private void formatMessage() {
-
-
-    }
-
-     */
 
 }

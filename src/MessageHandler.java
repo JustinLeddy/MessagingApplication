@@ -25,15 +25,20 @@ import java.util.stream.Collectors;
 public class MessageHandler implements Runnable {
     //Socket to interact with MessageClient and Synchronized field
     private final Socket CLIENT_SOCKET;
+    //other fields
     private final Object GATE_KEEPER = new Object();
     private BufferedWriter clientWriter;
     private String clientMessage;
     private String currentClientUsername;
-
-    //fields
     private File accountList;
 
-    //Constructor to initialize clientSocket
+    /**
+     * Constructor to initialize clientSocket, this initializes
+     * the inputStream, outputStream, clientReader, and clientWriter
+     * using the given clientSocket
+     *
+     * @param clientSocket socket of the connected client
+     */
     public MessageHandler(Socket clientSocket) {
         this.CLIENT_SOCKET = clientSocket;
         try {
@@ -46,7 +51,51 @@ public class MessageHandler implements Runnable {
         }
     }
 
-    //Run method which uses clientSocket to interact with MessageClient
+    /* List of all client -> messageHandler formats:
+     * loginRegister: L|username|password, R|username|password
+     * sendMessage: M|clientUsername|arrayOfMembers|message
+     * Update message history in chat: U<*>currentMember1|currentMember2|currentMember3<*>allMessages
+     * Delete user from chat: U<*>currentMember1|currentMember2|currentMember3<*>memberToDelete<*>allMessages
+     * delete account: D|username
+     * change password: P|username|newPassword
+     * check if users exist: C|user1,user2,user3
+     *
+     * List of all messageHandler -> client formats:
+     * initialize conversation array:
+     * Member1|Member2|Member3<*>Username|Message&%Username|Message<&*>conversation2<&*>conversation3
+     * loginOrRegister:
+     * login: true if logged in, false if not, Register: true if the account exists, false if register success
+     * Check if user exists: true if they all exists, false if there is one thats not.
+     */
+
+    /**
+     * Run method which uses clientSocket to interact with MessageClient
+     *
+     * The run method for message handler which is run whenever a new thread is started.
+     * This method handles all communication with the client it is initialized with
+     * at the socket clientSocket. The functions of this method include
+     * - sending messages to other message handlers
+     * - sending messages to this client
+     * - determine if a username or password is valid
+     * - add a new account to the account array
+     * - send all conversations that this client is a member of to this client
+     * - delete this clients account
+     * - change this clients password
+     * - edit and delete messages in conversations this client is a member of
+     * The way it does this is through the clientMessage that the MessageClient sends
+     * to the MessageHandler
+     * Depending on the first character and contents of this message, it will do
+     * one of the actions listed above.
+     *
+     * Testing:
+     * This method was tested using the debugging window and console printing to verify that inputs
+     * and its various outputs sent the correct Strings. For example, to test if the message was being
+     * sent to each user correctly I added breakpoints to the array and watched the message match each client
+     * and call their send method. I then had the client print the received message to the console so I could see
+     * that it was indeed being sent to the correct clients. I then had a breakpoint at the line where it updates
+     * the conversation array to verify that the message was added to the correct conversation
+     * in the correct format and order.
+     */
     @Override
     public void run() {
 
@@ -175,7 +224,7 @@ public class MessageHandler implements Runnable {
                         //update accounts
                         Files.write(Path.of("Accounts.txt"), lines, StandardCharsets.UTF_8);
 
-                    } else if (clientMessage.charAt(0) == 'U') {
+                    } else if (clientMessage.charAt(0) == 'U') { //update conversation members or messages
                         //edit conversation in file
                         //look for correct conversation,
                         String[] clientMessageSplit = clientMessage.split("<\\*>");
@@ -288,7 +337,7 @@ public class MessageHandler implements Runnable {
                                 }
                             }
                         }
-                    } else if (clientMessage.charAt(0) == 'I') {
+                    } else if (clientMessage.charAt(0) == 'I') { //initialize conversations this client is in
                         //Read Conversations from File
                         //look for every conversation with the username in it
                         // write them all in one massive line with format explained in Conversations.txt
@@ -329,7 +378,7 @@ public class MessageHandler implements Runnable {
                         boolean userExists = false;
 
                         //login
-                        if (firstLetter == 'L') {
+                        if (firstLetter == 'L') { //login to a new account
                             username = partTwo; //strip removes leading and trailing spaces
                             password = info[2].strip();
 
@@ -363,7 +412,7 @@ public class MessageHandler implements Runnable {
                             }
                         }
                         //register
-                        else if (firstLetter == 'R') {
+                        else if (firstLetter == 'R') { //register a new account
                             username = partTwo; //strip removes leading and trailing spaces
                             password = info[2].strip();
 
@@ -422,6 +471,13 @@ public class MessageHandler implements Runnable {
     }
 
     //Sending message
+
+    /**
+     * sends a message to the client
+     * is useful for sending messages from other MessageHandlers
+     *
+     * @param str String message to send
+     */
     public void send(String str) {
         try {
             clientWriter.write(str);
@@ -432,16 +488,31 @@ public class MessageHandler implements Runnable {
         }
     }
 
-    //Account Format: username,password
     //get socket
+
+    /**
+     * method to access this clients socket
+     *
+     * @return this clients socket
+     */
     public Socket getClientSocket() {
         return CLIENT_SOCKET;
     }
 
+    /**
+     * method to access the current username of the connected client
+     *
+     * @return String currentClientUsername
+     */
     public String getCurrentClientUsername() {
         return currentClientUsername;
     }
 
+    /**
+     * method to set the field currentClientUsername
+     *
+     * @param currentClientUsername the username to set currentClientUsername to
+     */
     public void setCurrentClientUsername(String currentClientUsername) {
         this.currentClientUsername = currentClientUsername;
     }

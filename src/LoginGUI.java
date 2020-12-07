@@ -2,6 +2,16 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * LoginGUI
+ *
+ * The login/register window to take in client's username and password
+ * Send client's credentials to MessageClient to process and verify authentication
+ * Prompt error message if credentials are invalid and welcoming message if the user is verfied
+ *
+ * @author Alex Frey, Justin Leddy, Maeve Tra, Yifei Mao, Naveena Erranki
+ * @version December 7th, 2020
+ */
 public class LoginGUI extends JFrame {
     private final MessageClient CLIENT;
     private static final String TITLE = "Social Messaging App";
@@ -15,14 +25,30 @@ public class LoginGUI extends JFrame {
     private JTextField userText;
     private JPasswordField passText;
 
+    /**
+     * Constructor for LoginGUI
+     * Initialize the login frame with all functional buttons and text fields
+     * @param client the specific client is logging in
+     */
     public LoginGUI(MessageClient client) {
         this.CLIENT = client;
         showLogin();
     }
 
+    /**
+     * Simplifies JOptionPane message dialog
+     * @param message the message to display
+     * @param type the type of JOptionPane message
+     */
+
     public static void message(String message, int type) {
         JOptionPane.showMessageDialog(null, message, TITLE, type);
     }
+
+    /**
+     * Initializes all the components in the login frame
+     * Add action listener to the buttons
+     */
 
     private void showLogin() {
         //Declare component fields for login
@@ -76,14 +102,24 @@ public class LoginGUI extends JFrame {
         frame.setVisible(true);
     }
 
+    /**
+     * Close the login frame once the user is logged in
+     */
+
     public void close() {
         frame.dispose();
     }
 
 
-
-
-    // Declare actionListener for specific functionality
+    /**
+     * Add functional method for the action listerner called by the buttons
+     * Once a button is clicked, check if all fields are filled and send the information to MessageClient
+     * to validate.
+     *
+     * Testing (more info in README)
+     * - When trying to logged in with non-existed credentials, an error message should pop up
+     * - When trying to register with an existed credentials, an error message should pop up
+     */
     private ActionListener actionListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {

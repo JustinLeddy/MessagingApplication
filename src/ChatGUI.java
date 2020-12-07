@@ -5,6 +5,20 @@ import java.awt.font.TextAttribute;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * ChatGUI
+ * <p>
+ * Display the main chat window. ChatGUI is unique for each user
+ * Respond to user's actions:
+ * displays the correct message panel when the conversation is clicked on
+ * takes user's message and send it to MessageClient to handle and display message in real-time
+ * shows instruction for delete/edit messages and account
+ * handles conversation deletion
+ *
+ * @author Alex Frey, Justin Leddy, Maeve Tra, Yifei Mao, Naveena Erranki
+ * @version December 7th, 2020
+ */
+
 public class ChatGUI extends JFrame {
     private final MessageClient MESSAGE_CLIENT;
     private ArrayList<Conversation> conversations;
@@ -27,10 +41,13 @@ public class ChatGUI extends JFrame {
             "*Double click on any chat or message to edit/delete");
     private final JLabel EDIT_ACCOUNT = new JLabel("[Edit your account]");
 
-    //Dark mode maybe
-    private JToggleButton switchButton;
 
-
+    /**
+     * Constructor for ChatGUI. Initializes all fields
+     * and calls createPanel to iterate through conversation array for existing conversations
+     *
+     * @param client
+     */
     public ChatGUI(MessageClient client) {
         this.MESSAGE_CLIENT = client;
         this.CLIENT_USERNAME = client.getClientUsername();
@@ -40,7 +57,10 @@ public class ChatGUI extends JFrame {
         showMessagePanel();
     }
 
-    //initial setup thingy
+
+    /**
+     * Initialize GUI components and add functions to all buttons
+     */
     private void showMessagePanel() {
         //initialize variables
         messageFrame = new JFrame(String.format("%s's Messages", CLIENT_USERNAME));
@@ -135,7 +155,12 @@ public class ChatGUI extends JFrame {
         messageFrame.setVisible(true);
     }
 
-
+    /**
+     * Create a panel for each conversation by creating a new DisplayMessageGUI for it
+     * Put this DisplayMessageGUI to the map with its label as the key
+     *
+     * @param c the converstaion to create this panel with
+     */
     private void createPanel(Conversation c) {
         DisplayMessageGUI panelToAdd = new DisplayMessageGUI(c, MESSAGE_CLIENT);
         String label = panelToAdd.getMessageLabel(); //set label (already sort member)
@@ -143,6 +168,11 @@ public class ChatGUI extends JFrame {
         inboxes.addElement(label); //add Label to the inboxList
     }
 
+    /**
+     * handle calling a panel when a conversation label is clicked on
+     *
+     * @param messageLabel label to use as key to find the specific DisplayMessageGUI object
+     */
     private void displayMessage(String messageLabel) {
         middlePanel.removeAll();
         messageField = allMessages.get(messageLabel); //find the panel in the map
@@ -157,7 +187,14 @@ public class ChatGUI extends JFrame {
     }
 
 
-    //delete conversation for recipient
+    /**
+     * Notify the remaining members of a conversation when a member leaves
+     * even if the recipients are not currently opening the conversation
+     * implement thread-safe updating to ensure real-time update
+     *
+     * @param c           the conversation needs to be updated
+     * @param removedUser the member that leaves
+     */
     public void userLeft(Conversation c, String removedUser) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -195,6 +232,12 @@ public class ChatGUI extends JFrame {
 
     }
 
+    /**
+     * Add the new message to a specific conversation.
+     * Call updateMessage() method of that conversation's DisplayMessageGUI to append the message
+     *
+     * @param c the conversation needs to be updated
+     */
     public void updateChat(Conversation c) {
         if (messageField != null
                 && messageField.getConversation().getMembers().containsAll(c.getMembers())
@@ -206,6 +249,8 @@ public class ChatGUI extends JFrame {
             String label = tempPanel.setMessageLabel(); // create a temp label for this conversation
             if (allMessages.containsKey(label)) { //use the label to see if conversation already exist
                 allMessages.get(label).updateMessage(c); //update the message, do not need to display
+                int index = findLabelIndex(label);
+                inboxes.setElementAt(String.format("%s (*)", label), index);
             } else { // if panel for this conversation does not exist (aka create new message)
                 createPanel(c); //create a new panel for it
                 displayMessage(label);
@@ -216,13 +261,35 @@ public class ChatGUI extends JFrame {
         }
     }
 
+    /**
+     * Find the index of the label on the inboxes list
+     *
+     * @param label conversation label to search
+     * @return index of the label
+     */
+    private int findLabelIndex(String label) {
+        int index = -1;
+        for (int i = 0; i < inboxes.size(); i++) {
+            if (label.equals(inboxes.get(i))) {
+                index = i;
+            }
+        }
+        return index;
+    }
+
+    /**
+     * Handle edit message feature. Create a new DisplayMessageGUI with the edited conversation
+     * and replace the old panel with a new one using its label as key
+     *
+     * @param c conversation needs to be edited
+     */
+
     public void editChat(Conversation c) {
         DisplayMessageGUI newPanel = new DisplayMessageGUI(c, MESSAGE_CLIENT);
         String label = newPanel.setMessageLabel();
         DisplayMessageGUI oldPanel = allMessages.get(label);
         allMessages.replace(label, oldPanel, newPanel); //replace the old panel with new panel
-        if (messageField.getMessageLabel().equals(label)) { //if user currently open this chat
-            //System.out.println("Label match");
+        if (messageField.getMessageLabel().equals(label)) { //if user currently open
             middlePanel.remove(messageField);
             messageField = newPanel;
             middlePanel.add(messageField);
@@ -231,7 +298,14 @@ public class ChatGUI extends JFrame {
         }
     }
 
-    //ALL PRIVATE METHODS BELOW
+    /**
+     * Called when the new chat button is clicked. Take the recipient list from the user and send to MessageClient to validate
+     * If all recipients are valid, send the message to MessageClient to create new chat. If not, show an error message
+     * If conversation already exists, ask if the user want to add to this conversation or not
+     *
+     * @param userNames all the recipients the user wants to send to
+     * @param message   the initial message to start the chat
+     */
     private void setUsersToSend(String userNames, String message) {
         usersToSend = new ArrayList<>();
         userNames = userNames.strip(); //strip leading white spaces
@@ -282,7 +356,13 @@ public class ChatGUI extends JFrame {
         }
     }
 
-    //[GUI method] temp remove conversation for sender and send to user
+    /**
+     * Temporarily remove the conversation when the user chooses to delete it
+     * and send signal to MessageClient to update the file
+     *
+     * @param label label of the conversation needs to be delete
+     * @param index the index on the inbox list of the conversation
+     */
     private void removeConversation(String label, int index) {
         inboxes.remove(index); //remove from inboxes -> not display anymore
         MessageClient.setClientMessageDeleteUser(allMessages.get(label).getConversation()); //send to client
@@ -303,17 +383,23 @@ public class ChatGUI extends JFrame {
 
 
     /**
-     * GUI Methods
-     * All methods related to FocusListener, MouseListener, ActionListener
+     * Action listener for send button and new chat button
+     * When a send button is clicked, take the message and send to MessageClient to process
+     * When a new chat button is clicked, call setUsersToSend() with the recipient list and message
+     * <p>
+     * Testing (more info in README):
+     * - Clicking send button is the only way to send messages. Messages update in real time on all sides
      */
     private ActionListener actionListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == sendButton) { //sendButton is clicked = new message
                 String message = messageText.getText();
-                //System.out.println(message); //print out message for debugging
                 if (message.isEmpty()) { //check if there is message to send
                     JOptionPane.showMessageDialog(null, "There is no message to send!",
+                            "Social Messaging App", JOptionPane.ERROR_MESSAGE);
+                } else if (message.contains("<*>") || message.contains("|") || message.contains("%&") || message.contains("<&*>")) { //<*> or | or %& or <&*>
+                    JOptionPane.showMessageDialog(null, "Please make sure your message doesnt contain <*> or | or %& or <&*>.",
                             "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                 } else {
                     MessageClient.setClientMessageMessaging(message, usersToSend); //send the message to messageClient
@@ -334,6 +420,10 @@ public class ChatGUI extends JFrame {
                 String initialMessage = JOptionPane.showInputDialog("Say something first!");
                 if (initialMessage == null) { // user choose cancel
                     return;
+                } else if (initialMessage.contains("<*>") || initialMessage.contains("|") || initialMessage.contains("%&") || initialMessage.contains("<&*>")) { //<*> or | or %& or <&*>
+                    JOptionPane.showMessageDialog(null, "Please make sure your message doesnt contain <*> or | or %& or <&*>.",
+                            "Social Messaging App", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
                 setUsersToSend(userNames, initialMessage);
 
@@ -341,7 +431,9 @@ public class ChatGUI extends JFrame {
         }
     };
 
-
+    /**
+     * FocusListener to set default text in the text field
+     */
     private FocusListener focusListener = new FocusListener() {
         @Override
         public void focusGained(FocusEvent e) {
@@ -358,6 +450,17 @@ public class ChatGUI extends JFrame {
         }
     };
 
+    /**
+     * MouseListener to detect when the user clicks on a conversation or double click to edit/delete
+     * <p>
+     * If double click, prompt a pop-up window to guide user through edit/delete process
+     * and send appropriate message to MessageClient to process.
+     * <p>
+     * If click once, detect where the click is. If the conversation is clicked, call displayMessage()
+     * to display the correct panel. If EDIT_ACCOUNT label is clicked, prompt a pop-up window to guide
+     * user to edit/delete their account
+     */
+
     private MouseListener mouseListener = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
@@ -373,6 +476,11 @@ public class ChatGUI extends JFrame {
                     }
                 } else { //just click to open the chat
                     String selectedConversation = inboxList.getSelectedValue();
+                    int index = inboxList.getSelectedIndex();
+                    if (selectedConversation.contains("(*)")) {
+                        selectedConversation = selectedConversation.substring(0, selectedConversation.length() - 4);
+                        inboxes.setElementAt(selectedConversation, index);
+                    }
                     messageText.setEditable(true); //enable text field to start typing
                     displayMessage(selectedConversation);
                 }
@@ -414,16 +522,4 @@ public class ChatGUI extends JFrame {
             }
         }
     };
-
-
-    //for debugging
-    private void printList() {
-        for (int i = 0; i < inboxes.getSize(); i++) {
-            System.out.println(inboxes.get(i));
-        }
-    }
-
-    public static void main(String[] args) {
-        new ChatGUI(new MessageClient());
-    }
 }

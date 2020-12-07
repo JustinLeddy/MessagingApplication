@@ -13,8 +13,7 @@ import java.lang.reflect.*;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 //TODO Implement Method Testing in Main
 public class RunLocalTest {
@@ -1614,8 +1613,8 @@ public class RunLocalTest {
         public void testMessageClientMethodEighteenDeclaration() {
             try {
                 Method method = MessageClient.class.getDeclaredMethod("getUserAccountsExist");
-                if (method.getModifiers() != Modifier.PUBLIC) {
-                    fail("The method `getUserAccountsExist` in MessageClient is not public");
+                if (method.getModifiers() != Modifier.PUBLIC + Modifier.STATIC) {
+                    fail("The method `getUserAccountsExist` in MessageClient is not public and/or static");
                 }
 
                 if (method.getReturnType() != boolean.class) {
@@ -1631,15 +1630,15 @@ public class RunLocalTest {
         public void testMessageClientMethodNineteenDeclaration() {
             try {
                 Method method = MessageClient.class.getDeclaredMethod("setUserAccountsExists", boolean.class);
-                if (method.getModifiers() != Modifier.PUBLIC) {
-                    fail("The method `setUserAccountsExists` in MessageClient is not public");
+                if (method.getModifiers() != Modifier.PUBLIC + Modifier.STATIC) {
+                    fail("The method `setUserAccountsExists` in MessageClient is not public and/or static");
                 }
 
                 if (method.getReturnType() != void.class) {
                     fail("The method `setUserAccountsExists` in MessageClient does not return type void");
                 }
             } catch (NoSuchMethodException e) {
-                fail("Cannot find the method `setUserAccountsExistsntUsername` in MessageClient");
+                fail("Cannot find the method `setUserAccountsExists` in MessageClient");
             }
         }
 
@@ -1674,6 +1673,23 @@ public class RunLocalTest {
                 }
             } catch (NoSuchMethodException e) {
                 fail("Cannot find the method `setClientMessageChangePassword` in MessageClient");
+            }
+        }
+
+        //getClientMessage
+        @Test(timeout = 1000)
+        public void testMessageClientMethodTwentyTwoDeclaration() {
+            try {
+                Method method = MessageClient.class.getDeclaredMethod("getClientMessage");
+                if (method.getModifiers() != Modifier.PUBLIC) {
+                    fail("The method `getClientMessage` in MessageClient is not public");
+                }
+
+                if (method.getReturnType() != String.class) {
+                    fail("The method `getClientMessage` in MessageClient does not return type String");
+                }
+            } catch (NoSuchMethodException e) {
+                fail("Cannot find the method `getClientMessage` in MessageClient");
             }
         }
 
@@ -1822,6 +1838,23 @@ public class RunLocalTest {
                 }
             } catch (NoSuchMethodException e) {
                 fail("Cannot find the constructor `ChatGUI` in ChatGUI");
+            }
+        }
+
+        //findLabelIndex
+        @Test(timeout = 1000)
+        public void testChatGUIMethodOneDeclaration() {
+            try {
+                Method method = ChatGUI.class.getDeclaredMethod("findLabelIndex", String.class);
+                if (method.getModifiers() != Modifier.PRIVATE) {
+                    fail("The method `findLabelIndex` in ChatGUI is not private");
+                }
+
+                if (method.getReturnType() != int.class) {
+                    fail("The method `findLabelIndex` in ChatGUI does not return type int");
+                }
+            } catch (NoSuchMethodException e) {
+                fail("Cannot find the method `findLabelIndex` in ChatGUI");
             }
         }
 
@@ -2012,26 +2045,9 @@ public class RunLocalTest {
             }
         }
 
-        //main
-        @Test(timeout = 1000)
-        public void testChatGUIMethodThirteenDeclaration() {
-            try {
-                Method method = ChatGUI.class.getDeclaredMethod("main", String[].class);
-                if (method.getModifiers() != Modifier.PUBLIC + Modifier.STATIC) {
-                    fail("The method `main` in ChatGUI is not public and/or static");
-                }
-
-                if (method.getReturnType() != void.class) {
-                    fail("The method `main` in ChatGUI does not return type void");
-                }
-            } catch (NoSuchMethodException e) {
-                fail("Cannot find the method `main` in ChatGUI");
-            }
-        }
-
         //userLeft
         @Test(timeout = 1000)
-        public void testChatGUIMethodFourteenDeclaration() {
+        public void testChatGUIMethodThirteenDeclaration() {
             try {
                 Method method = ChatGUI.class.getDeclaredMethod("userLeft", Conversation.class, String.class);
                 if (method.getModifiers() != Modifier.PUBLIC) {
@@ -2042,13 +2058,13 @@ public class RunLocalTest {
                     fail("The method `userLeft` in ChatGUI does not return type void");
                 }
             } catch (NoSuchMethodException e) {
-                fail("Cannot find the userLeft `updateChat` in ChatGUI");
+                fail("Cannot find the method `updateChat` in ChatGUI");
             }
         }
 
         //run
         @Test(timeout = 1000)
-        public void testChatGUIMethodFifteenDeclaration() {
+        public void testChatGUIMethodFourteenDeclaration() {
             try {
                 Method method = Class.forName("ChatGUI$1").getDeclaredMethod("run");
                 if (method.getModifiers() != Modifier.PUBLIC) {
@@ -2265,7 +2281,7 @@ public class RunLocalTest {
             }
         }
 
-        //ClientManager - 5
+        //ClientManager - 2
 
         //addTrace
         @Test(timeout = 1000)
@@ -2284,60 +2300,9 @@ public class RunLocalTest {
             }
         }
 
-        //getTrace
-        @Test(timeout = 1000)
-        public void testClientManagerMethodTwoDeclaration() {
-            try {
-                Method method = ClientManager.class.getDeclaredMethod("getTrace", String.class);
-                if (method.getModifiers() != Modifier.PUBLIC + Modifier.STATIC) {
-                    fail("The method `getTrace` in ClientManager is not public and/or static");
-                }
-
-                if (method.getReturnType() != MessageHandler.class) {
-                    fail("The method `getTrace` in ClientManager does not return type MessageHandler");
-                }
-            } catch (NoSuchMethodException e) {
-                fail("Cannot find the method `getTrace` in ClientManager");
-            }
-        }
-
-        //clearTrace
-        @Test(timeout = 1000)
-        public void testClientManagerMethodThreeDeclaration() {
-            try {
-                Method method = ClientManager.class.getDeclaredMethod("clearTrace");
-                if (method.getModifiers() != Modifier.PUBLIC + Modifier.STATIC) {
-                    fail("The method `clearTrace` in ClientManager is not public and/or static");
-                }
-
-                if (method.getReturnType() != void.class) {
-                    fail("The method `clearTrace` in ClientManager does not return type void");
-                }
-            } catch (NoSuchMethodException e) {
-                fail("Cannot find the method `clearTrace` in ClientManager");
-            }
-        }
-
-        //removeTrace
-        @Test(timeout = 1000)
-        public void testClientManagerMethodFourDeclaration() {
-            try {
-                Method method = ClientManager.class.getDeclaredMethod("removeTrace", String.class);
-                if (method.getModifiers() != Modifier.PUBLIC + Modifier.STATIC) {
-                    fail("The method `removeTrace` in ClientManager is not public and/or static");
-                }
-
-                if (method.getReturnType() != void.class) {
-                    fail("The method `removeTrace` in ClientManager does not return type void");
-                }
-            } catch (NoSuchMethodException e) {
-                fail("Cannot find the method `removeTrace` in ClientManager");
-            }
-        }
-
         //getDeliverTo
         @Test(timeout = 1000)
-        public void testClientManagerMethodFiveDeclaration() {
+        public void testClientManagerMethodTwoDeclaration() {
             try {
                 Method method = ClientManager.class.getDeclaredMethod("getDeliverTo");
                 if (method.getModifiers() != Modifier.PUBLIC + Modifier.STATIC) {
@@ -2528,7 +2493,7 @@ public class RunLocalTest {
         // and any helper methods on the server that don't use threads.
 
 
-        //::MessageHandler - 2
+        //::MessageHandler - 3
         @Test(timeout = 1000)
         public void testMessageHandler() {
             //General Class: MessageHandler
@@ -2536,98 +2501,285 @@ public class RunLocalTest {
             String testing = "testingString";
 
             try {
-                socket = new Socket("localhost", 1);
+                socket = new Socket("localhost", 0);
             } catch (IOException e) {
-                e.printStackTrace();
                 return;
             }
 
-            MessageHandler handler = new MessageHandler(socket);
+            MessageHandler messageHandler = new MessageHandler(socket);
 
             //getClientSocket
-            assertEquals(socket, handler.getClientSocket());
+            assertEquals(socket, messageHandler.getClientSocket());
 
             //getCurrentClientUsername & setCurrentClientUsername
             String currentClientUsername = "test";
 
-            handler.setCurrentClientUsername(currentClientUsername);
+            messageHandler.setCurrentClientUsername(currentClientUsername);
 
-            assertEquals(currentClientUsername, handler.getCurrentClientUsername());
+            assertEquals(currentClientUsername, messageHandler.getCurrentClientUsername());
 
         }
 
         //::MessageClient - 18
-
-        //setClientMessageLoginRegister
-
-
-        //setClientMessageMessaging
-        //setClientMessageDeleteAccount
-        //setClientMessageChangePassword
-
-        //setClientMessageDeleteUser
-
-        //setClientMessageUpdateChat
-        //setClientMessageNewChat
-
-
-        //updateConversation
-        //initializeConversations
-        //getConversations
-
-
-        //getClientUsername
-        //setClientUsername
-
-
-        //setLoginRegisterClicked
-        //setSendMessageClicked
-        //setLoginOrRegister
-        //setCheckUserAccountsExisting
-
-        //getUserAccountsExist
-        //setUserAccountsExists
-
-
-        //::MessageServer - 0
-
-        //::DisplayMessageGUI - 6
-
-        //initializeList
-        //setMessageLabel
-        //getMessageLabel
-        //getConversation
-        //notifyChange
-        //checkUser
-
-        //::ClientManager - 5
-
-        //addTrace
-        //getTrace
-        //clearTrace
-        //removeTrace
-        //getDeliverTo
-
-        //::Conversation - 8
-
-        //removeMessageAtIndex
-        //removeMemberWithName
-        //editMessageAtIndex
-        //addMessage
-
-
-        //getMessages & setMessages
         @Test(timeout = 1000)
-        public void testConversationFiveAndSixExpected() {
+        public void testMessageClient() {
+            /* List of all client -> messageHandler formats:
+             * loginRegister: L|username|password, R|username|password
+             * sendMessage: M|clientUsername|arrayOfMembers|message
+             * Update message history in chat: U<*>currentMember1|currentMember2|currentMember3<*>allMessages
+             * Delete user from chat: U<*>currentMember1|currentMember2|currentMember3<*>memberToDelete<*>allMessages
+             * delete account: D|username
+             * change password: P|username|newPassword
+             * check if users exist: C|user1,user2,user3
+             *
+             */
+            MessageClient messageClient = new MessageClient();
+            ArrayList<String> members = new ArrayList<>(Arrays.asList("member1", "member2", "member3"));
+            ArrayList<String> messages = new ArrayList<>(Arrays.asList("member1|message1", "member2|message2", "member3|message3"));
+            Conversation conversation1 = new Conversation(members);
+            Conversation conversation2 = new Conversation(members, messages);
+            String clientMessageMessaging = "M|clientUsername|member1,member2,member3|message";
+            String clientMessageDeleteAccount = "D|username";
+            String clientMessageLogin = "L|username|password";
+            String clientMessageRegister = "R|username|password";
+            String clientMessageChangePassword = "P|username|password";
+            String clientMessageUpdateChat = "U<*>member1|member2|member3<*>member1|message1%&member2|message2";
+            String clientMessageNewChat = "C|member1,member2,member3";
+            String clientMessageDeleteUser = "U<*>member1|member2|member3<*>member1<*>member1|message1%&member2|message2";
+            String username = "username";
+            String password = "password";
+            String member = "member";
+            String message = "message";
+
+            //getClientUsername & setClientUsername
+            messageClient.setClientUsername(username);
+
+            assertEquals(username, messageClient.getClientUsername());
+
+            //getClientMessage
+            String clientMessage = message;
+
+            
+
+
+
+            //setLoginRegisterClicked
+            AtomicBoolean loginRegisterClicked;
+
+            messageClient.setLoginRegisterClicked();
+
+            try {
+                Field field = MessageClient.class.getDeclaredField("loginRegisterClicked");
+                field.setAccessible(true);
+                loginRegisterClicked = (AtomicBoolean) field.get(messageClient);
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            assertTrue(loginRegisterClicked.get());
+
+            //setSendMessageClicked
+            AtomicBoolean sendMessageClicked;
+
+            messageClient.setSendMessageClicked(false);
+
+            try {
+                Field field = MessageClient.class.getDeclaredField("sendMessageClicked");
+                field.setAccessible(true);
+                sendMessageClicked = (AtomicBoolean) field.get(messageClient);
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            assertFalse(sendMessageClicked.get());
+
+            //setLoginOrRegister
+            AtomicBoolean loginOrRegister;
+
+            messageClient.setLoginOrRegister(false);
+
+            try {
+                Field field = MessageClient.class.getDeclaredField("loginOrRegister");
+                field.setAccessible(true);
+                loginOrRegister = (AtomicBoolean) field.get(messageClient);
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            assertFalse(loginOrRegister.get());
+
+            //setCheckUserAccountsExisting
+            AtomicBoolean checkUserAccountsExisting;
+
+            messageClient.setCheckUserAccountsExisting(false);
+
+            try {
+                Field field = MessageClient.class.getDeclaredField("checkUserAccountsExisting");
+                field.setAccessible(true);
+                checkUserAccountsExisting = (AtomicBoolean) field.get(messageClient);
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            assertFalse(checkUserAccountsExisting.get());
+
+            //getUserAccountsExist & setUserAccountsExists
+            messageClient.setUserAccountsExists(false);
+
+            assertFalse(messageClient.getUserAccountsExist());
+
+            //setClientMessageLoginRegister
+            char[] pass = password.toCharArray();
+            messageClient.setClientMessageLoginRegister(true, username, pass);
+
+            assertEquals(clientMessageLogin, messageClient.getClientMessage());
+
+            messageClient.setClientMessageLoginRegister(false, username, pass);
+
+            assertEquals(clientMessageRegister, messageClient.getClientMessage());
+
+            //setClientMessageMessaging
+            messageClient.setClientMessageMessaging(message, members);
+
+            assertEquals(clientMessageMessaging, messageClient.getClientMessage());
+
+            //setClientMessageDeleteAccount
+
+            //setClientMessageChangePassword
+            //setClientMessageDeleteUser
+            //setClientMessageUpdateChat
+            //setClientMessageNewChat
+
+
+            //updateConversation
+            //initializeConversations
+            //getConversations
 
 
         }
 
+        //::MessageServer - 0
 
-        //getMembers
-        //setMembers
+        //::DisplayMessageGUI - 5
+        @Test(timeout = 1000)
+
+        public void testDisplayMessageGUI() {
+            ArrayList<String> members = new ArrayList<String>(Arrays.asList("member1", "member2", "member3"));
+            ArrayList<String> messages = new ArrayList<String>(Arrays.asList("member1|message1", "member2|message2", "member3|message3"));
+            Conversation conversation = new Conversation(members, messages);
+            MessageClient messageClient = new MessageClient();
+            DisplayMessageGUI displayMessageGUI = new DisplayMessageGUI(conversation, messageClient);
+
+            //setMessageLabel
+            assertEquals("member1 | member2 | member3", displayMessageGUI.setMessageLabel());
+
+            //getMessageLabel
+            assertEquals("member1 | member2 | member3", displayMessageGUI.getMessageLabel());
+
+            //getConversation
+            assertEquals(conversation, displayMessageGUI.getConversation());
+        }
 
 
+        //::ClientManager - 5
+        @Test(timeout = 1000)
+        public void testClientManager() {
+            //General Class: ClientManager
+            ClientManager clientManager = new ClientManager();
+            Field field;
+            String key = "test";
+            Socket socket;
+            HashMap<String, MessageHandler> deliverTo;
+            MessageHandler messageHandler;
+
+            try {
+                socket = new Socket("localhost", 0);
+                messageHandler = new MessageHandler(socket);
+            } catch (IOException e) {
+                return;
+            }
+
+            try {
+                field = ClientManager.class.getDeclaredField("deliverTo");
+                field.setAccessible(true);
+                deliverTo = (HashMap<String, MessageHandler>) field.get(clientManager);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            //addTrace
+            clientManager.addTrace(key, messageHandler);
+
+            assertEquals(deliverTo.get(key), messageHandler);
+
+            //getDeliverTo
+            assertEquals(deliverTo, clientManager.getDeliverTo());
+        }
+
+        //::Conversation - 8
+        @Test(timeout = 1000)
+        public void testConversation() {
+            //General Class: Conversation
+            ArrayList<String> messages;
+            ArrayList<String> members;
+            String[] membersArray = {"User1", "User2", "User3"};
+            String[] messagesArray = {"Message1", "Message2", "Message3"};
+            ArrayList<String> membersList = new ArrayList<>(Arrays.asList(membersArray));
+            ArrayList<String> messagesList = new ArrayList<>(Arrays.asList(messagesArray));
+            String[] membersArrayTest;
+            String[] messagesArrayTest;
+            ArrayList<String> membersListTest;
+            ArrayList<String> messagesListTest;
+            Conversation conversation = new Conversation(null, null);
+
+
+            //getMembers & setMembers
+            conversation.setMembers(membersList);
+
+            assertEquals(membersList, conversation.getMembers());
+
+            //getMessages & setMessages
+            conversation.setMessages(messagesList);
+
+            assertEquals(messagesList, conversation.getMessages());
+
+            //removeMessageAtIndex & addMessage
+            messagesArrayTest = new String[]{"Message1", "Message2"};
+            messagesListTest = new ArrayList<>(Arrays.asList(messagesArrayTest));
+
+            conversation.removeMessageAtIndex(2);
+
+            assertEquals(conversation.getMessages(), messagesListTest);
+
+            //removeMemberWithName
+            membersArrayTest = new String[]{"User1", "User3"};
+            membersListTest = new ArrayList<>(Arrays.asList(membersArrayTest));
+
+            conversation.removeMemberWithName("User2");
+
+            assertEquals(conversation.getMembers(), membersListTest);
+
+            //editMessageAtIndex
+            messagesArrayTest = new String[]{"Message1", "MessageTest"};
+            messagesListTest = new ArrayList<>(Arrays.asList(messagesArrayTest));
+
+            conversation.editMessageAtIndex(1, "MessageTest");
+
+            assertEquals(conversation.getMessages(), messagesListTest);
+
+            //addMessage
+            messagesArrayTest = new String[]{"Message1", "MessageTest", "AddedMessage"};
+            messagesListTest = new ArrayList<>(Arrays.asList(messagesArrayTest));
+
+            conversation.addMessage("AddedMessage");
+
+            assertEquals(conversation.getMessages(), messagesListTest);
+        }
     }
 
 

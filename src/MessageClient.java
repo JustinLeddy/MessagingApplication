@@ -10,14 +10,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Message Client
  * <p>
- * Deals with most GUI parts of social messaging app.
- * Takes input from user within application and sends to the MessageServer
+ * Format message from the client and sends to the MessageServer
+ * Receive message from MessageServer and allocate changes on GUIs
  * USE PORT 8888 on LOCALHOST
  *
  * @author Alex Frey, Justin Leddy, Maeve Tra, Yifei Mao, Naveena Erranki
  * @version December 7th, 2020
  */
 public class MessageClient {
+
     //Global Fields
     private static String clientMessage;
     private static String clientUsername;
@@ -35,6 +36,34 @@ public class MessageClient {
 
 
     //Runs actions for login or button based on true (login) or false (register) param
+
+    /* List of all client -> messageHandler formats:
+     * loginRegister: L|username|password, R|username|password
+     * sendMessage: M|clientUsername|arrayOfMembers|message
+     * Update message history in chat: U<*>currentMember1|currentMember2|currentMember3<*>allMessages
+     * Delete user from chat: U<*>currentMember1|currentMember2|currentMember3<*>memberToDelete<*>allMessages
+     * delete account: D|username
+     * change password: P|username|newPassword
+     * check if users exist: C|user1,user2,user3
+     *
+     * List of all messageHandler -> client formats:
+     * initialize conversation array:
+     * Member1|Member2|Member3<*>Username|Message&%Username|Message<&*>conversation2<&*>conversation3
+     * loginOrRegister:
+     * login: true if logged in, false if not, Register: true if the account exists, false if register success
+     * Check if user exists: true if they all exists, false if there is one thats not.
+     */
+
+    /**
+     * sets the field clientMessage to the correct format to be sent to
+     * the server.
+     * Format for logging in is L|username|password
+     * and for registering is R|username|password
+     *
+     * @param loginOrRegister boolean which determines whether to set the message in the login or register format
+     * @param username        username of the client
+     * @param passwordArray   character array of the password
+     */
     public static void setClientMessageLoginRegister(boolean loginOrRegister, String username, char[] passwordArray) {
         //Grab username and password
         String password = "";
@@ -55,31 +84,53 @@ public class MessageClient {
     }
 
     //sets client message for sending a group message
+
+    /**
+     * Sets the field clientMessage to the correct format for sending a message
+     * to a group in the format
+     * <p>
+     * M|clientUsername|arrayOfMembers|message
+     *
+     * @param message the message to send to the group
+     * @param members the members of the group who are receiving this message
+     */
     public static void setClientMessageMessaging(String message, ArrayList<String> members) {
         String recipient = Arrays.toString(members.toArray())
                 .replaceAll(", ", ",")
                 .replaceAll("[\\[\\]]", "");
         //makes sure that newlines dont cause issues
-        clientMessage = String.format("M|%s|%s|%s", clientUsername, recipient, message.replaceAll("\n", " "));
+        clientMessage = String.format("M|%s|%s|%s", clientUsername,
+                recipient, message.replaceAll("\n", " "));
     }
 
 
-
     /**
-     * sets client message for  deleting account in the format D|username
+     * sets client message for deleting account
+     * in the format D|username
      * README: MAKE SURE TO RUN A LEAVE CONVERSATION ON EVERY CONVERSATION THE USER IS IN BEFORE SENDING THIS MESSAGE
      */
     public static void setClientMessageDeleteAccount() {
         clientMessage = "D|" + clientUsername;
     }
 
-    //sets client message for changing account password
-    //format D|username
+    /**
+     * sets client message for changing account password
+     * format P|username|newPassword
+     *
+     * @param newPassword new password for the current client to change their password to
+     */
     public static void setClientMessageChangePassword(String newPassword) {
         clientMessage = "P|" + clientUsername + "|" + newPassword;
     }
 
-    //Format: C|Recipient1,Recipient2,Recipient3
+
+    /**
+     * sets the clientMessage to the correct format for checking if users
+     * have a registered account
+     * Format: C|Recipient1,Recipient2,Recipient3
+     *
+     * @param usersToSend a string ArrayList of usernames to check for accounts
+     */
     public static void setClientMessageNewChat(ArrayList<String> usersToSend) {
         Collections.sort(usersToSend);
         clientMessage = "C|" + Arrays.toString(usersToSend.toArray()).replaceAll("[\\[\\]]", "");
@@ -91,6 +142,7 @@ public class MessageClient {
      * Method to set the client message to the correct command
      * so the server deletes this user from that conversation
      * Method automatically uses currentClient as the one to delete
+     * Format U<*>currentMember1|currentMember2|currentMember3<*>memberToDelete<*>allMessages
      *
      * @param conversation the conversation without the user
      */
@@ -109,11 +161,12 @@ public class MessageClient {
 
     /**
      * Formats the updated conversation to send to the server and update there
+     * Format U<*>currentMember1|currentMember2|currentMember3<*>allMessages
      *
-     * @param conversation the conversation
+     * @param conversation the conversation which needs updated
      */
     public static void setClientMessageUpdateChat(Conversation conversation) {
-        //Format U<*>currentMember1|currentMember2|currentMember3<*>allMessages
+
         String newMessage = "U<*>";
         System.out.println(Arrays.toString(conversation.getMembers().toArray()));
         newMessage += Arrays.toString(conversation.getMembers().toArray())
@@ -127,10 +180,23 @@ public class MessageClient {
     }
 
     //Simplifies JOptionPane process
+
+    /**
+     * method to show a JOptionPane message dialog
+     * with a given message and type
+     *
+     * @param message String message to display in the optionPane
+     * @param type    int type which is the type of optionPane to display
+     */
     public static void message(String message, int type) {
         JOptionPane.showMessageDialog(null, message, TITLE, type);
     }
 
+    /**
+     * method to connect to the server hosted locally.
+     * at port 8888.
+     * to connect to a remote server change "localhost" to the server's IP address
+     */
     public void connect() {
         try {
             socket = new Socket("localhost", 8888);
@@ -138,11 +204,18 @@ public class MessageClient {
             writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             System.out.println("Connected!");
         } catch (IOException e) {
-            e.printStackTrace(); //TODO: Replace with detailed error popup
+            e.printStackTrace();
         }
     }
 
     //Main method to run all screens: Login, Register, messageApp
+
+    /**
+     * the main method which initializes the client GUI and handles
+     * all server communication.
+     *
+     * @param args String array of arguments
+     */
     public static void main(String[] args) {
         MessageClient messageClient = new MessageClient();
         messageClient.connect(); // use Socket to initialize reader and writer
@@ -150,7 +223,9 @@ public class MessageClient {
         /*
          * infinite loop for server communication
          * only sends the message if a button has been clicked for login screen
-         * or if a button has been clicked for messaging
+         * or if a button has been clicked for messaging. It sends the message
+         * clientMessage which has been initialized by the user through the
+         * chatGUI and other methods
          */
         while (true) {
             if (loginRegisterClicked.get() || sendMessageClicked.get()) {
@@ -279,7 +354,7 @@ public class MessageClient {
 
                 }
             } catch (IOException e) {
-                e.printStackTrace(); //TODO: Replace with detailed error popup
+                e.printStackTrace();
             }
 
         }
@@ -293,7 +368,7 @@ public class MessageClient {
     private static void updateConversation(String fromServer) {
 
         if (fromServer.split("<\\*>").length == 4) { //if its a member deletion
-            System.out.println("Members have changed");
+            //System.out.println("Members have changed");
             String[] splitServerMessage = fromServer.split("<\\*>");
             String removedUser = splitServerMessage[2];
             String members = splitServerMessage[1] + "|" + removedUser;
@@ -311,7 +386,7 @@ public class MessageClient {
             }
 
         } else if (fromServer.split("<\\*>").length == 3) {
-            System.out.println("Message has changed");
+            //System.out.println("Message has changed");
             String[] splitServerMessage = fromServer.split("<\\*>");
             String members = splitServerMessage[1];
             String messages = splitServerMessage[2];
@@ -322,8 +397,8 @@ public class MessageClient {
 
             //search for chat to update
             for (Conversation conversation : conversations) {
-                System.out.println(Arrays.toString(new ArrayList[]{memberArray}));
-                System.out.println(Arrays.toString(new ArrayList[]{conversation.getMembers()}));
+                //System.out.println(Arrays.toString(new ArrayList[]{memberArray}));
+                //System.out.println(Arrays.toString(new ArrayList[]{conversation.getMembers()}));
                 if (memberArray.equals(conversation.getMembers())) {
                     conversation.setMessages(messageArray);
                     chatGUI.editChat(conversation); //supposedly update the list?
@@ -334,12 +409,26 @@ public class MessageClient {
     }
 
 
+    /**
+     * method which takes a message received from the server in the format
+     * Member1|Member2|Member3<*>Username|Message&%Username|Message<&*>conversation2<&*>conversation3
+     * and initializes the array Conversation[] conversations
+     * the method splits the message into an array of conversations by the delimiter <&*>
+     * and then splits each conversation by the delimiter <*>
+     * and then takes the first entry and splits it into a list of members by the delimiter "|"
+     * and adds it to a new conversation. Then splits the second entry into a String array of messages by
+     * the delimiter "%&" and adds that array to the new conversation.
+     * it then adds all of the conversations to an array of conversations
+     * and sets it as the clients Conversation array "conversations"
+     *
+     * @param readLine the line sent by the server
+     */
     private static void initializeConversations(String readLine) {
         //Member1,Member2,Member<*>Username|Message,Username|Message
         if (readLine != null && readLine.length() > 2) {
             String[] newConversations = readLine.split("<&\\*>");
             ArrayList<Conversation> updatedConversations = new ArrayList<>();
-            for (String conversation : newConversations) { //Member1,Member2,Member3<*>Username|Message%&Username|Message%&Username|Message
+            for (String conversation : newConversations) { //Member1|Member2|Member3<*>Username|Message%&Username|Message%&Username|Message
                 String[] membersAndMessages = conversation.split("<\\*>");
                 if (membersAndMessages.length == 3) {
                     ArrayList<String> members = new ArrayList<>(Arrays.asList(membersAndMessages[0].split("\\|")));
@@ -367,47 +456,97 @@ public class MessageClient {
     //Special Characters Message: | &*
     //Special Characters Login: , :  (leading and trailing spaces stripped)
 
-
-    /*
-     * Getters and setters for the fields
+    /**
+     * returns the array of conversations
+     *
+     * @return the field ArrayList<Conversation> conversations
      */
     public ArrayList<Conversation> getConversations() {
         return conversations;
     }
 
+    /**
+     * Method to access clientUsername field
+     *
+     * @return the field clientUsername
+     */
     public String getClientUsername() {
         return clientUsername;
     }
 
+    /**
+     * method to set the clientUsername field
+     *
+     * @param username username to set the clientUsername
+     */
     public void setClientUsername(String username) {
         clientUsername = username;
     }
 
+    /**
+     * method to set the AtomicBoolean loginRegisterClicked to true
+     */
     public void setLoginRegisterClicked() {
         loginRegisterClicked.set(true);
     }
 
+    /**
+     * method to set the AtomicBoolean sendMessageClicked to a boolean
+     * value
+     *
+     * @param value the boolean value to set AtomicBoolean sendMessageClicked to
+     */
     public void setSendMessageClicked(boolean value) {
         sendMessageClicked.set(value);
     }
 
+    /**
+     * method to set the AtomicBoolean loginOrRegister to a boolean
+     * value
+     *
+     * @param value the boolean value to set AtomicBoolean loginOrRegister to
+     */
     public void setLoginOrRegister(boolean value) {
         MessageClient.loginOrRegister.set(value);
     }
 
+    /**
+     * method to set the AtomicBoolean checkUserAccountsExisting to a boolean
+     * value
+     *
+     * @param value the boolean value to set AtomicBoolean checkUserAccountsExisting to
+     */
     public void setCheckUserAccountsExisting(boolean value) {
         MessageClient.checkUserAccountsExisting.set(value);
     }
 
+    /**
+     * a method to access the AtomicBoolean userAccountsExist
+     *
+     * @return the boolean value of userAccountsExist
+     */
     public static boolean getUserAccountsExist() {
         return userAccountsExist.get();
     }
 
+    /**
+     * method to set the AtomicBoolean userAccountsExist to a boolean
+     * value
+     *
+     * @param value the boolean value to set AtomicBoolean userAccountsExist to
+     */
     public static void setUserAccountsExists(boolean value) {
         MessageClient.userAccountsExist.set(value);
     }
 
-
+    /**
+     * method to access the String clientMessage
+     *
+     * @return the string value of clientMessage
+     */
+    public String getClientMessage() {
+        return clientMessage;
+    }
 }
 
 

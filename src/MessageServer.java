@@ -15,14 +15,17 @@ import java.net.UnknownHostException;
  * Have add/edit/delete functionality of conversations and messages
  *
  * @author Alex Frey, Justin Leddy, Maeve Tra, Yifei Mao, Naveena Erranki
- * @version November 30th, 2020
+ * @version December 7th, 2020
  */
 public class MessageServer {
     private final ServerSocket SERVER_SOCKET; //socket for this server
     private String identity;
 
     /**
-     * Constructor for the Message Server
+     * Constructs a new MethodServer at the given port
+     * Sets the server socket at the port
+     * @param port port to set the server socket at
+     * @throws IOException exception thrown when the socket encounters a connection error
      */
     public MessageServer(int port) throws IOException {
         this.SERVER_SOCKET = new ServerSocket(port);
@@ -30,6 +33,9 @@ public class MessageServer {
 
     /**
      * Spawn a new Thread to serve each Client connect to the Server
+     * adds each new client to the HashMap of connected clients ClientManager
+     *
+     * @throws InterruptedException Exception thrown when there is an interruption in the connection
      */
     public void serveClient() throws InterruptedException {
         InetAddress address;
@@ -75,12 +81,17 @@ public class MessageServer {
     }
 
 
+    /**
+     * Main method to run the server
+     *
+     * @param args arguments for main
+     * @throws InterruptedException Exception thrown when there is an interruption in the connection
+     */
     public static void main(String[] args) throws InterruptedException {
         MessageServer server;
 
         try {
-            /* temporary use 8888 because Client is using 8888,
-             * might change to 0 (randomly assigned) later
+            /* use 8888 because Client is using 8888
              */
             server = new MessageServer(8888);
 

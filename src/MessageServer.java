@@ -18,7 +18,7 @@ import java.net.UnknownHostException;
  * @version December 7th, 2020
  */
 public class MessageServer {
-    private final ServerSocket SERVER_SOCKET; //socket for this server
+    private final ServerSocket serverSocket; //socket for this server
     private String identity;
 
     /**
@@ -29,7 +29,7 @@ public class MessageServer {
      * @throws IOException exception thrown when the socket encounters a connection error
      */
     public MessageServer(int port) throws IOException {
-        this.SERVER_SOCKET = new ServerSocket(port);
+        this.serverSocket = new ServerSocket(port);
     }
 
     /**
@@ -54,12 +54,12 @@ public class MessageServer {
             return;
         }
         hostName = address.getCanonicalHostName();
-        port = this.SERVER_SOCKET.getLocalPort();
+        port = this.serverSocket.getLocalPort();
         System.out.printf("Host name: %s, port: %d\n", hostName, port); //host computer info
 
         while (true) {
             try {
-                clientSocket = this.SERVER_SOCKET.accept();
+                clientSocket = this.serverSocket.accept();
 
             } catch (IOException e) {
                 System.out.println("Client Disconnected");

@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;
  * @version December 7th, 2020
  */
 public class LoginGUI extends JFrame {
-    private final MessageClient CLIENT;
+    private final MessageClient client;
     private static final String TITLE = "Social Messaging App";
     private static JFrame frame;
 
@@ -32,7 +32,7 @@ public class LoginGUI extends JFrame {
      * @param client the specific client is logging in
      */
     public LoginGUI(MessageClient client) {
-        this.CLIENT = client;
+        this.client = client;
         showLogin();
     }
 
@@ -129,27 +129,27 @@ public class LoginGUI extends JFrame {
                 String username = userText.getText().strip();
                 char[] password = passText.getPassword();
 
-                CLIENT.setLoginOrRegister(true); // true = loginButton clicked
+                client.setLoginOrRegister(true); // true = loginButton clicked
 
                 if (username.isEmpty() || password.length == 0) {
                     message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    CLIENT.setClientUsername(username);
+                    client.setClientUsername(username);
                     MessageClient.setClientMessageLoginRegister(true, username, password);
-                    CLIENT.setLoginRegisterClicked(); //set to true to notify button click
+                    client.setLoginRegisterClicked(); //set to true to notify button click
                 }
             } else if (e.getSource() == registerBtn) {
                 String username = userText.getText();
                 char[] password = passText.getPassword();
 
-                CLIENT.setLoginOrRegister(false); // false = registerButton clicked
+                client.setLoginOrRegister(false); // false = registerButton clicked
 
                 if (username.isEmpty() || password.length == 0) {
                     message("Fill All Fields", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    CLIENT.setClientUsername(username);
+                    client.setClientUsername(username);
                     MessageClient.setClientMessageLoginRegister(false, username, password);
-                    CLIENT.setLoginRegisterClicked(); //set to true to notify button click
+                    client.setLoginRegisterClicked(); //set to true to notify button click
                 }
             }
         }

@@ -17,9 +17,9 @@ import java.util.Collections;
  */
 
 public class DisplayMessageGUI extends JPanel {
-    private final MessageClient CLIENT;
-    private final String CLIENT_USERNAME;
-    private final String MESSAGE_LABEL;
+    private final MessageClient client;
+    private final String clientUsername;
+    private final String messageLabel;
     private Conversation conversation;
     private DefaultListModel<String> list;
     private JList<String> messages;
@@ -34,15 +34,15 @@ public class DisplayMessageGUI extends JPanel {
      */
     public DisplayMessageGUI(Conversation conversation, MessageClient client) {
         this.conversation = conversation;
-        this.CLIENT = client;
-        this.CLIENT_USERNAME = client.getClientUsername();
+        this.client = client;
+        this.clientUsername = client.getClientUsername();
         this.list = new DefaultListModel<>();
         initializeList(); //fill list with old messages
         this.messages = new JList<>(list);
         messages.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         messages.setFont(new Font("Sans Serif", Font.PLAIN, 12));
         messages.addMouseListener(mouseListener);
-        this.MESSAGE_LABEL = setMessageLabel();
+        this.messageLabel = setMessageLabel();
         setLayout(new BorderLayout());
         add(new JScrollPane(messages), "Center");
     }
@@ -75,12 +75,12 @@ public class DisplayMessageGUI extends JPanel {
     }
 
     /**
-     * Getter for MESSAGE_LABEL
+     * Getter for messageLabel
      *
      * @return current label of the conversation
      */
     public String getMessageLabel() {
-        return this.MESSAGE_LABEL;
+        return this.messageLabel;
     }
 
     /**
@@ -192,7 +192,7 @@ public class DisplayMessageGUI extends JPanel {
      */
     private void notifyChange() { //send this conversation back to MessageClient
         MessageClient.setClientMessageUpdateChat(this.conversation);
-        CLIENT.setSendMessageClicked(true); //to enter the loop
+        client.setSendMessageClicked(true); //to enter the loop
 
     }
 
@@ -204,7 +204,7 @@ public class DisplayMessageGUI extends JPanel {
      */
     private boolean checkUser(String message) { //check if the message is sent by this user or not
         String[] info = message.split("\\|");
-        return info[0].equals(CLIENT_USERNAME);
+        return info[0].equals(clientUsername);
     }
 
 

@@ -210,36 +210,36 @@ public class RunLocalTest {
                 return;
             }
 
-            // CLIENT_SOCKET
+            // clientSocket
             try {
-                Field field = MessageHandler.class.getDeclaredField("CLIENT_SOCKET");
+                Field field = MessageHandler.class.getDeclaredField("clientSocket");
                 if (field.getType() != Socket.class) {
-                    fail("The field `CLIENT_SOCKET` in MessageHandler is not a type of Socket");
+                    fail("The field `clientSocket` in MessageHandler is not a type of Socket");
                     return;
                 }
                 if (field.getModifiers() != Modifier.PRIVATE + Modifier.FINAL) {
-                    fail("The field `CLIENT_SOCKET` in MessageHandler is not private and/or final");
+                    fail("The field `clientSocket` in MessageHandler is not private and/or final");
                     return;
                 }
             } catch (NoSuchFieldException e) {
-                fail("Cannot find the field `CLIENT_SOCKET` in MessageHandler");
+                fail("Cannot find the field `clientSocket` in MessageHandler");
                 e.printStackTrace();
                 return;
             }
 
-            // GATE_KEEPER
+            // 
             try {
-                Field field = MessageHandler.class.getDeclaredField("GATE_KEEPER");
+                Field field = MessageHandler.class.getDeclaredField("gateKeeper");
                 if (field.getType() != Object.class) {
-                    fail("The field `GATE_KEEPER` in MessageHandler is not a type of Object");
+                    fail("The field `gateKeeper` in MessageHandler is not a type of Object");
                     return;
                 }
                 if (field.getModifiers() != Modifier.PRIVATE + Modifier.FINAL) {
-                    fail("The field `GATE_KEEPER` in MessageHandler is not private and/or final");
+                    fail("The field `gateKeeper` in MessageHandler is not private and/or final");
                     return;
                 }
             } catch (NoSuchFieldException e) {
-                fail("Cannot find the field `GATE_KEEPER` in MessageHandler");
+                fail("Cannot find the field `gateKeeper` in MessageHandler");
                 e.printStackTrace();
                 return;
             }
@@ -524,19 +524,19 @@ public class RunLocalTest {
         //For MessageServer
         @Test(timeout = 1000)
         public void testMessageServerDeclarations() {
-            // SERVER_SOCKET
+            // serverSocket
             try {
-                Field field = MessageServer.class.getDeclaredField("SERVER_SOCKET");
+                Field field = MessageServer.class.getDeclaredField("serverSocket");
                 if (field.getType() != ServerSocket.class) {
-                    fail("The field `SERVER_SOCKET` in MessageServer is not a type of ServerSocket");
+                    fail("The field `serverSocket` in MessageServer is not a type of ServerSocket");
                     return;
                 }
                 if (field.getModifiers() != Modifier.PRIVATE + Modifier.FINAL) {
-                    fail("The field `SERVER_SOCKET` in MessageServer is not private and/or final");
+                    fail("The field `serverSocket` in MessageServer is not private and/or final");
                     return;
                 }
             } catch (NoSuchFieldException e) {
-                fail("Cannot find the field `SERVER_SOCKET` in MessageServer");
+                fail("Cannot find the field `serverSocket` in MessageServer");
                 e.printStackTrace();
                 return;
             }
@@ -562,19 +562,19 @@ public class RunLocalTest {
         //For LoginGUI
         @Test(timeout = 1000)
         public void testLoginGUIDeclarations() {
-            //CLIENT
+            //client
             try {
-                Field field = LoginGUI.class.getDeclaredField("CLIENT");
+                Field field = LoginGUI.class.getDeclaredField("client");
                 if (field.getType() != MessageClient.class) {
-                    fail("The field `CLIENT` in LoginGUI is not a type of MessageClient");
+                    fail("The field `client` in LoginGUI is not a type of MessageClient");
                     return;
                 }
                 if (field.getModifiers() != Modifier.PRIVATE + Modifier.FINAL) {
-                    fail("The field `CLIENT` in LoginGUI is not private and/or final");
+                    fail("The field `client` in LoginGUI is not private and/or final");
                     return;
                 }
             } catch (NoSuchFieldException e) {
-                fail("Cannot find the field `CLIENT` in LoginGUI");
+                fail("Cannot find the field `client` in LoginGUI");
                 e.printStackTrace();
                 return;
             }
@@ -719,19 +719,19 @@ public class RunLocalTest {
         //For ChatGUI
         @Test(timeout = 1000)
         public void testChatGUIDeclarations() {
-            //MESSAGE_CLIENT
+            //messageClient
             try {
-                Field field = ChatGUI.class.getDeclaredField("MESSAGE_CLIENT");
+                Field field = ChatGUI.class.getDeclaredField("messageClient");
                 if (field.getType() != MessageClient.class) {
-                    fail("The field `MESSAGE_CLIENT` in ChatGUI is not a type of MessageClient");
+                    fail("The field `messageClient` in ChatGUI is not a type of MessageClient");
                     return;
                 }
                 if (field.getModifiers() != Modifier.PRIVATE + Modifier.FINAL) {
-                    fail("The field `MESSAGE_CLIENT` in ChatGUI is not private and/or final");
+                    fail("The field `messageClient` in ChatGUI is not private and/or final");
                     return;
                 }
             } catch (NoSuchFieldException e) {
-                fail("Cannot find the field `MESSAGE_CLIENT` in ChatGUI");
+                fail("Cannot find the field `messageClient` in ChatGUI");
                 e.printStackTrace();
                 return;
             }
@@ -753,19 +753,19 @@ public class RunLocalTest {
                 return;
             }
 
-            //CLIENT_USERNAME
+            //clientUsername
             try {
-                Field field = ChatGUI.class.getDeclaredField("CLIENT_USERNAME");
+                Field field = ChatGUI.class.getDeclaredField("clientUsername");
                 if (field.getType() != String.class) {
-                    fail("The field `CLIENT_USERNAME` in ChatGUI is not a type of String");
+                    fail("The field `clientUsername` in ChatGUI is not a type of String");
                     return;
                 }
                 if (field.getModifiers() != Modifier.PRIVATE + Modifier.FINAL) {
-                    fail("The field `CLIENT_USERNAME` in ChatGUI is not private and/or final");
+                    fail("The field `clientUsername` in ChatGUI is not private and/or final");
                     return;
                 }
             } catch (NoSuchFieldException e) {
-                fail("Cannot find the field `CLIENT_USERNAME` in ChatGUI");
+                fail("Cannot find the field `clientUsername` in ChatGUI");
                 e.printStackTrace();
                 return;
             }
@@ -956,36 +956,36 @@ public class RunLocalTest {
                 return;
             }
 
-            //DELETE_INSTRUCTION
+            //deleteInstruction
             try {
-                Field field = ChatGUI.class.getDeclaredField("DELETE_INSTRUCTION");
+                Field field = ChatGUI.class.getDeclaredField("deleteInstruction");
                 if (field.getType() != JLabel.class) {
-                    fail("The field `DELETE_INSTRUCTION` in ChatGUI is not a type of JLabel");
+                    fail("The field `deleteInstruction` in ChatGUI is not a type of JLabel");
                     return;
                 }
                 if (field.getModifiers() != Modifier.PRIVATE + Modifier.FINAL) {
-                    fail("The field `DELETE_INSTRUCTION` in ChatGUI is not private and/or final");
+                    fail("The field `deleteInstruction` in ChatGUI is not private and/or final");
                     return;
                 }
             } catch (NoSuchFieldException e) {
-                fail("Cannot find the field `DELETE_INSTRUCTION` in ChatGUI");
+                fail("Cannot find the field `deleteInstruction` in ChatGUI");
                 e.printStackTrace();
                 return;
             }
 
-            //EDIT_ACCOUNT
+            //editAccount
             try {
-                Field field = ChatGUI.class.getDeclaredField("EDIT_ACCOUNT");
+                Field field = ChatGUI.class.getDeclaredField("editAccount");
                 if (field.getType() != JLabel.class) {
-                    fail("The field `EDIT_ACCOUNT` in ChatGUI is not a type of JLabel");
+                    fail("The field `editAccount` in ChatGUI is not a type of JLabel");
                     return;
                 }
                 if (field.getModifiers() != Modifier.PRIVATE + Modifier.FINAL) {
-                    fail("The field `EDIT_ACCOUNT` in ChatGUI is not private and/or final");
+                    fail("The field `editAccount` in ChatGUI is not private and/or final");
                     return;
                 }
             } catch (NoSuchFieldException e) {
-                fail("Cannot find the field `EDIT_ACCOUNT` in ChatGUI");
+                fail("Cannot find the field `editAccount` in ChatGUI");
                 e.printStackTrace();
                 return;
             }
@@ -1045,53 +1045,53 @@ public class RunLocalTest {
         //For DisplayMessageGUI
         @Test(timeout = 1000)
         public void testDisplayMessageGUIDeclarations() {
-            // CLIENT
+            // client
             try {
-                Field field = DisplayMessageGUI.class.getDeclaredField("CLIENT");
+                Field field = DisplayMessageGUI.class.getDeclaredField("client");
                 if (field.getType() != MessageClient.class) {
-                    fail("The field `CLIENT` in DisplayMessageGUI is not a type of MessageClient");
+                    fail("The field `client` in DisplayMessageGUI is not a type of MessageClient");
                     return;
                 }
                 if (field.getModifiers() != Modifier.PRIVATE + Modifier.FINAL) {
-                    fail("The field `CLIENT` in DisplayMessageGUI is not private and/or final");
+                    fail("The field `client` in DisplayMessageGUI is not private and/or final");
                     return;
                 }
             } catch (NoSuchFieldException e) {
-                fail("Cannot find the field `CLIENT` in DisplayMessageGUI");
+                fail("Cannot find the field `client` in DisplayMessageGUI");
                 e.printStackTrace();
                 return;
             }
 
-            // CLIENT_USERNAME
+            // clientUsername
             try {
-                Field field = DisplayMessageGUI.class.getDeclaredField("CLIENT_USERNAME");
+                Field field = DisplayMessageGUI.class.getDeclaredField("clientUsername");
                 if (field.getType() != String.class) {
-                    fail("The field `CLIENT_USERNAME` in DisplayMessageGUI is not a type of String");
+                    fail("The field `clientUsername` in DisplayMessageGUI is not a type of String");
                     return;
                 }
                 if (field.getModifiers() != Modifier.PRIVATE + Modifier.FINAL) {
-                    fail("The field `CLIENT_USERNAME` in DisplayMessageGUI is not private and/or final");
+                    fail("The field `clientUsername` in DisplayMessageGUI is not private and/or final");
                     return;
                 }
             } catch (NoSuchFieldException e) {
-                fail("Cannot find the field `CLIENT_USERNAME` in DisplayMessageGUI");
+                fail("Cannot find the field `clientUsername` in DisplayMessageGUI");
                 e.printStackTrace();
                 return;
             }
 
-            // MESSAGE_LABEL
+            // messageLabel
             try {
-                Field field = DisplayMessageGUI.class.getDeclaredField("MESSAGE_LABEL");
+                Field field = DisplayMessageGUI.class.getDeclaredField("messageLabel");
                 if (field.getType() != String.class) {
-                    fail("The field `MESSAGE_LABEL` in DisplayMessageGUI is not a type of String");
+                    fail("The field `messageLabel` in DisplayMessageGUI is not a type of String");
                     return;
                 }
                 if (field.getModifiers() != Modifier.PRIVATE + Modifier.FINAL) {
-                    fail("The field `MESSAGE_LABEL` in DisplayMessageGUI is not private and/or final");
+                    fail("The field `messageLabel` in DisplayMessageGUI is not private and/or final");
                     return;
                 }
             } catch (NoSuchFieldException e) {
-                fail("Cannot find the field `MESSAGE_LABEL` in DisplayMessageGUI");
+                fail("Cannot find the field `messageLabel` in DisplayMessageGUI");
                 e.printStackTrace();
                 return;
             }
@@ -2117,8 +2117,8 @@ public class RunLocalTest {
         @Test(timeout = 1000)
         public void testDisplayMessageGUIConstructorDeclaration() {
             try {
-                Constructor constructor = DisplayMessageGUI.class.
-                        getDeclaredConstructor(Conversation.class, MessageClient.class);
+                Constructor constructor = DisplayMessageGUI.class
+                        .getDeclaredConstructor(Conversation.class, MessageClient.class);
                 if (constructor.getModifiers() != Modifier.PUBLIC) {
                     fail("The constructor `DisplayMessageGUI` in DisplayMessageGUI is not public");
                 }

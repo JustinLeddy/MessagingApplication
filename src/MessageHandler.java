@@ -3,7 +3,6 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.SQLOutput;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,9 +23,9 @@ import java.util.stream.Collectors;
 
 public class MessageHandler implements Runnable {
     //Socket to interact with MessageClient and Synchronized field
-    private final Socket CLIENT_SOCKET;
+    private final Socket clientSocket;
     //other fields
-    private final Object GATE_KEEPER = new Object();
+    private final Object gateKeeper = new Object();
     private BufferedWriter clientWriter;
     private String clientMessage;
     private String currentClientUsername;
@@ -40,10 +39,10 @@ public class MessageHandler implements Runnable {
      * @param clientSocket socket of the connected client
      */
     public MessageHandler(Socket clientSocket) {
-        this.CLIENT_SOCKET = clientSocket;
+        this.clientSocket = clientSocket;
         try {
-            InputStream inputStream = this.CLIENT_SOCKET.getInputStream();
-            OutputStream outputStream = this.CLIENT_SOCKET.getOutputStream();
+            InputStream inputStream = this.clientSocket.getInputStream();
+            OutputStream outputStream = this.clientSocket.getOutputStream();
             BufferedReader clientReader = new BufferedReader(new InputStreamReader(inputStream));
             clientWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
         } catch (IOException e) {
@@ -99,11 +98,11 @@ public class MessageHandler implements Runnable {
     @Override
     public void run() {
 
-        synchronized (GATE_KEEPER) {
+        synchronized (gateKeeper) {
 
             //try with resources, being the input and output streams, readers, and writers.
-            try (var inputStream = this.CLIENT_SOCKET.getInputStream();
-                 var outputStream = this.CLIENT_SOCKET.getOutputStream();
+            try (var inputStream = this.clientSocket.getInputStream();
+                 var outputStream = this.clientSocket.getOutputStream();
                  var clientReader = new BufferedReader(new InputStreamReader(inputStream));
                  var clientWriter = new BufferedWriter(new OutputStreamWriter(outputStream))) {
 
@@ -270,8 +269,7 @@ public class MessageHandler implements Runnable {
                                 if (members.containsAll(membersArray) && members.size() == membersArray.size()) {
                                     membersArray.remove(userToRemove); //remove the user
                                     if (membersArray.size() > 1) { //if there is still more than two
-                                        String updatedConversation = Arrays.toString(new ArrayList[]
-                                                {membersArray})
+                                        String updatedConversation = Arrays.toString(new ArrayList[]{membersArray})
                                                 .replaceAll(", ", "|")
                                                 .replaceAll("[\\[\\]]", "")
                                                 + "<*>" + allMessages + "<*>System|" + userToRemove
@@ -363,8 +361,8 @@ public class MessageHandler implements Runnable {
                                 if (!socket.isClosed()
                                         && clientMessageHandler.getCurrentClientUsername() != null
                                         && membersArray.contains(clientMessageHandler.getCurrentClientUsername())
-                                        && !(currentClientUsername.equals(clientMessageHandler.
-                                        getCurrentClientUsername()))) {
+                                        && !(currentClientUsername.equals(clientMessageHandler
+                                        .getCurrentClientUsername()))) {
 
                                     clientMessageHandler.send(clientMessage); //format U<*>memberArray<*>newMessageArray
 
@@ -487,7 +485,6 @@ public class MessageHandler implements Runnable {
                                         .map(line -> line.substring(0, line.indexOf(",")))
                                         .collect(Collectors.toList());
                                 boolean usersExist = allUsernames.containsAll(Arrays.asList(partTwo.split(",")));
-                                System.out.println(usersExist);
                                 clientWriter.write(usersExist + "\n");
                                 clientWriter.flush();
 
@@ -530,7 +527,7 @@ public class MessageHandler implements Runnable {
      * @return this clients socket
      */
     public Socket getClientSocket() {
-        return CLIENT_SOCKET;
+        return clientSocket;
     }
 
     /**

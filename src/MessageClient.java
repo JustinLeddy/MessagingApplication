@@ -76,7 +76,7 @@ public class MessageClient {
         //Already check for empty in LoginGUI
         if (loginRegister) {
             //Send info for login
-            clientMessage = String.format("L |%s|%s", username, password);
+            clientMessage = String.format("L|%s|%s", username, password);
         } else {
             //Send info for register
             clientMessage = String.format("R|%s|%s", username, password);
@@ -246,8 +246,6 @@ public class MessageClient {
 
                     if (checkUserAccountsExisting.get()) {
                         boolean newUserExist = Boolean.parseBoolean(reader.readLine());
-                        System.out.println(clientMessage);
-                        System.out.println(newUserExist);
                         userAccountsExist.set(newUserExist);
                         checkUserAccountsExisting.set(false);
                     }
@@ -310,7 +308,7 @@ public class MessageClient {
             try {
                 if (reader.ready()) { //if there is a message from the server
                     String fromServer = reader.readLine(); //read message
-                    if (fromServer.startsWith("M|")) {//if it is in the message format
+                    if (fromServer.startsWith("M|")) { //if it is in the message format
                         //M|Sender|Recipient|Message
                         //M|Sender|Recipient1,Recipient2,Recipient3|Message
                         String[] receivedMessage = fromServer.split("\\|");

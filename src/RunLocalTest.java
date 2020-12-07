@@ -1218,7 +1218,7 @@ public class RunLocalTest {
          * along with verifying it has the correct return type and access modifier.
          */
 
-        //MessageHandler - 4
+        //MessageHandler - 5
 
         //Constructor
         @Test(timeout = 1000)
@@ -1298,6 +1298,23 @@ public class RunLocalTest {
                 }
             } catch (NoSuchMethodException e) {
                 fail("Cannot find the method `getCurrentClientUsername` in MessageHandler");
+            }
+        }
+
+        //setCurrentClientUsername
+        @Test(timeout = 1000)
+        public void testMessageHandlerMethodFiveDeclaration() {
+            try {
+                Method method = MessageHandler.class.getDeclaredMethod("setCurrentClientUsername", String.class);
+                if (method.getModifiers() != Modifier.PUBLIC) {
+                    fail("The method `setCurrentClientUsername` in MessageHandler is not public");
+                }
+
+                if (method.getReturnType() != void.class) {
+                    fail("The method `setCurrentClientUsername` in MessageHandler does not return type void");
+                }
+            } catch (NoSuchMethodException e) {
+                fail("Cannot find the method `setCurrentClientUsername` in MessageHandler");
             }
         }
 

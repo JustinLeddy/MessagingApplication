@@ -133,7 +133,9 @@ public class MessageClient {
      */
     public static void setClientMessageNewChat(ArrayList<String> usersToSend) {
         Collections.sort(usersToSend);
-        clientMessage = "C|" + Arrays.toString(usersToSend.toArray()).replaceAll("[\\[\\]]", "");
+        clientMessage = "C|" + Arrays.toString(usersToSend.toArray())
+                .replaceAll("[\\[\\]]", "")
+                .replaceAll(", ", ",");
     }
 
     //setClientMessage update conversation
@@ -244,6 +246,7 @@ public class MessageClient {
 
                     if (checkUserAccountsExisting.get()) {
                         boolean newUserExist = Boolean.parseBoolean(reader.readLine());
+                        System.out.println(clientMessage);
                         System.out.println(newUserExist);
                         userAccountsExist.set(newUserExist);
                         checkUserAccountsExisting.set(false);

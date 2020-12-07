@@ -427,6 +427,7 @@ public class ChatGUI extends JFrame {
                             "Social Messaging App", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+                initialMessage = initialMessage.replaceAll(" ", "");
                 setUsersToSend(userNames, initialMessage);
 
             }

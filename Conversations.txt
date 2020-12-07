@@ -9,7 +9,7 @@ Alex|Maeve<*>Alex|Hello Maeve%&Maeve|hay alex%&Maeve|this should still work%&Mae
 Justin|Maeve|Mario<*>Maeve|message%&Justin|heyo%&Justin|wow that was weird%&Alex|yeah
 Alex|Big|Jesus<*>Alex|Whats up
 Alex|Justin<*>Alex|Geeez%&Alex|Happy Days%&Alex|Hey Justin%&Justin|I'm back
-Alex|Justin|Maeve<*>Alex|Hello Both of Yall%&Justin|hey%&Maeve|yo! please work%&Alex|wait%&Maeve|message edit test%&Maeve|huh%&Justin|test again%&Maeve|Hello!%&Alex|heyo
+Alex|Maeve<*>Alex|Hello Both of Yall%&Justin|hey%&Maeve|yo! please work%&Alex|wait%&Maeve|message edit test%&Maeve|huh%&Justin|test again%&Maeve|Hello!%&Alex|heyo<*>System|Justin has left the chat.
 Alex|Baby|Justin<*>Alex|God does maybe do know%&Alex|Please Please Please%&Justin|Okk%&Justin|Hey%&Justin|Hello%&Justin|Oh%&Justin|Hi hi
 Alex|Baby|Jesus|Justin<*>Alex|Wack
 Alex|Baby|Big|Jesus<*>Alex|Testing
@@ -34,3 +34,4 @@ Maeve|Tommy<*>Maeve|Hello
 Alex|Justin|Mario<*>Maeve|Hello<*>System|Maeve has left the chat.
 Justin|Maeve|Tom|Tommy<*>Justin|hey
 Justin|Maeve2<*>Maeve2|hey
+Alex|Justin|Maeve<*>Justin|Heyo

@@ -452,7 +452,7 @@ public class MessageHandler implements Runnable {
                                         .filter(line -> !line.isEmpty())
                                         .map(line -> line.substring(0, line.indexOf(",")))
                                         .collect(Collectors.toList());
-                                boolean usersExist = allUsernames.containsAll(Arrays.asList(partTwo.split(", ")));
+                                boolean usersExist = allUsernames.containsAll(Arrays.asList(partTwo.split(",")));
                                 System.out.println(usersExist);
                                 clientWriter.write(usersExist + "\n");
                                 clientWriter.flush();

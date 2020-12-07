@@ -1659,6 +1659,8 @@ public class RunLocalTest {
                 fail("Cannot find the method `setClientMessageChangePassword` in MessageClient");
             }
         }
+
+
         //MessageServer - 3
 
         //Constructor
@@ -2496,11 +2498,120 @@ public class RunLocalTest {
                 fail("Cannot find the method `setMessages` in Conversation");
             }
         }
+
+
+        /**
+         * Req 4: Each method in every class must have two implementation tests:
+         * One that verifies it works correctly with proper input,
+         * and another that tests that it fails with improper input.
+         */
+
+        //no testing for gui or thread methods - only for
+        //Focus on writing automated tests for non-GUI client methods
+        // and any helper methods on the server that don't use threads.
+
+
+        //::MessageHandler - 2
+        @Test(timeout = 1000)
+        public void testMessageHandler() {
+            //General Class: MessageHandler
+            Socket socket;
+            String testing = "testingString";
+
+            try {
+                socket = new Socket("localhost", 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            MessageHandler handler = new MessageHandler(socket);
+
+            //getClientSocket
+            assertEquals(socket, handler.getClientSocket());
+
+            //getCurrentClientUsername & setCurrentClientUsername
+            String currentClientUsername = "test";
+
+            handler.setCurrentClientUsername(currentClientUsername);
+
+            assertEquals(currentClientUsername, handler.getCurrentClientUsername());
+
+        }
+
+        //::MessageClient - 18
+
+        //setClientMessageLoginRegister
+
+
+        //setClientMessageMessaging
+        //setClientMessageDeleteAccount
+        //setClientMessageChangePassword
+
+        //setClientMessageDeleteUser
+
+        //setClientMessageUpdateChat
+        //setClientMessageNewChat
+
+
+        //updateConversation
+        //initializeConversations
+        //getConversations
+
+
+        //getClientUsername
+        //setClientUsername
+
+
+        //setLoginRegisterClicked
+        //setSendMessageClicked
+        //setLoginOrRegister
+        //setCheckUserAccountsExisting
+
+        //getUserAccountsExist
+        //setUserAccountsExists
+
+
+        //::MessageServer - 0
+
+        //::DisplayMessageGUI - 6
+
+        //initializeList
+        //setMessageLabel
+        //getMessageLabel
+        //getConversation
+        //notifyChange
+        //checkUser
+
+        //::ClientManager - 5
+
+        //addTrace
+        //getTrace
+        //clearTrace
+        //removeTrace
+        //getDeliverTo
+
+        //::Conversation - 8
+
+        //removeMessageAtIndex
+        //removeMemberWithName
+        //editMessageAtIndex
+        //addMessage
+
+
+        //getMessages & setMessages
+        @Test(timeout = 1000)
+        public void testConversationFiveAndSixExpected() {
+
+
+        }
+
+
+        //getMembers
+        //setMembers
+
+
     }
-    
-    
-    
-    
-    
-    
+
+
 }

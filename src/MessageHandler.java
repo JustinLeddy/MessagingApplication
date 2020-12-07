@@ -441,4 +441,8 @@ public class MessageHandler implements Runnable {
     public String getCurrentClientUsername() {
         return currentClientUsername;
     }
+
+    public void setCurrentClientUsername(String currentClientUsername) {
+        this.currentClientUsername = currentClientUsername;
+    }
 }

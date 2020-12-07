@@ -16,6 +16,11 @@ public class DisplayMessageGUI extends JPanel {
     private JList<String> messages;
 
 
+    /**
+     *
+     * @param conversation
+     * @param client
+     */
     public DisplayMessageGUI(Conversation conversation, MessageClient client) {
         this.conversation = conversation;
         this.CLIENT = client;

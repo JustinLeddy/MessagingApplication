@@ -380,7 +380,7 @@ public class MessageClient {
                 if (conversation.getMembers().equals(memberArray)) {
                     memberArray.remove(removedUser); //remove the removed user
                     conversation.setMembers(memberArray); //reset the members
-                    chatGUI.userLeft(conversation, removedUser); //updates the conversation?
+                    chatGUI.userLeft(conversation, removedUser); //updates the conversation
                     break;
                 }
             }
@@ -401,7 +401,7 @@ public class MessageClient {
                 //System.out.println(Arrays.toString(new ArrayList[]{conversation.getMembers()}));
                 if (memberArray.equals(conversation.getMembers())) {
                     conversation.setMessages(messageArray);
-                    chatGUI.editChat(conversation); //supposedly update the list?
+                    chatGUI.editChat(conversation); //update the list
                     break;
                 }
             }
@@ -463,6 +463,10 @@ public class MessageClient {
      */
     public ArrayList<Conversation> getConversations() {
         return conversations;
+    }
+
+    public void setConversations(ArrayList<Conversation> conversations) {
+        this.conversations = conversations;
     }
 
     /**

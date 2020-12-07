@@ -1693,6 +1693,23 @@ public class RunLocalTest {
             }
         }
 
+        //setConversations
+        @Test(timeout = 1000)
+        public void testMessageClientMethodTwentyThreeDeclaration() {
+            try {
+                Method method = MessageClient.class.getDeclaredMethod("setConversations", ArrayList.class);
+                if (method.getModifiers() != Modifier.PUBLIC) {
+                    fail("The method `setConversations` in MessageClient is not public");
+                }
+
+                if (method.getReturnType() != void.class) {
+                    fail("The method `setConversations` in MessageClient does not return type void");
+                }
+            } catch (NoSuchMethodException e) {
+                fail("Cannot find the method `setConversations` in MessageClient");
+            }
+        }
+
 
         //MessageServer - 3
 
@@ -2532,36 +2549,37 @@ public class RunLocalTest {
              * change password: P|username|newPassword
              * check if users exist: C|user1,user2,user3
              *
+             * List of all messageHandler -> client formats:
+             * initialize conversation array:
+             * Member1|Member2|Member3<*>Username|Message&%Username|Message<&*>conversation2<&*>conversation3
+             * loginOrRegister:
+             * login: true if logged in, false if not, Register: true if the account exists, false if register success
+             * Check if user exists: true if they all exists, false if there is one thats not.
              */
             MessageClient messageClient = new MessageClient();
             ArrayList<String> members = new ArrayList<>(Arrays.asList("member1", "member2", "member3"));
-            ArrayList<String> messages = new ArrayList<>(Arrays.asList("member1|message1", "member2|message2", "member3|message3"));
+            ArrayList<String> messages = new ArrayList<>(Arrays.asList("member1|message1", "member2|message2"));
             Conversation conversation1 = new Conversation(members);
             Conversation conversation2 = new Conversation(members, messages);
-            String clientMessageMessaging = "M|clientUsername|member1,member2,member3|message";
+            String clientMessageMessaging = "M|username|member1,member2,member3|message";
             String clientMessageDeleteAccount = "D|username";
             String clientMessageLogin = "L|username|password";
             String clientMessageRegister = "R|username|password";
             String clientMessageChangePassword = "P|username|password";
-            String clientMessageUpdateChat = "U<*>member1|member2|member3<*>member1|message1%&member2|message2";
+            String clientMessageUpdateChat = "U<*>member1|member2|member3|username<*>member1|message1%&member2|message2";
             String clientMessageNewChat = "C|member1,member2,member3";
-            String clientMessageDeleteUser = "U<*>member1|member2|member3<*>member1<*>member1|message1%&member2|message2";
+            String clientMessageDeleteUser = "U<*>member1|member2|member3<*>username<*>member1|message1%&member2|message2";
             String username = "username";
             String password = "password";
             String member = "member";
             String message = "message";
 
+            //getClientMessage is tested through all setClientMessage type methods
+
             //getClientUsername & setClientUsername
             messageClient.setClientUsername(username);
 
             assertEquals(username, messageClient.getClientUsername());
-
-            //getClientMessage
-            String clientMessage = message;
-
-            
-
-
 
             //setLoginRegisterClicked
             AtomicBoolean loginRegisterClicked;
@@ -2643,22 +2661,41 @@ public class RunLocalTest {
             assertEquals(clientMessageRegister, messageClient.getClientMessage());
 
             //setClientMessageMessaging
+            messageClient.setClientUsername(username);
             messageClient.setClientMessageMessaging(message, members);
 
             assertEquals(clientMessageMessaging, messageClient.getClientMessage());
 
             //setClientMessageDeleteAccount
+            messageClient.setClientMessageDeleteAccount();
+
+            assertEquals(clientMessageDeleteAccount, messageClient.getClientMessage());
 
             //setClientMessageChangePassword
+            messageClient.setClientMessageChangePassword(password);
+
+            assertEquals(clientMessageChangePassword, messageClient.getClientMessage());
+
             //setClientMessageDeleteUser
+            messageClient.setClientMessageDeleteUser(conversation2);
+
+            assertEquals(clientMessageDeleteUser, messageClient.getClientMessage());
+
             //setClientMessageUpdateChat
+            messageClient.setClientMessageUpdateChat(conversation2);
+
+            assertEquals(clientMessageUpdateChat, messageClient.getClientMessage());
+
             //setClientMessageNewChat
 
+            //initializeConversations is private and run in the run method of MessageHandler
+            //Further details in README or comments of MessageHandler
+            //getConversations & setConversations
+            ArrayList<Conversation> conversationsTest = new ArrayList<>(Arrays.asList(conversation1, conversation2));
 
-            //updateConversation
-            //initializeConversations
-            //getConversations
+            messageClient.setConversations(conversationsTest);
 
+            assertEquals(conversationsTest, messageClient.getConversations());
 
         }
 

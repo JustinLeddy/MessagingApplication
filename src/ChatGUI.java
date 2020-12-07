@@ -215,7 +215,8 @@ public class ChatGUI extends JFrame {
                         inboxes.setElementAt(newLabel, index); //switch out the label
                         allMessages.remove(label); //remove old panel from map
                         allMessages.put(newLabel, newPanel); //add new panel to map with a new label
-                        if (newPanel.getConversation().getMembers().containsAll(messageField.getConversation().getMembers())
+                        if (messageField != null
+                                && newPanel.getConversation().getMembers().containsAll(messageField.getConversation().getMembers())
                                 && messageField.getConversation().getMembers().containsAll(newPanel.getConversation().getMembers())) {
                             //user currently open the chat
                             middlePanel.remove(messageField);
@@ -320,6 +321,7 @@ public class ChatGUI extends JFrame {
             usersToSend.add(user.strip());
         }
         Collections.sort(usersToSend);
+        //System.out.println(usersToSend.toString());
 
         //check for local duplicates
         DisplayMessageGUI tempPanel = new DisplayMessageGUI(new Conversation(usersToSend), MESSAGE_CLIENT);

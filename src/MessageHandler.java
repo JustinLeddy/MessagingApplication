@@ -109,7 +109,7 @@ public class MessageHandler implements Runnable {
 
 
                 while ((clientMessage = clientReader.readLine()) != null) {
-                    System.out.println("Received from client: " + clientMessage); //print it for processing purposes
+                    //System.out.println("Received from client: " + clientMessage); //print it for processing purposes
 
 
                     if (clientMessage.charAt(0) == 'M') { //its a message to send to other users
@@ -413,7 +413,7 @@ public class MessageHandler implements Runnable {
                         }
                         //register
                         else if (firstLetter == 'R') { //register a new account
-                            username = partTwo; //strip removes leading and trailing spaces
+                            username = partTwo.strip(); //strip removes leading and trailing spaces
                             password = info[2].strip();
 
                             try (var fileReader = new BufferedReader(new FileReader("Accounts.txt"));
@@ -452,8 +452,8 @@ public class MessageHandler implements Runnable {
                                         .filter(line -> !line.isEmpty())
                                         .map(line -> line.substring(0, line.indexOf(",")))
                                         .collect(Collectors.toList());
-                                boolean usersExist = allUsernames.containsAll(Arrays.asList(partTwo.split(",")));
-                                System.out.println(userExists);
+                                boolean usersExist = allUsernames.containsAll(Arrays.asList(partTwo.split(", ")));
+                                System.out.println(usersExist);
                                 clientWriter.write(usersExist + "\n");
                                 clientWriter.flush();
 

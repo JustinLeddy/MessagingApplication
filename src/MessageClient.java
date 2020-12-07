@@ -168,7 +168,7 @@ public class MessageClient {
     public static void setClientMessageUpdateChat(Conversation conversation) {
 
         String newMessage = "U<*>";
-        System.out.println(Arrays.toString(conversation.getMembers().toArray()));
+        //System.out.println(Arrays.toString(conversation.getMembers().toArray()));
         newMessage += Arrays.toString(conversation.getMembers().toArray())
                 .replaceAll(", ", "|")
                 .replaceAll("[\\[\\]]", "") + "|" + clientUsername;
@@ -236,7 +236,7 @@ public class MessageClient {
 
                     //Sends message from Client to server
                     if (clientMessage != null && clientMessage.length() > 0) {
-                        System.out.println("Sent to server: " + clientMessage);
+                        //System.out.println("Sent to server: " + clientMessage);
                         writer.write(clientMessage);
                         writer.newLine();
                         writer.flush();
@@ -307,7 +307,7 @@ public class MessageClient {
             try {
                 if (reader.ready()) { //if there is a message from the server
                     String fromServer = reader.readLine(); //read message
-                    System.out.println("Received this from the server: {" + fromServer + "}"); //print the message it received from server
+                    //System.out.println("Received this from the server: {" + fromServer + "}"); //print the message it received from server
                     if (fromServer.startsWith("M|")) {//if it is in the message format
                         //M|Sender|Recipient|Message
                         //M|Sender|Recipient1,Recipient2,Recipient3|Message

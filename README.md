@@ -95,7 +95,7 @@ The main method that runs the server. It throws an InterruptedException exceptio
 ## LoginGUI
 Graphic User Interface that displays a login/register window for the users. It will be the first window that pops out to the user when the program launches. This class takes the information, including username and password, from the user and sends this information to the correct method in the MessageClient to process. A window will pop up after the user hits Login or Register to notify if their credentials are valid or not. 
 
-![image]https://imgur.com/tGZsVYG
+[![Screen-Shot-2020-12-04-at-4-57-26-AM.png](https://i.postimg.cc/FRfwzkH3/Screen-Shot-2020-12-04-at-4-57-26-AM.png)](https://postimg.cc/JDLpdnJz)
 
 ## ChatGUI
 This is the main window for this messaging app. All communications between the users and the server are handled through this GUI. 
